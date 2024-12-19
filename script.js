@@ -1,10 +1,8 @@
-// script.js
 document.addEventListener('DOMContentLoaded', () => {
     // Theme toggler
     const themeToggle = document.querySelector('.theme-toggle');
     const themeIcon = themeToggle.querySelector('i');
     
-    // Check for saved theme preference
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-theme');
         themeIcon.classList.replace('fa-moon', 'fa-sun');
@@ -14,8 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('dark-theme');
         themeIcon.classList.toggle('fa-moon');
         themeIcon.classList.toggle('fa-sun');
-        
-        // Save theme preference
         localStorage.setItem('theme', 
             document.body.classList.contains('dark-theme') ? 'dark' : 'light'
         );
@@ -35,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         lastScroll = currentScroll;
     });
 
-    // Initialize skill bars animation if on about page
+    // Initialize skill bars animation
     const skillBars = document.querySelectorAll('.skill .bar div');
     if (skillBars.length > 0) {
         setTimeout(() => {
@@ -46,12 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     }
 
-    // Form submission handling
+    // Form submission
     const contactForm = document.querySelector('.contact-form');
     if (contactForm) {
         contactForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            // Add your form submission logic here
             alert('Form submission functionality will be implemented soon!');
         });
     }
