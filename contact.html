@@ -5,62 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact - Edward Ju</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Copy all the CSS from index.html and add this new style -->
+    <!-- Copy ALL the CSS from index.html here -->
     <style>
-        /* First copy ALL the CSS from index.html, then add these new styles: */
-        
+        /* Copy ALL CSS from index.html and add: */
         .contact-container {
-            max-width: 800px;
-            margin: 120px auto 0;
-            padding: 2rem;
+            padding-top: 100px;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
         }
 
-        .contact-grid {
+        .contact-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            margin-top: 3rem;
+            gap: 4rem;
+            padding: 2rem;
         }
 
         .contact-info-card {
             background-color: var(--bg-secondary);
             padding: 2rem;
             border-radius: 15px;
-            transition: transform 0.3s;
+            margin-bottom: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .contact-info-card:hover {
             transform: translateY(-5px);
-        }
-
-        .contact-icon {
-            font-size: 2rem;
-            color: var(--accent);
-            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .contact-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+            background-color: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 15px;
         }
 
         .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
-            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
         }
 
         .form-group input,
         .form-group textarea {
+            width: 100%;
             padding: 0.8rem;
             border: none;
             border-radius: 8px;
-            background-color: var(--bg-secondary);
+            background-color: var(--bg-primary);
             color: var(--text-primary);
             font-size: 1rem;
         }
@@ -74,8 +72,8 @@
             background-color: var(--accent);
             color: white;
             border: none;
-            padding: 1rem;
-            border-radius: 8px;
+            padding: 1rem 2rem;
+            border-radius: 30px;
             cursor: pointer;
             font-size: 1rem;
             transition: transform 0.3s, box-shadow 0.3s;
@@ -87,21 +85,26 @@
         }
 
         @media (max-width: 768px) {
-            .contact-grid {
+            .contact-content {
                 grid-template-columns: 1fr;
+                gap: 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Copy Cursor and Loader divs from index.html -->
+    <!-- Custom Cursor -->
     <div class="cursor"></div>
-    <div class="loader"><div class="loader-content"></div></div>
 
-    <!-- Copy Navbar from index.html -->
+    <!-- Loader -->
+    <div class="loader">
+        <div class="loader-content"></div>
+    </div>
+
+    <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-content">
-            <a href="#" class="logo">Edward Ju</a>
+            <a href="index.html" class="logo">Edward Ju</a>
             <div class="nav-links">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="about.html" class="nav-link">About</a>
@@ -115,46 +118,87 @@
 
     <main class="contact-container">
         <h1 class="section-title">Get In Touch</h1>
-        
-        <div class="contact-grid">
-            <div class="contact-info">
+        <div class="contact-content">
+            <div>
                 <div class="contact-info-card">
-                    <i class="fas fa-envelope contact-icon"></i>
-                    <h3>Email</h3>
+                    <h3 style="margin-bottom: 1rem; color: var(--text-primary);">
+                        <i class="fas fa-envelope" style="color: var(--accent); margin-right: 0.5rem;"></i>
+                        Email
+                    </h3>
                     <p style="color: var(--text-secondary);">contact@example.com</p>
                 </div>
-                
-                <div class="contact-info-card" style="margin-top: 2rem;">
-                    <i class="fas fa-phone contact-icon"></i>
-                    <h3>Phone</h3>
+                <div class="contact-info-card">
+                    <h3 style="margin-bottom: 1rem; color: var(--text-primary);">
+                        <i class="fas fa-phone" style="color: var(--accent); margin-right: 0.5rem;"></i>
+                        Phone
+                    </h3>
                     <p style="color: var(--text-secondary);">+1 (234) 567-8900</p>
                 </div>
             </div>
-            
             <form class="contact-form">
                 <div class="form-group">
                     <label>Name</label>
                     <input type="text" required>
                 </div>
-                
                 <div class="form-group">
                     <label>Email</label>
                     <input type="email" required>
                 </div>
-                
                 <div class="form-group">
                     <label>Message</label>
                     <textarea required></textarea>
                 </div>
-                
                 <button type="submit" class="submit-btn">Send Message</button>
             </form>
         </div>
     </main>
 
-    <!-- Copy all JavaScript from index.html -->
     <script>
-        // Copy ALL the JavaScript from index.html
+        // Custom cursor
+        const cursor = document.querySelector('.cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+    
+        document.addEventListener('click', () => {
+            cursor.classList.add('expand');
+            setTimeout(() => {
+                cursor.classList.remove('expand');
+            }, 500);
+        });
+    
+        // Theme toggler
+        const themeToggle = document.querySelector('.theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            themeIcon.classList.toggle('fa-moon');
+            themeIcon.classList.toggle('fa-sun');
+        });
+    
+        // Navbar hide on scroll
+        let lastScroll = 0;
+        const navbar = document.querySelector('.navbar');
+    
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > lastScroll && currentScroll > 100) {
+                navbar.classList.add('hidden');
+            } else {
+                navbar.classList.remove('hidden');
+            }
+            lastScroll = currentScroll;
+        });
+    
+        // Page loader
+        window.addEventListener('load', () => {
+            const loader = document.querySelector('.loader');
+            setTimeout(() => {
+                loader.classList.add('hidden');
+            }, 1000);
+        });
     </script>
 </body>
 </html>
