@@ -1,31 +1,22 @@
+<!-- File: index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio - Edward Ju</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="script.js" defer></script>
 </head>
 <body>
-    <!-- Custom Cursor -->
-    <div class="cursor"></div>
-
-    <!-- Loader -->
-    <div class="loader">
-        <div class="loader-content"></div>
-    </div>
-
-    <!-- Navigation -->
     <nav class="navbar">
-        <div class="nav-content">
-            <a href="#" class="logo">Edward Ju</a>
+        <div class="container">
+            <a href="index.html" class="logo">Edward Ju</a>
             <div class="nav-links">
-                <a href="#" class="nav-link">Home</a>
-                <a href="#projects" class="nav-link">Projects</a>
-                <a href="#" class="nav-link">About</a>
-                <a href="#" class="nav-link">Contact</a>
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
             </div>
             <button class="theme-toggle">
                 <i class="fas fa-moon"></i>
@@ -33,82 +24,44 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Creative Developer</h1>
-            <p>Building digital experiences that make a difference</p>
-            <a href="#projects" class="cta-button">View My Work</a>
-        </div>
-    </section>
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Building Digital Experiences</h1>
+                <p>Full-stack developer specializing in modern web applications</p>
+                <a href="#projects" class="btn">View My Work</a>
+            </div>
+        </section>
 
-    <!-- Projects Section -->
-    <section id="projects" class="projects">
-        <h2 class="section-title">Featured Projects</h2>
-        <div class="projects-grid">
-            <div class="project-card">
-                <div class="project-image">
-                    <i class="fas fa-code"></i>
-                </div>
-                <div class="project-content">
-                    <h3 class="project-title">E-Commerce Platform</h3>
-                    <p class="project-description">A full-stack e-commerce solution with real-time inventory management.</p>
-                    <div class="project-tags">
-                        <span class="project-tag">React</span>
-                        <span class="project-tag">Node.js</span>
-                        <span class="project-tag">MongoDB</span>
+        <section id="projects" class="projects">
+            <div class="container">
+                <h2>Featured Projects</h2>
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3>E-Commerce Platform</h3>
+                        <p>Full-stack e-commerce solution with real-time inventory.</p>
+                        <div class="tags">
+                            <span>React</span>
+                            <span>Node.js</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <div class="project-image">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Mobile App</h3>
+                        <p>Cross-platform mobile application for fitness tracking.</p>
+                        <div class="tags">
+                            <span>React Native</span>
+                            <span>Firebase</span>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="project-card">
-                <div class="project-image">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="project-content">
-                    <h3 class="project-title">Social Media Dashboard</h3>
-                    <p class="project-description">Analytics dashboard for social media performance tracking.</p>
-                    <div class="project-tags">
-                        <span class="project-tag">Vue.js</span>
-                        <span class="project-tag">D3.js</span>
-                        <span class="project-tag">Firebase</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="project-card">
-                <div class="project-image">
-                    <i class="fas fa-mobile-alt"></i>
-                </div>
-                <div class="project-content">
-                    <h3 class="project-title">Mobile Fitness App</h3>
-                    <p class="project-description">Cross-platform fitness tracking application with social features.</p>
-                    <div class="project-tags">
-                        <span class="project-tag">React Native</span>
-                        <span class="project-tag">Redux</span>
-                        <span class="project-tag">GraphQL</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer Section -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="social-links">
-                <a href="#" class="social-link">
-                    <i class="fab fa-github"></i>
-                </a>
-                <a href="#" class="social-link">
-                    <i class="fab fa-linkedin"></i>
-                </a>
-                <a href="#" class="social-link">
-                    <i class="fab fa-twitter"></i>
-                </a>
-            </div>
-            <p class="copyright">© 2024 Edward Ju. All rights reserved.</p>
-        </div>
-    </footer>
+        </section>
+    </main>
 </body>
 </html>
