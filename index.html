@@ -4,72 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio - Edward Ju</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <script src="script.js" defer></script>
 </head>
-<body class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-    <nav class="fixed w-full top-0 z-50 bg-white dark:bg-gray-800 shadow-md transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="index.html" class="text-blue-500 text-2xl font-bold hover:scale-105 transition-transform">
-                Edward Ju
-            </a>
-            <div class="hidden md:flex space-x-8">
-                <a href="index.html" class="hover:text-blue-500 transition-colors">Home</a>
-                <a href="about.html" class="hover:text-blue-500 transition-colors">About</a>
-                <a href="contact.html" class="hover:text-blue-500 transition-colors">Contact</a>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+
+    <!-- Loader -->
+    <div class="loader">
+        <div class="loader-content"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="#" class="logo">Edward Ju</a>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Home</a>
+                <a href="#projects" class="nav-link">Projects</a>
+                <a href="#" class="nav-link">About</a>
+                <a href="#" class="nav-link">Contact</a>
             </div>
-            <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                🌙
+            <button class="theme-toggle">
+                <i class="fas fa-moon"></i>
             </button>
         </div>
     </nav>
 
-    <main class="pt-16">
-        <section class="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-32 text-center">
-            <div class="max-w-7xl mx-auto px-4">
-                <h1 class="text-4xl md:text-5xl font-bold mb-4">Building Digital Experiences</h1>
-                <p class="text-xl mb-8 opacity-90">Full-stack developer specializing in modern web applications</p>
-                <a href="#projects" class="inline-block px-8 py-3 bg-white text-blue-500 rounded-full font-medium hover:-translate-y-1 transition-transform shadow-lg">
-                    View My Work
-                </a>
-            </div>
-        </section>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Creative Developer</h1>
+            <p>Building digital experiences that make a difference</p>
+            <a href="#projects" class="cta-button">View My Work</a>
+        </div>
+    </section>
 
-        <section id="projects" class="py-24 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
-            <div class="max-w-7xl mx-auto px-4">
-                <h2 class="text-3xl font-bold text-center mb-16 dark:text-white">Featured Projects</h2>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="p-6 rounded-xl shadow-lg bg-white dark:bg-gray-900 hover:-translate-y-2 transition-transform">
-                        <div class="h-48 bg-blue-500 rounded-lg mb-6 flex items-center justify-center text-white text-4xl">
-                            💻
-                        </div>
-                        <h3 class="text-xl font-bold mb-3 dark:text-white">E-Commerce Platform</h3>
-                        <p class="mb-4 text-gray-600 dark:text-gray-300">
-                            Full-stack e-commerce solution with real-time inventory.
-                        </p>
-                        <div class="flex gap-2 flex-wrap">
-                            <span class="px-3 py-1 bg-blue-500 text-white rounded-full text-sm">React</span>
-                            <span class="px-3 py-1 bg-blue-500 text-white rounded-full text-sm">Node.js</span>
-                        </div>
-                    </div>
-                    
-                    <div class="p-6 rounded-xl shadow-lg bg-white dark:bg-gray-900 hover:-translate-y-2 transition-transform">
-                        <div class="h-48 bg-blue-500 rounded-lg mb-6 flex items-center justify-center text-white text-4xl">
-                            📱
-                        </div>
-                        <h3 class="text-xl font-bold mb-3 dark:text-white">Mobile App</h3>
-                        <p class="mb-4 text-gray-600 dark:text-gray-300">
-                            Cross-platform mobile application for fitness tracking.
-                        </p>
-                        <div class="flex gap-2 flex-wrap">
-                            <span class="px-3 py-1 bg-blue-500 text-white rounded-full text-sm">React Native</span>
-                            <span class="px-3 py-1 bg-blue-500 text-white rounded-full text-sm">Firebase</span>
-                        </div>
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <h2 class="section-title">Featured Projects</h2>
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-image">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">E-Commerce Platform</h3>
+                    <p class="project-description">A full-stack e-commerce solution with real-time inventory management.</p>
+                    <div class="project-tags">
+                        <span class="project-tag">React</span>
+                        <span class="project-tag">Node.js</span>
+                        <span class="project-tag">MongoDB</span>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
+
+            <div class="project-card">
+                <div class="project-image">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Social Media Dashboard</h3>
+                    <p class="project-description">Analytics dashboard for social media performance tracking.</p>
+                    <div class="project-tags">
+                        <span class="project-tag">Vue.js</span>
+                        <span class="project-tag">D3.js</span>
+                        <span class="project-tag">Firebase</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-image">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Mobile Fitness App</h3>
+                    <p class="project-description">Cross-platform fitness tracking application with social features.</p>
+                    <div class="project-tags">
+                        <span class="project-tag">React Native</span>
+                        <span class="project-tag">Redux</span>
+                        <span class="project-tag">GraphQL</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="#" class="social-link">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="social-link">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="#" class="social-link">
+                    <i class="fab fa-twitter"></i>
+                </a>
+            </div>
+            <p class="copyright">© 2024 Edward Ju. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>
