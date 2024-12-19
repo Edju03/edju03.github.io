@@ -1,311 +1,17 @@
+<!-- File: about.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About - Edward Ju</title>
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Root variables from index.html */
-        :root {
-            --bg-primary-light: #ffffff;
-            --bg-secondary-light: #f0f0f0;
-            --text-primary-light: #333333;
-            --text-secondary-light: #666666;
-            --accent-light: #2196f3;
-            
-            --bg-primary-dark: #1a1a1a;
-            --bg-secondary-dark: #2d2d2d;
-            --text-primary-dark: #ffffff;
-            --text-secondary-dark: #cccccc;
-            --accent-dark: #64b5f6;
-            
-            --bg-primary: var(--bg-primary-light);
-            --bg-secondary: var(--bg-secondary-light);
-            --text-primary: var(--text-primary-light);
-            --text-secondary: var(--text-secondary-light);
-            --accent: var(--accent-light);
-
-            /* New variables for enhanced effects */
-            --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            --hover-transform: translateY(-5px);
-        }
-
-        /* Base styles from index.html */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            transition: background-color 0.3s, color 0.3s;
-            overflow-x: hidden;
-        }
-
-        body.dark-theme {
-            --bg-primary: var(--bg-primary-dark);
-            --bg-secondary: var(--bg-secondary-dark);
-            --text-primary: var(--text-primary-dark);
-            --text-secondary: var(--text-secondary-dark);
-            --accent: var(--accent-dark);
-        }
-
-        /* Enhanced About Page Styles */
-        .about-container {
-            padding: 120px 20px 60px;
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .about-hero {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            margin-bottom: 6rem;
-        }
-
-        .profile-image {
-            position: relative;
-            width: 100%;
-            height: 400px;
-            border-radius: 20px;
-            overflow: hidden;
-            background: var(--bg-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8rem;
-            color: var(--accent);
-            box-shadow: var(--card-shadow);
-            transition: transform 0.3s ease;
-        }
-
-        .profile-image:hover {
-            transform: var(--hover-transform);
-        }
-
-        .about-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .section-title {
-            font-size: 3rem;
-            margin-bottom: 2rem;
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background: var(--accent);
-            transition: width 0.3s ease;
-        }
-
-        .section-title:hover::after {
-            width: 100%;
-        }
-
-        .about-text {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        .skills-section {
-            margin-top: 4rem;
-        }
-
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .skill-card {
-            background: var(--bg-secondary);
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: var(--card-shadow);
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        .skill-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .skill-card:hover {
-            transform: var(--hover-transform);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        }
-
-        .skill-icon {
-            font-size: 2.5rem;
-            color: var(--accent);
-            margin-bottom: 1.5rem;
-        }
-
-        .skill-title {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .skill-description {
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        .skill-progress {
-            width: 100%;
-            height: 8px;
-            background: var(--bg-primary);
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .skill-progress-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: var(--accent);
-            width: 0;
-            transition: width 1.5s ease;
-        }
-
-        .timeline-section {
-            margin-top: 6rem;
-            padding: 3rem 0;
-        }
-
-        .timeline {
-            position: relative;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem 0;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 2px;
-            height: 100%;
-            background: var(--accent);
-            transform: translateX(-50%);
-        }
-
-        .timeline-item {
-            margin-bottom: 4rem;
-            position: relative;
-            width: calc(50% - 30px);
-            opacity: 0;
-            transform: translateX(-50px);
-            transition: all 0.6s ease;
-        }
-
-        .timeline-item.visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .timeline-item:nth-child(even) {
-            margin-left: calc(50% + 30px);
-            transform: translateX(50px);
-        }
-
-        .timeline-item:nth-child(even).visible {
-            transform: translateX(0);
-        }
-
-        .timeline-content {
-            background: var(--bg-secondary);
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: var(--card-shadow);
-            position: relative;
-        }
-
-        .timeline-content::before {
-            content: '';
-            position: absolute;
-            top: 20px;
-            right: -36px;
-            width: 36px;
-            height: 2px;
-            background: var(--accent);
-        }
-
-        .timeline-item:nth-child(even) .timeline-content::before {
-            left: -36px;
-            right: auto;
-        }
-
-        .timeline-date {
-            color: var(--accent);
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .about-hero {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .timeline::before {
-                left: 0;
-            }
-
-            .timeline-item {
-                width: calc(100% - 30px);
-                margin-left: 30px;
-            }
-
-            .timeline-item:nth-child(even) {
-                margin-left: 30px;
-            }
-
-            .timeline-item:nth-child(even) .timeline-content::before {
-                left: -36px;
-            }
-        }
-    </style>
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <!-- Copy navbar from index.html -->
     <nav class="navbar">
-        <div class="nav-content">
+        <div class="container">
             <a href="index.html" class="logo">Edward Ju</a>
             <div class="nav-links">
                 <a href="index.html" class="nav-link">Home</a>
@@ -318,141 +24,52 @@
         </div>
     </nav>
 
-    <main class="about-container">
-        <section class="about-hero">
-            <div class="profile-image">
-                <i class="fas fa-user"></i>
-            </div>
-            <div class="about-content">
-                <h1 class="section-title">About Me</h1>
-                <p class="about-text">
-                    Hello! I'm Edward Ju, a passionate developer with a keen eye for design and a love for creating 
-                    exceptional digital experiences. I specialize in building modern, responsive websites and applications 
-                    that combine aesthetic appeal with optimal functionality.
-                </p>
-                <p class="about-text">
-                    With a strong foundation in both front-end and back-end development, I bring ideas to life through 
-                    clean, efficient code and intuitive user interfaces. I'm constantly learning and adapting to new 
-                    technologies to deliver cutting-edge solutions.
-                </p>
-            </div>
-        </section>
-
-        <section class="skills-section">
-            <h2 class="section-title">My Skills</h2>
-            <div class="skills-grid">
-                <div class="skill-card">
-                    <i class="fas fa-code skill-icon"></i>
-                    <h3 class="skill-title">Frontend Development</h3>
-                    <p class="skill-description">
-                        Creating responsive and interactive user interfaces with modern frameworks and tools.
-                    </p>
-                    <div class="skill-progress">
-                        <div class="skill-progress-bar" data-progress="90"></div>
+    <main>
+        <section class="about">
+            <div class="container">
+                <h1>About Me</h1>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>Hi, I'm Edward Ju. I'm a full-stack developer passionate about creating beautiful and functional web applications.</p>
+                        <p>With expertise in modern web technologies, I help businesses bring their ideas to life.</p>
+                        <div class="experience">
+                            <h2>Experience</h2>
+                            <div class="experience-item">
+                                <h3>Senior Developer</h3>
+                                <p>2023 - Present</p>
+                                <p>Leading development team in creating innovative web solutions.</p>
+                            </div>
+                            <div class="experience-item">
+                                <h3>Full Stack Developer</h3>
+                                <p>2021 - 2023</p>
+                                <p>Developed and maintained various web applications and services.</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="skill-card">
-                    <i class="fas fa-database skill-icon"></i>
-                    <h3 class="skill-title">Backend Development</h3>
-                    <p class="skill-description">
-                        Building robust server-side applications and RESTful APIs.
-                    </p>
-                    <div class="skill-progress">
-                        <div class="skill-progress-bar" data-progress="85"></div>
-                    </div>
-                </div>
-                <div class="skill-card">
-                    <i class="fas fa-paint-brush skill-icon"></i>
-                    <h3 class="skill-title">UI/UX Design</h3>
-                    <p class="skill-description">
-                        Designing intuitive and beautiful user experiences that engage and delight.
-                    </p>
-                    <div class="skill-progress">
-                        <div class="skill-progress-bar" data-progress="80"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="timeline-section">
-            <h2 class="section-title">Experience</h2>
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">2023 - Present</div>
-                        <h3>Senior Developer</h3>
-                        <p>Leading development team in creating innovative web solutions.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">2021 - 2023</div>
-                        <h3>Full Stack Developer</h3>
-                        <p>Developed and maintained various web applications and services.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">2019 - 2021</div>
-                        <h3>Frontend Developer</h3>
-                        <p>Created responsive and interactive user interfaces.</p>
+                    <div class="skills">
+                        <h2>Skills</h2>
+                        <div class="skill-bars">
+                            <div class="skill">
+                                <span>HTML/CSS</span>
+                                <div class="bar"><div style="width: 90%"></div></div>
+                            </div>
+                            <div class="skill">
+                                <span>JavaScript</span>
+                                <div class="bar"><div style="width: 85%"></div></div>
+                            </div>
+                            <div class="skill">
+                                <span>React</span>
+                                <div class="bar"><div style="width: 80%"></div></div>
+                            </div>
+                            <div class="skill">
+                                <span>Node.js</span>
+                                <div class="bar"><div style="width: 75%"></div></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
-
-    <script>
-        // Theme toggler
-        const themeToggle = document.querySelector('.theme-toggle');
-        const themeIcon = themeToggle.querySelector('i');
-        
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-theme');
-            themeIcon.classList.toggle('fa-moon');
-            themeIcon.classList.toggle('fa-sun');
-        });
-
-        // Skill progress animation
-        const skillBars = document.querySelectorAll('.skill-progress-bar');
-        function animateSkills() {
-            skillBars.forEach(bar => {
-                const progress = bar.getAttribute('data-progress');
-                bar.style.width = `${progress}%`;
-            });
-        }
-
-        // Timeline and skill cards animation
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.skill-card, .timeline-item').forEach(item => {
-            observer.observe(item);
-        });
-
-        // Initialize animations
-        window.addEventListener('load', () => {
-            setTimeout(animateSkills, 500);
-        });
-
-        // Navbar hide on scroll
-        let lastScroll = 0;
-        const navbar = document.querySelector('.navbar');
-
-        window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
-            if (currentScroll > lastScroll && currentScroll > 100) {
-                navbar.classList.add('hidden');
-            } else {
-                navbar.classList.remove('hidden');
-            }
-            lastScroll = currentScroll;
-        });
-    </script>
 </body>
 </html>
