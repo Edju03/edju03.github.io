@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Edward Ju</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Copy all the CSS from index.html and add this new style -->
+    <style>
+        /* First copy ALL the CSS from index.html, then add these new styles: */
+        
+        .about-container {
+            max-width: 1000px;
+            margin: 120px auto 0;
+            padding: 2rem;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .about-image {
+            background-color: var(--bg-secondary);
+            border-radius: 15px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--accent);
+        }
+
+        .skill-bars {
+            margin-top: 2rem;
+        }
+
+        .skill-bar {
+            margin-bottom: 1.5rem;
+        }
+
+        .skill-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .skill-progress {
+            height: 8px;
+            background-color: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .skill-fill {
+            height: 100%;
+            background-color: var(--accent);
+            transition: width 1s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Copy Cursor and Loader divs from index.html -->
+    <div class="cursor"></div>
+    <div class="loader"><div class="loader-content"></div></div>
+
+    <!-- Copy Navbar from index.html -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="#" class="logo">Edward Ju</a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </div>
+            <button class="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="about-container">
+        <h1 class="section-title">About Me</h1>
+        <div class="about-grid">
+            <div class="about-image">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="about-content">
+                <h2>Who I Am</h2>
+                <p style="margin: 1rem 0; line-height: 1.6; color: var(--text-secondary);">
+                    I'm Edward Ju, a passionate developer focused on creating beautiful and functional web experiences. With a keen eye for design and a love for clean code, I transform ideas into reality.
+                </p>
+                
+                <div class="skill-bars">
+                    <div class="skill-bar">
+                        <div class="skill-info">
+                            <span>HTML/CSS</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="skill-progress">
+                            <div class="skill-fill" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-bar">
+                        <div class="skill-info">
+                            <span>JavaScript</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="skill-progress">
+                            <div class="skill-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-bar">
+                        <div class="skill-info">
+                            <span>React</span>
+                            <span>80%</span>
+                        </div>
+                        <div class="skill-progress">
+                            <div class="skill-fill" style="width: 80%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Copy all JavaScript from index.html -->
+    <script>
+        // Copy ALL the JavaScript from index.html
+    </script>
+</body>
+</html>
