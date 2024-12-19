@@ -1,4 +1,3 @@
-<!-- File: index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,8 +9,16 @@
     <script src="script.js" defer></script>
 </head>
 <body>
+    <!-- Loader -->
+    <div class="loader">
+        <div class="loader-content"></div>
+    </div>
+
+    <!-- Custom cursor -->
+    <div class="cursor"></div>
+
     <nav class="navbar">
-        <div class="container">
+        <div class="nav-content">
             <a href="index.html" class="logo">Edward Ju</a>
             <div class="nav-links">
                 <a href="index.html" class="nav-link">Home</a>
@@ -26,37 +33,39 @@
 
     <main>
         <section class="hero">
-            <div class="container">
+            <div class="hero-content">
                 <h1>Building Digital Experiences</h1>
                 <p>Full-stack developer specializing in modern web applications</p>
-                <a href="#projects" class="btn">View My Work</a>
+                <a href="#projects" class="nav-link">View My Work</a>
             </div>
         </section>
 
         <section id="projects" class="projects">
-            <div class="container">
-                <h2>Featured Projects</h2>
-                <div class="projects-grid">
-                    <div class="project-card">
-                        <div class="project-image">
-                            <i class="fas fa-code"></i>
-                        </div>
-                        <h3>E-Commerce Platform</h3>
-                        <p>Full-stack e-commerce solution with real-time inventory.</p>
-                        <div class="tags">
-                            <span>React</span>
-                            <span>Node.js</span>
+            <h2 class="section-title">Featured Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-image">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">E-Commerce Platform</h3>
+                        <p class="project-description">Full-stack e-commerce solution with real-time inventory.</p>
+                        <div class="project-tags">
+                            <span class="project-tag">React</span>
+                            <span class="project-tag">Node.js</span>
                         </div>
                     </div>
-                    <div class="project-card">
-                        <div class="project-image">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <h3>Mobile App</h3>
-                        <p>Cross-platform mobile application for fitness tracking.</p>
-                        <div class="tags">
-                            <span>React Native</span>
-                            <span>Firebase</span>
+                </div>
+                <div class="project-card">
+                    <div class="project-image">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Mobile App</h3>
+                        <p class="project-description">Cross-platform mobile application for fitness tracking.</p>
+                        <div class="project-tags">
+                            <span class="project-tag">React Native</span>
+                            <span class="project-tag">Firebase</span>
                         </div>
                     </div>
                 </div>
