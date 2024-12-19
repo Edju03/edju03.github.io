@@ -3,249 +3,473 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portfolio</title>
+    <title>Advanced Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #ffd700;
-            --bg-dark: #1e1e1e;
-            --bg-darker: #141414;
-            --text-light: #ffffff;
-            --text-gray: #909090;
+            /* Light theme */
+            --bg-primary-light: #ffffff;
+            --bg-secondary-light: #f0f0f0;
+            --text-primary-light: #333333;
+            --text-secondary-light: #666666;
+            --accent-light: #2196f3;
+            
+            /* Dark theme */
+            --bg-primary-dark: #1a1a1a;
+            --bg-secondary-dark: #2d2d2d;
+            --text-primary-dark: #ffffff;
+            --text-secondary-dark: #cccccc;
+            --accent-dark: #64b5f6;
+            
+            /* Current theme (default to light) */
+            --bg-primary: var(--bg-primary-light);
+            --bg-secondary: var(--bg-secondary-light);
+            --text-primary: var(--text-primary-light);
+            --text-secondary: var(--text-secondary-light);
+            --accent: var(--accent-light);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+            overflow-x: hidden;
         }
 
-        .container {
+        body.dark-theme {
+            --bg-primary: var(--bg-primary-dark);
+            --bg-secondary: var(--bg-secondary-dark);
+            --text-primary: var(--text-primary-dark);
+            --text-secondary: var(--text-secondary-dark);
+            --accent: var(--accent-dark);
+        }
+
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-content {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--bg-secondary);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--bg-primary);
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+
+        .navbar.hidden {
+            transform: translateY(-100%);
+        }
+
+        .nav-content {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .profile-card {
-            background-color: var(--bg-darker);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            text-decoration: none;
+            transition: transform 0.3s;
         }
 
-        .profile-image {
-            width: 150px;
-            height: 150px;
-            background-color: var(--bg-dark);
-            border-radius: 20px;
-            margin: 0 auto 20px;
-            overflow: hidden;
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            position: relative;
+            padding: 0.5rem;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: width 0.3s;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            transition: transform 0.3s;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(180deg);
+        }
+
+        .hero {
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 48px;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
         }
 
-        .profile-title {
-            font-size: 24px;
-            margin-bottom: 10px;
+        .hero-content {
+            max-width: 800px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s forwards;
+            animation-delay: 0.5s;
         }
 
-        .profile-subtitle {
-            background-color: var(--bg-dark);
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--accent), #ff4081);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
             display: inline-block;
-            padding: 8px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            color: var(--text-gray);
-        }
-
-        .contact-info {
-            text-align: left;
-            margin-top: 20px;
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            color: var(--text-gray);
-        }
-
-        .contact-item i {
-            width: 20px;
-            color: var(--primary-color);
-            margin-right: 10px;
-        }
-
-        .main-content {
-            background-color: var(--bg-darker);
-            padding: 30px;
-            border-radius: 15px;
-        }
-
-        .nav {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .nav a {
-            color: var(--text-gray);
+            padding: 1rem 2rem;
+            background-color: var(--accent);
+            color: white;
             text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: 0.3s;
+            border-radius: 30px;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .nav a.active {
-            color: var(--primary-color);
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .projects {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .section-title {
-            font-size: 32px;
-            margin-bottom: 20px;
-            position: relative;
-            padding-bottom: 10px;
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+            color: var(--text-primary);
         }
 
-        .section-title::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 60px;
-            height: 4px;
-            background-color: var(--primary-color);
-        }
-
-        .about-text {
-            color: var(--text-gray);
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-
-        .services-grid {
+        .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
         }
 
-        .service-card {
-            background-color: var(--bg-dark);
-            padding: 20px;
-            border-radius: 10px;
+        .project-card {
+            background-color: var(--bg-secondary);
+            border-radius: 15px;
+            overflow: hidden;
+            transform: translateY(50px);
+            opacity: 0;
+            transition: transform 0.5s, opacity 0.5s, box-shadow 0.3s;
         }
 
-        .service-icon {
-            color: var(--primary-color);
-            font-size: 24px;
-            margin-bottom: 15px;
+        .project-card.visible {
+            transform: translateY(0);
+            opacity: 1;
         }
 
-        .service-title {
-            margin-bottom: 10px;
+        .project-card:hover {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
-        .service-description {
-            color: var(--text-gray);
-            font-size: 14px;
+        .project-image {
+            width: 100%;
+            height: 200px;
+            background-color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+
+        .project-content {
+            padding: 1.5rem;
+        }
+
+        .project-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .project-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .project-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .project-tag {
+            padding: 0.3rem 0.8rem;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 15px;
+            font-size: 0.9rem;
         }
 
         @media (max-width: 768px) {
-            .container {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .projects-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s;
+        }
+
+        @keyframes cursorAnim {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+
+        .cursor.expand {
+            animation: cursorAnim 0.5s forwards;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Profile Card -->
-        <div class="profile-card">
-            <div class="profile-image">👤</div>
-            <h1 class="profile-title">Your Name</h1>
-            <div class="profile-subtitle">Web Developer</div>
-            
-            <div class="contact-info">
-                <div class="contact-item">
-                    <i>📧</i>
-                    <span>your.email@example.com</span>
-                </div>
-                <div class="contact-item">
-                    <i>📱</i>
-                    <span>+1 (234) 567-8900</span>
-                </div>
-                <div class="contact-item">
-                    <i>📅</i>
-                    <span>January 1, 1990</span>
-                </div>
-                <div class="contact-item">
-                    <i>📍</i>
-                    <span>Your City, Country</span>
-                </div>
-            </div>
-        </div>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <nav class="nav">
-                <a href="#" class="active">About</a>
-                <a href="#">Resume</a>
-                <a href="#">Portfolio</a>
-                <a href="#">Blog</a>
-                <a href="#">Contact</a>
-            </nav>
-
-            <section>
-                <h2 class="section-title">About Me</h2>
-                <p class="about-text">
-                    I'm a passionate web developer with expertise in creating beautiful and functional websites. 
-                    I enjoy solving complex problems and turning them into simple, elegant solutions.
-                </p>
-
-                <h3 class="section-title">What I'm Doing</h3>
-                <div class="services-grid">
-                    <div class="service-card">
-                        <div class="service-icon">🎨</div>
-                        <h4 class="service-title">Web Design</h4>
-                        <p class="service-description">
-                            Modern and high-quality design made at a professional level.
-                        </p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">💻</div>
-                        <h4 class="service-title">Web Development</h4>
-                        <p class="service-description">
-                            High-quality development of sites at the professional level.
-                        </p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">📱</div>
-                        <h4 class="service-title">Mobile Apps</h4>
-                        <p class="service-description">
-                            Professional development of applications for iOS and Android.
-                        </p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">📸</div>
-                        <h4 class="service-title">Photography</h4>
-                        <p class="service-description">
-                            I make high-quality photos of any category at a professional level.
-                        </p>
-                    </div>
-                </div>
-            </section>
-        </div>
+    <!-- Loader -->
+    <div class="loader">
+        <div class="loader-content"></div>
     </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="#" class="logo">Portfolio</a>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Home</a>
+                <a href="#projects" class="nav-link">Projects</a>
+                <a href="#" class="nav-link">About</a>
+                <a href="#" class="nav-link">Contact</a>
+            </div>
+            <button class="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Creative Developer</h1>
+            <p>Building digital experiences that make a difference</p>
+            <a href="#projects" class="cta-button">View My Work</a>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <h2 class="section-title">Featured Projects</h2>
+        <div class="projects-grid">
+            <!-- Project cards will be generated by JavaScript -->
+        </div>
+    </section>
+
+    <script>
+        // Custom cursor
+        const cursor = document.querySelector('.cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        document.addEventListener('click', () => {
+            cursor.classList.add('expand');
+            setTimeout(() => {
+                cursor.classList.remove('expand');
+            }, 500);
+        });
+
+        // Theme toggler
+        const themeToggle = document.querySelector('.theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            themeIcon.classList.toggle('fa-moon');
+            themeIcon.classList.toggle('fa-sun');
+        });
+
+        // Navbar hide on scroll
+        let lastScroll = 0;
+        const navbar = document.querySelector('.navbar');
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > lastScroll && currentScroll > 100) {
+                navbar.classList.add('hidden');
+            } else {
+                navbar.classList.remove('hidden');
+            }
+            lastScroll = currentScroll;
+        });
+
+        // Project cards data
+        const projects = [
+            {
+                title: 'E-Commerce Platform',
+                description: 'A full-stack e-commerce solution with real-time inventory management.',
+                tags: ['React', 'Node.js', 'MongoDB']
+            },
+            {
+                title: 'Social Media Dashboard',
+                description: 'Analytics dashboard for social media performance tracking.',
+                tags: ['Vue.js', 'D3.js', 'Firebase']
+            },
+            {
+                title: 'Mobile Fitness App',
+                description: 'Cross-platform fitness tracking application with social features.',
+                tags: ['React Native', 'Redux', 'GraphQL']
+            }
+        ];
+
+        // Generate project cards
+        const projectsGrid = document.querySelector('.projects-grid');
+        projects.forEach(project => {
+            const card = document.createElement('div');
+            card.className = 'project-card';
+            card.innerHTML = `
+                <div class="project-image">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">${project.title}</h3>
+                    <p class="project-description">${project.description}</p>
+                    <div class="project-tags">
+                        ${project.tags.map(tag => `<span class="project-tag">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+            projectsGrid.appendChild(card);
+        });
+
+        // Project cards animation on scroll
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.project-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Page loader
+        window.addEventListener('load', () => {
+            const loader = document.querySelector('.loader');
+            setTimeout(() => {
+                loader.classList.add('hidden');
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
