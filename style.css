@@ -68,7 +68,9 @@ body.dark-theme {
     position: fixed;
     pointer-events: none;
     z-index: 9999;
-    transition: transform 0.1s;
+    transition: transform 0.15s ease, opacity 0.2s ease;
+    will-change: transform;
+    opacity: 0;
 }
 
 .cursor.expand {
