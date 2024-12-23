@@ -1,3 +1,4 @@
+/* CSS Variables */
 :root {
     /* Light theme */
     --bg-primary-light: #ffffff;
@@ -21,6 +22,7 @@
     --accent: var(--accent-light);
 }
 
+/* Reset and Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -47,6 +49,14 @@ body.dark-theme {
     --text-primary: var(--text-primary-dark);
     --text-secondary: var(--text-secondary-dark);
     --accent: var(--accent-dark);
+}
+
+/* Container */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
 }
 
 /* Custom Cursor */
@@ -123,6 +133,7 @@ body.dark-theme {
 
 .nav-content {
     width: 100%;
+    max-width: 1200px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -303,56 +314,7 @@ body.dark-theme {
     font-size: 0.9rem;
 }
 
-/* Button styles */
-.btn {
-    display: inline-block;
-    padding: 0.8rem 1.5rem;
-    background-color: var(--accent);
-    color: white;
-    text-decoration: none;
-    border-radius: 25px;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .nav-links {
-        display: none;
-    }
-
-    .hero h1 {
-        font-size: 2.5rem;
-    }
-
-    .projects-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .nav-content {
-        padding: 0 1rem;
-    }
-}
-
-
-.container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-}
-
+/* About Section */
 .about {
     padding: 8rem 0 5rem;
     background-color: var(--bg-primary);
@@ -416,6 +378,7 @@ body.dark-theme {
     margin-bottom: 0.5rem;
 }
 
+/* Skills Section */
 .skills {
     background-color: var(--bg-secondary);
     padding: 2rem;
@@ -452,7 +415,125 @@ body.dark-theme {
     transition: width 1s ease-in-out;
 }
 
+/* Contact Section */
+.contact {
+    padding: 8rem 0 5rem;
+    background-color: var(--bg-primary);
+    min-height: 100vh;
+}
+
+.contact h1 {
+    font-size: 3rem;
+    margin-bottom: 3rem;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.contact-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-primary);
+}
+
+.info-item i {
+    font-size: 1.5rem;
+    color: var(--accent);
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 0.8rem;
+    border: 2px solid var(--bg-secondary);
+    border-radius: 8px;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+/* Button styles */
+.btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background-color: var(--accent);
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+
     .about-content {
         grid-template-columns: 1fr;
         gap: 2rem;
@@ -464,5 +545,14 @@ body.dark-theme {
     
     .about h1 {
         font-size: 2.5rem;
+    }
+
+    .contact-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .nav-content {
+        padding: 0 1rem;
     }
 }
