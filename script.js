@@ -5,29 +5,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let isHoveringClickable = false;
 
     if (cursor) {
-        // Main cursor movement with smoothing
-        let cursorX = 0;
-        let cursorY = 0;
-        let currentX = 0;
-        let currentY = 0;
-
+        // Initial cursor position fix
+        cursor.style.opacity = 0;
+        
         document.addEventListener('mousemove', (e) => {
-            cursorX = e.clientX;
-            cursorY = e.clientY;
+            // Show cursor on first move
+            cursor.style.opacity = 1;
+            
+            // Get mouse position relative to viewport
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            
+            // Position the cursor - subtract half the cursor size to center it
+            cursor.style.transform = `translate(${mouseX - 10}px, ${mouseY - 10}px)`;
+            
+            // Scale effect for hovering over clickable elements
+            const scale = isHoveringClickable ? 1.5 : 1;
+            cursor.style.transform += ` scale(${scale})`;
         });
-
-        // Smooth cursor animation
-        function animateCursor() {
-            const ease = 0.2;
-            
-            currentX += (cursorX - currentX) * ease;
-            currentY += (cursorY - currentY) * ease;
-            
-            cursor.style.transform = `translate(${currentX}px, ${currentY}px) scale(${isHoveringClickable ? 1.5 : 1})`;
-            
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
 
         // Cursor effects for clickable elements
         links.forEach(link => {
@@ -45,17 +40,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Click animation
-        document.addEventListener('mousedown', () => {
-            cursor.style.transform = `translate(${currentX}px, ${currentY}px) scale(0.8)`;
+        document.addEventListener('mousedown', (event) => {
+            cursor.style.transform = `translate(${event.clientX - 10}px, ${event.clientY - 10}px) scale(0.8)`;
         });
 
-        document.addEventListener('mouseup', () => {
-            cursor.style.transform = `translate(${currentX}px, ${currentY}px) scale(1)`;
+        document.addEventListener('mouseup', (event) => {
+            cursor.style.transform = `translate(${event.clientX - 10}px, ${event.clientY - 10}px) scale(1)`;
         });
 
-        // Hide system cursor
+        // Hide default cursor
         document.body.style.cursor = 'none';
         links.forEach(link => link.style.cursor = 'none');
+
+        // Hide cursor when leaving the window
+        document.addEventListener('mouseleave', () => {
+            cursor.style.opacity = 0;
+        });
+
+        // Show cursor when entering the window
+        document.addEventListener('mouseenter', () => {
+            cursor.style.opacity = 1;
+        });
     }
 
     // Theme toggler with smooth transition
