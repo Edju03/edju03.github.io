@@ -51,26 +51,12 @@ body.dark-theme {
     --accent: var(--accent-dark);
 }
 
-/* Particle Canvas Styles */
-#particle-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    background: var(--bg-primary-dark);
-    pointer-events: none;
-}
-
 /* Container */
 .container {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
-    position: relative;
-    z-index: 1;
 }
 
 /* Loader */
@@ -108,9 +94,7 @@ body.dark-theme {
 
 /* Navigation */
 .navbar {
-    background: rgba(26, 26, 26, 0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background-color: var(--bg-primary);
     padding: 1rem 2rem;
     position: fixed;
     width: 100%;
@@ -190,30 +174,24 @@ body.dark-theme {
 
 /* Hero Section */
 .hero {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 2rem;
     width: 100%;
-    background: transparent;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
 }
 
 .hero-content {
     width: 100%;
     max-width: 800px;
-    padding: 2.5rem;
+    padding: 0 2rem;
     opacity: 0;
     transform: translateY(20px);
     animation: fadeInUp 1s forwards;
     animation-delay: 0.5s;
-    background: rgba(26, 26, 26, 0.5);
-    border-radius: 15px;
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
 }
 
 .hero h1 {
@@ -232,13 +210,9 @@ body.dark-theme {
 
 /* Projects Section */
 .projects {
-    position: relative;
-    z-index: 1;
     padding: 5rem 0;
     width: 100%;
-    background: rgba(26, 26, 26, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background-color: var(--bg-secondary);
 }
 
 .section-title {
@@ -260,15 +234,12 @@ body.dark-theme {
 }
 
 .project-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: var(--bg-primary);
     border-radius: 15px;
     overflow: hidden;
     transform: translateY(50px);
     opacity: 0;
-    transition: transform 0.5s, opacity 0.5s, box-shadow 0.3s;
+    transition: transform 0.5s, opacity 0.5s, box-shadow 0.3s, background-color 0.3s;
 }
 
 .project-card.visible {
@@ -278,7 +249,7 @@ body.dark-theme {
 
 .project-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
 .project-image {
@@ -326,8 +297,6 @@ body.dark-theme {
     padding: 8rem 0 5rem;
     background-color: var(--bg-primary);
     min-height: 100vh;
-    position: relative;
-    z-index: 1;
 }
 
 .about h1 {
@@ -405,9 +374,7 @@ body.dark-theme {
 
 .timeline-content {
     padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    background-color: var(--bg-secondary);
     border-radius: 10px;
     position: relative;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -453,13 +420,9 @@ body.dark-theme {
 
 /* Skills Section */
 .skills {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    background-color: var(--bg-secondary);
     padding: 2rem;
     border-radius: 15px;
-    position: relative;
-    z-index: 1;
 }
 
 .skills h2 {
@@ -495,10 +458,8 @@ body.dark-theme {
 /* Contact Section */
 .contact {
     padding: 8rem 0 5rem;
-    background-color: transparent;
+    background-color: var(--bg-primary);
     min-height: 100vh;
-    position: relative;
-    z-index: 1;
 }
 
 .contact h1 {
@@ -539,12 +500,6 @@ body.dark-theme {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    padding: 2rem;
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .form-group {
@@ -563,7 +518,7 @@ body.dark-theme {
     padding: 0.8rem;
     border: 2px solid var(--bg-secondary);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background-color: var(--bg-primary);
     color: var(--text-primary);
     transition: border-color 0.3s;
 }
@@ -590,8 +545,6 @@ body.dark-theme {
     transition: transform 0.3s, box-shadow 0.3s;
     border: none;
     cursor: pointer;
-    font-size: 1rem;
-    text-align: center;
 }
 
 .btn:hover {
@@ -653,40 +606,5 @@ body.dark-theme {
     
     .timeline-description {
         font-size: 0.9rem;
-    }
-
-    .hero-content {
-        padding: 1.5rem;
-    }
-
-    .contact-form {
-        padding: 1.5rem;
-    }
-}
-
-/* Dark theme specific overrides */
-body.dark-theme .project-card,
-body.dark-theme .timeline-content,
-body.dark-theme .contact-form {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-body.dark-theme .form-group input,
-body.dark-theme .form-group textarea {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-/* Additional responsive tweaks */
-@media (max-width: 480px) {
-    .hero h1 {
-        font-size: 2rem;
-    }
-    
-    .section-title {
-        font-size: 2rem;
-    }
-    
-    .container {
-        padding: 0 1rem;
     }
 }
