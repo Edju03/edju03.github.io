@@ -7,6 +7,147 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="script.js" defer></script>
+    <style>
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .social-link {
+            color: var(--accent);
+            font-size: 1.8rem;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .social-link:hover {
+            transform: translateY(-3px);
+            color: var(--text-primary);
+        }
+
+        .contact-card {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .availability {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .availability h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .schedule-item {
+            background: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .schedule-day {
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .schedule-time {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .preferred-contact {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 15px;
+        }
+
+        .preferred-contact h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .contact-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .contact-method {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        .contact-method:hover {
+            transform: translateX(5px);
+        }
+
+        .contact-method i {
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .method-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .method-name {
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+
+        .method-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-feedback {
+            display: none;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .form-feedback.success {
+            display: block;
+            background: #4CAF50;
+            color: white;
+        }
+
+        .form-feedback.error {
+            display: block;
+            background: #f44336;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <!-- Loader -->
@@ -34,37 +175,123 @@
                 <h1>Get In Touch</h1>
                 <div class="contact-content">
                     <div class="contact-info">
-                        <div class="info-item">
-                            <i class="fas fa-envelope"></i>
-                            <p>contact@example.com</p>
+                        <div class="contact-card">
+                            <div class="info-item">
+                                <i class="fas fa-envelope"></i>
+                                <p>eju@caltech.edu</p>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-phone"></i>
+                                <p>+1 (626)-773-2964</p>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-location-dot"></i>
+                                <p>1200 E California BLVD MSC 531</p>
+                            </div>
+                            <div class="social-links">
+                                <a href="#" class="social-link" title="GitHub">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="#" class="social-link" title="LinkedIn">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                                <a href="#" class="social-link" title="Website">
+                                    <i class="fas fa-globe"></i>
+                                </a>
+                            </div>
                         </div>
-                        <div class="info-item">
-                            <i class="fas fa-phone"></i>
-                            <p>+1 (234) 567-8900</p>
+
+                        <div class="availability">
+                            <h3>Availability</h3>
+                            <p>Current timezone: Pacific Time (PT)</p>
+                            <div class="schedule-grid">
+                                <div class="schedule-item">
+                                    <div class="schedule-day">Weekdays</div>
+                                    <div class="schedule-time">9:00 AM - 5:00 PM</div>
+                                </div>
+                                <div class="schedule-item">
+                                    <div class="schedule-day">Weekends</div>
+                                    <div class="schedule-time">By appointment</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="info-item">
-                            <i class="fas fa-location-dot"></i>
-                            <p>San Francisco, CA</p>
+
+                        <div class="preferred-contact">
+                            <h3>Preferred Contact Methods</h3>
+                            <div class="contact-methods">
+                                <div class="contact-method">
+                                    <i class="fas fa-envelope"></i>
+                                    <div class="method-details">
+                                        <span class="method-name">Email</span>
+                                        <span class="method-description">Best for detailed inquiries</span>
+                                    </div>
+                                </div>
+                                <div class="contact-method">
+                                    <i class="fab fa-linkedin"></i>
+                                    <div class="method-details">
+                                        <span class="method-name">LinkedIn</span>
+                                        <span class="method-description">Professional networking</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
                     <form class="contact-form">
                         <div class="form-group">
                             <label for="name">Name</label>
-                            <input type="text" id="name" required>
+                            <input type="text" id="name" required placeholder="Your name">
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" id="email" required>
+                            <input type="email" id="email" required placeholder="your.email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" required placeholder="What's this about?">
                         </div>
                         <div class="form-group">
                             <label for="message">Message</label>
-                            <textarea id="message" required></textarea>
+                            <textarea id="message" required placeholder="Your message here..."></textarea>
                         </div>
                         <button type="submit" class="btn">Send Message</button>
+                        <div class="form-feedback"></div>
                     </form>
                 </div>
             </div>
         </section>
     </main>
+
+    <script>
+        // Enhanced form handling
+        document.querySelector('.contact-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const feedback = document.querySelector('.form-feedback');
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            
+            try {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Sending...';
+                
+                // Simulate form submission delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                feedback.textContent = 'Message sent successfully! I\'ll get back to you soon.';
+                feedback.className = 'form-feedback success';
+                e.target.reset();
+                
+                setTimeout(() => {
+                    feedback.style.display = 'none';
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Send Message';
+                }, 3000);
+            } catch (error) {
+                feedback.textContent = 'Failed to send message. Please try again.';
+                feedback.className = 'form-feedback error';
+                submitButton.disabled = false;
+                submitButton.textContent = 'Send Message';
+            }
+        });
+    </script>
 </body>
 </html>
