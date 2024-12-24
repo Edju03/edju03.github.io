@@ -1,0 +1,121 @@
+/* hero-background.css */
+.hero {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Animated gradient mesh */
+.hero-background::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: 
+        radial-gradient(circle at center, var(--accent) 0%, transparent 25%),
+        repeating-linear-gradient(45deg, 
+            var(--accent) 0%, 
+            transparent 5%, 
+            var(--bg-secondary) 10%
+        );
+    opacity: 0.1;
+    animation: rotate 30s linear infinite;
+}
+
+/* Animated grid overlay */
+.hero-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(var(--text-secondary) 1px, transparent 1px),
+        linear-gradient(90deg, var(--text-secondary) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.1;
+    animation: gridMove 20s linear infinite;
+}
+
+/* Floating particles */
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    filter: blur(1px);
+    opacity: 0.5;
+    animation: float 15s infinite linear;
+}
+
+.particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+.particle:nth-child(2) { top: 60%; left: 30%; animation-delay: -2s; }
+.particle:nth-child(3) { top: 40%; left: 50%; animation-delay: -4s; }
+.particle:nth-child(4) { top: 70%; left: 70%; animation-delay: -6s; }
+.particle:nth-child(5) { top: 30%; left: 90%; animation-delay: -8s; }
+
+/* Center content wrapper */
+.hero-content-wrapper {
+    position: relative;
+    z-index: 2;
+    background: radial-gradient(
+        circle at center,
+        transparent 0%,
+        var(--bg-primary) 70%
+    );
+    padding: 2rem;
+    border-radius: 20px;
+}
+
+/* Animations */
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes gridMove {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(50px);
+    }
+}
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.5;
+    }
+    25% {
+        transform: translate(100px, 50px) scale(1.2);
+        opacity: 0.7;
+    }
+    50% {
+        transform: translate(200px, 0) scale(1);
+        opacity: 0.5;
+    }
+    75% {
+        transform: translate(100px, -50px) scale(0.8);
+        opacity: 0.3;
+    }
+    100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.5;
+    }
+}
