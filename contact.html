@@ -168,7 +168,7 @@
                         </div>
                     </div>
 
-                    <form class="contact-form" action="https://formspree.io/f/xnnnnjyn" method="POST">
+                    <form class="contact-form" action="https://formspree.io/f/{your-form-id}" method="POST">
                         <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" id="name" name="name" required placeholder="Your name">
@@ -200,6 +200,14 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Prevent multiple submissions
+            if (submitButton.disabled) return;
+            
+            // Reset feedback display
+            feedback.style.display = 'none';
+            
+            // Update button state
             submitButton.disabled = true;
             submitButton.textContent = 'Sending...';
 
@@ -213,23 +221,35 @@
                 });
 
                 if (response.ok) {
+                    // Show success message
                     feedback.textContent = 'Message sent successfully! I\'ll get back to you soon.';
                     feedback.className = 'form-feedback success';
+                    feedback.style.display = 'block';
                     form.reset();
+                    
+                    // Reset button after successful submission
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Send Message';
                 } else {
                     throw new Error('Failed to send message');
                 }
             } catch (error) {
+                // Show error message
                 feedback.textContent = 'Failed to send message. Please try again.';
                 feedback.className = 'form-feedback error';
-            } finally {
+                feedback.style.display = 'block';
+                
+                // Reset button on error
                 submitButton.disabled = false;
                 submitButton.textContent = 'Send Message';
-                
-                setTimeout(() => {
-                    feedback.style.display = 'none';
-                }, 3000);
             }
+
+            // Hide feedback message after delay
+            setTimeout(() => {
+                if (feedback.style.display === 'block') {
+                    feedback.style.display = 'none';
+                }
+            }, 3000);
         });
     </script>
 </body>
