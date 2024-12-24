@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio - Edward Ju</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="hero-background.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="script.js" defer></script>
 </head>
@@ -29,17 +30,33 @@
     </nav>
 
     <main>
+        <!-- Hero Section with New Background -->
         <section class="hero">
-            <div class="hero-content">
-                <h1>Building Digital Experiences</h1>
-                <p>Full-stack developer specializing in modern web applications</p>
-                <a href="#projects" class="nav-link">View My Work</a>
+            <!-- Background Elements -->
+            <div class="hero-background">
+                <div class="hero-grid"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+            </div>
+            
+            <!-- Content Wrapper -->
+            <div class="hero-content-wrapper">
+                <div class="hero-content">
+                    <h1>Building Digital Experiences</h1>
+                    <p>Full-stack developer specializing in modern web applications</p>
+                    <a href="#projects" class="nav-link">View My Work</a>
+                </div>
             </div>
         </section>
 
+        <!-- Projects Section -->
         <section id="projects" class="projects">
             <h2 class="section-title">Featured Projects</h2>
             <div class="projects-grid">
+                <!-- Project Card 1 -->
                 <div class="project-card">
                     <div class="project-image">
                         <i class="fas fa-code"></i>
@@ -53,6 +70,8 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Project Card 2 -->
                 <div class="project-card">
                     <div class="project-image">
                         <i class="fas fa-mobile-alt"></i>
