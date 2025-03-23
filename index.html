@@ -1,162 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio - Edward Ju</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="hero-background.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="script.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Robotic Arm Simulation</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #roboticArmContainer {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      background: #eeeeee;
+    }
+  </style>
 </head>
 <body>
-    <!-- Loader -->
-    <div class="loader">
-        <div class="loader-content"></div>
-    </div>
+  <!-- Container for the simulation -->
+  <div id="roboticArmContainer"></div>
 
-    <nav class="navbar">
-        <div class="nav-content">
-            <a href="index.html" class="logo">Edward Ju</a>
-            <div class="nav-links">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="about.html" class="nav-link">About</a>
-                <a href="contact.html" class="nav-link">Contact</a>
-            </div>
-            <button class="theme-toggle">
-                <i class="fas fa-moon"></i>
-            </button>
-        </div>
-    </nav>
-
-    <main>
-        <!-- Hero Section with New Background -->
-        <section class="hero">
-            <!-- Background Elements -->
-            <div class="hero-background">
-                <div class="hero-grid"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-            </div>
-            
-            <!-- Content Wrapper -->
-            <div class="hero-content-wrapper">
-                <div class="hero-content">
-                    <h1>Turning Ideas Into Reality</h1>
-                    <p>Second year undergraduate at Caltech studying Computer Science and Robotics</p>
-                    <a href="#projects" class="nav-link">View My Work</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Projects Section -->
-        <section id="projects" class="projects">
-            <h2 class="section-title">Featured Projects</h2>
-            <div class="projects-grid">
-                <!-- CHARIOT Project -->
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">CHARIOT</h3>
-                        <p class="project-description">System Engineer and Software Lead for Cooperative Heterogeneous Autonomous Robots for Intra-Crater Operations. Developing autonomy for flying and hopping robots with advanced landing capabilities.</p>
-                        <div class="project-tags">
-                            <span class="project-tag">ROS</span>
-                            <span class="project-tag">Computer Vision</span>
-                            <span class="project-tag">Ubuntu</span>
-                            <span class="project-tag">Robotics</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- NASA Big Idea Challenge -->
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-space-shuttle"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">NASA Big Idea Challenge</h3>
-                        <p class="project-description">Finalist in 2024 Inflatable Challenge. Developing innovative system for plume alleviation on lunar surfaces using inflatable technology. Project awarded $150,000 for development and testing.</p>
-                        <div class="project-tags">
-                            <span class="project-tag">NASA</span>
-                            <span class="project-tag">Aerospace</span>
-                            <span class="project-tag">Innovation</span>
-                            <span class="project-tag">Space Tech</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Caltech CRATER -->
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-rocket"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">Caltech CRATER</h3>
-                        <p class="project-description">Software Engineering Team member working on the CRATER rover wheel system. Preparing for participation in the University Rover Challenge.</p>
-                        <div class="project-tags">
-                            <span class="project-tag">Robotics</span>
-                            <span class="project-tag">Software Engineering</span>
-                            <span class="project-tag">System Design</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Neural Decoding Project -->
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">Neural Decoding Project</h3>
-                        <p class="project-description">Analyzed neural datas and developed ML models to decode visual features from neural signals, with specific focus on regional neural dynamics.</p>
-                        <div class="project-tags">
-                            <span class="project-tag">Neural Data Analysis</span>
-                            <span class="project-tag">Time Series Analysis</span>
-                            <span class="project-tag">Signal Processing</span>
-                            <span class="project-tag">Machine Learning</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- UAV/ML Research -->
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-drone"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">UAV/ML Research</h3>
-                        <p class="project-description">Developed robust particle filter for UGV and UAV localization at Duke University. Worked with radar-based point-cloud mapping and swarm drone models.</p>
-                        <div class="project-tags">
-                            <span class="project-tag">UAV</span>
-                            <span class="project-tag">Machine Learning</span>
-                            <span class="project-tag">Robotics</span>
-                            <span class="project-tag">Radar</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- NASA Space Grant Research -->
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-satellite"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">NASA Space Grant Research</h3>
-                        <p class="project-description">Analyzing orthomosaic datasets using fluid lensing technology and remote pilot drones. Collaboration with NASA Guam Space Grant & EPSCoR.</p>
-                        <div class="project-tags">
-                            <span class="project-tag">ML Algorithms</span>
-                            <span class="project-tag">Data Analysis</span>
-                            <span class="project-tag">NASA</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+  <!-- Include Three.js and dat.GUI from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+  <script>
+    // Set up scene, camera, and renderer
+    const container = document.getElementById('roboticArmContainer');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xeeeeee);
+    
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(5, 5, 10);
+    camera.lookAt(0, 0, 0);
+    
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    container.appendChild(renderer.domElement);
+    
+    // Lighting
+    scene.add(new THREE.AmbientLight(0x404040));
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(10, 10, 10);
+    scene.add(directionalLight);
+    
+    // Create a group to hold the entire robotic arm
+    const arm = new THREE.Group();
+    scene.add(arm);
+    
+    // --- Base ---
+    const baseGeometry = new THREE.CylinderGeometry(1, 1, 0.5, 32);
+    const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
+    const base = new THREE.Mesh(baseGeometry, baseMaterial);
+    arm.add(base);
+    
+    // --- Lower Arm ---
+    const lowerArmGeometry = new THREE.BoxGeometry(0.5, 3, 0.5);
+    const lowerArmMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+    const lowerArm = new THREE.Mesh(lowerArmGeometry, lowerArmMaterial);
+    // Position the lower arm so its bottom touches the top of the base
+    lowerArm.position.y = 1.75;
+    base.add(lowerArm);
+    
+    // --- Upper Arm ---
+    const upperArmGeometry = new THREE.BoxGeometry(0.5, 2.5, 0.5);
+    const upperArmMaterial = new THREE.MeshStandardMaterial({ color: 0x0000ff });
+    const upperArm = new THREE.Mesh(upperArmGeometry, upperArmMaterial);
+    // Attach the upper arm to the top of the lower arm.
+    // Its position is relative to lowerArm so that its pivot is at its top.
+    upperArm.position.y = 1.75;
+    // Adjust geometry so rotation occurs from its base
+    upperArm.geometry.translate(0, -upperArmGeometry.parameters.height / 2, 0);
+    lowerArm.add(upperArm);
+    
+    // --- Gripper ---
+    const gripperGeometry = new THREE.BoxGeometry(0.3, 0.5, 0.3);
+    const gripperMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+    // Two gripper parts for a simple open/close mechanism
+    const gripperLeft = new THREE.Mesh(gripperGeometry, gripperMaterial);
+    const gripperRight = new THREE.Mesh(gripperGeometry, gripperMaterial);
+    // Position at the bottom of the upper arm
+    gripperLeft.position.set(-0.2, -upperArmGeometry.parameters.height, 0);
+    gripperRight.position.set(0.2, -upperArmGeometry.parameters.height, 0);
+    upperArm.add(gripperLeft);
+    upperArm.add(gripperRight);
+    
+    // --- dat.GUI Controls ---
+    const gui = new dat.GUI();
+    const controls = {
+      baseRotation: 0,
+      lowerArmRotation: 0,
+      upperArmRotation: 0,
+      gripperOpen: 0.2
+    };
+    
+    gui.add(controls, 'baseRotation', -180, 180)
+       .name('Base Rotation')
+       .onChange(value => { base.rotation.y = THREE.MathUtils.degToRad(value); });
+    gui.add(controls, 'lowerArmRotation', -90, 90)
+       .name('Lower Arm Rotation')
+       .onChange(value => { lowerArm.rotation.z = THREE.MathUtils.degToRad(value); });
+    gui.add(controls, 'upperArmRotation', -90, 90)
+       .name('Upper Arm Rotation')
+       .onChange(value => { upperArm.rotation.z = THREE.MathUtils.degToRad(value); });
+    gui.add(controls, 'gripperOpen', 0, 1)
+       .name('Gripper Open')
+       .onChange(value => {
+          gripperLeft.position.x = -0.2 - value;
+          gripperRight.position.x = 0.2 + value;
+       });
+    
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+    animate();
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
 </body>
 </html>
