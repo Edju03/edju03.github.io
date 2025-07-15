@@ -62,21 +62,17 @@ function resizeCanvas() {
 }
 
 function createParticles() {
-    const particleCount = Math.floor((window.innerWidth * window.innerHeight) / 12000);
+    const particleCount = Math.floor((window.innerWidth * window.innerHeight) / 15000);
     
     for (let i = 0; i < particleCount; i++) {
         particles.push({
             x: Math.random() * window.innerWidth,
             y: Math.random() * window.innerHeight,
-            vx: (Math.random() - 0.5) * 0.8,
-            vy: (Math.random() - 0.5) * 0.8,
-            size: Math.random() * 3 + 1,
-            opacity: Math.random() * 0.8 + 0.2,
-            color: `hsl(${190 + Math.random() * 30}, 100%, ${50 + Math.random() * 20}%)`,
-            originalSize: Math.random() * 3 + 1,
-            pulseSpeed: Math.random() * 0.02 + 0.01,
-            angle: Math.random() * Math.PI * 2,
-            trail: []
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5,
+            size: Math.random() * 2 + 1,
+            opacity: Math.random() * 0.5 + 0.3,
+            color: `rgba(0, 212, 255, ${Math.random() * 0.3 + 0.2})`
         });
     }
 }
@@ -84,9 +80,8 @@ function createParticles() {
 function animateParticles() {
     if (!particlesCtx) return;
     
-    // Create trailing effect
-    particlesCtx.fillStyle = 'rgba(10, 10, 10, 0.05)';
-    particlesCtx.fillRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+    // Clear canvas
+    particlesCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
     
     particles.forEach((particle, index) => {
         // Update position
@@ -99,92 +94,45 @@ function animateParticles() {
         if (particle.y < 0) particle.y = particlesCanvas.height;
         if (particle.y > particlesCanvas.height) particle.y = 0;
         
-        // Mouse interaction with enhanced effects
+        // Simple mouse interaction
         const dx = mouseX - particle.x;
         const dy = mouseY - particle.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
-        if (distance < 150) {
-            const force = (150 - distance) / 150;
+        if (distance < 100) {
+            const force = (100 - distance) / 100;
             const angle = Math.atan2(dy, dx);
             
-            // Repulsion effect
-            particle.vx -= Math.cos(angle) * force * 0.002;
-            particle.vy -= Math.sin(angle) * force * 0.002;
-            
-            // Size increase near mouse
-            particle.size = particle.originalSize * (1 + force * 0.5);
-            particle.opacity = Math.min(1, particle.opacity + force * 0.3);
-            
-            // Add glow effect
-            particlesCtx.save();
-            particlesCtx.shadowColor = particle.color;
-            particlesCtx.shadowBlur = 20 * force;
-            particlesCtx.beginPath();
-            particlesCtx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-            particlesCtx.fillStyle = particle.color;
-            particlesCtx.globalAlpha = particle.opacity;
-            particlesCtx.fill();
-            particlesCtx.restore();
-        } else {
-            // Pulse effect
-            particle.angle += particle.pulseSpeed;
-            particle.size = particle.originalSize * (1 + Math.sin(particle.angle) * 0.3);
-            particle.opacity = Math.max(0.2, particle.opacity - 0.005);
+            // Gentle repulsion
+            particle.vx -= Math.cos(angle) * force * 0.01;
+            particle.vy -= Math.sin(angle) * force * 0.01;
         }
         
         // Apply friction
-        particle.vx *= 0.98;
-        particle.vy *= 0.98;
+        particle.vx *= 0.99;
+        particle.vy *= 0.99;
         
-        // Draw particle trail
-        if (particle.trail.length > 0) {
-            particlesCtx.beginPath();
-            particlesCtx.moveTo(particle.trail[0].x, particle.trail[0].y);
-            for (let i = 1; i < particle.trail.length; i++) {
-                particlesCtx.lineTo(particle.trail[i].x, particle.trail[i].y);
-            }
-            particlesCtx.strokeStyle = particle.color;
-            particlesCtx.globalAlpha = 0.3;
-            particlesCtx.lineWidth = 1;
-            particlesCtx.stroke();
-        }
-        
-        // Update trail
-        particle.trail.push({x: particle.x, y: particle.y});
-        if (particle.trail.length > 10) {
-            particle.trail.shift();
-        }
-        
-        // Draw main particle
+        // Draw particle
         particlesCtx.beginPath();
         particlesCtx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         particlesCtx.fillStyle = particle.color;
         particlesCtx.globalAlpha = particle.opacity;
         particlesCtx.fill();
         
-        // Draw enhanced connections
+        // Draw simple connections
         particles.forEach((otherParticle, otherIndex) => {
             if (index !== otherIndex && index < otherIndex) {
                 const dx = particle.x - otherParticle.x;
                 const dy = particle.y - otherParticle.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
-                if (distance < 120) {
-                    const opacity = (120 - distance) / 120 * 0.3;
-                    
-                    // Create gradient line
-                    const gradient = particlesCtx.createLinearGradient(
-                        particle.x, particle.y,
-                        otherParticle.x, otherParticle.y
-                    );
-                    gradient.addColorStop(0, particle.color);
-                    gradient.addColorStop(1, otherParticle.color);
+                if (distance < 80) {
+                    const opacity = (80 - distance) / 80 * 0.2;
                     
                     particlesCtx.beginPath();
                     particlesCtx.moveTo(particle.x, particle.y);
                     particlesCtx.lineTo(otherParticle.x, otherParticle.y);
-                    particlesCtx.strokeStyle = gradient;
+                    particlesCtx.strokeStyle = `rgba(0, 212, 255, ${opacity})`;
                     particlesCtx.globalAlpha = opacity;
                     particlesCtx.lineWidth = 1;
                     particlesCtx.stroke();
