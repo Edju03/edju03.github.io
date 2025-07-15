@@ -447,7 +447,7 @@ function initializeContactForm() {
     });
 }
 
-// Cursor Trail
+// Custom Cursor
 function initializeCursorTrail() {
     const cursorTrail = document.querySelector('.cursor-trail');
     if (!cursorTrail) return;
@@ -468,9 +468,22 @@ function initializeCursorTrail() {
         cursorTrail.style.opacity = '0';
     });
     
+    // Add hover effects for interactive elements
+    const interactiveElements = document.querySelectorAll('a, button, .project-card, .experience-card, .nav-link, .btn, .tech-tag');
+    
+    interactiveElements.forEach(element => {
+        element.addEventListener('mouseenter', function() {
+            cursorTrail.classList.add('hover');
+        });
+        
+        element.addEventListener('mouseleave', function() {
+            cursorTrail.classList.remove('hover');
+        });
+    });
+    
     function updateCursorTrail() {
-        trailX += (cursorX - trailX) * 0.1;
-        trailY += (cursorY - trailY) * 0.1;
+        trailX += (cursorX - trailX) * 0.2;
+        trailY += (cursorY - trailY) * 0.2;
         
         cursorTrail.style.left = trailX - 10 + 'px';
         cursorTrail.style.top = trailY - 10 + 'px';
