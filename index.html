@@ -10,6 +10,8 @@
     <script src="script.js" defer></script>
 </head>
 <body>
+    <!-- Cursor Trail -->
+    <div class="cursor-trail"></div>
     
     <!-- Loading Screen -->
     <div class="loading-screen">
@@ -50,10 +52,6 @@
                 <a href="#projects" class="nav-link">
                     <i class="fas fa-code"></i>
                     <span>Projects</span>
-                </a>
-                <a href="#experience" class="nav-link">
-                    <i class="fas fa-briefcase"></i>
-                    <span>Experience</span>
                 </a>
                 <a href="#contact" class="nav-link">
                     <i class="fas fa-envelope"></i>
@@ -222,11 +220,8 @@
             <div class="projects-grid">
                 <div class="project-card featured">
                     <div class="project-image">
-                        <div class="project-visual">
-                            <div class="visual-element lunar-surface"></div>
-                            <div class="visual-element robot-silhouette"></div>
-                            <div class="visual-element landing-trajectory"></div>
-                            <div class="project-title-overlay">CHARIOT</div>
+                        <div class="project-icon">
+                            <i class="fas fa-robot"></i>
                         </div>
                     </div>
                     <div class="project-content">
@@ -256,11 +251,8 @@
                 
                 <div class="project-card">
                     <div class="project-image">
-                        <div class="project-visual">
-                            <div class="visual-element nasa-logo"></div>
-                            <div class="visual-element inflatable-system"></div>
-                            <div class="visual-element moon-surface"></div>
-                            <div class="project-title-overlay">NASA BIG IDEA</div>
+                        <div class="project-icon">
+                            <i class="fas fa-space-shuttle"></i>
                         </div>
                     </div>
                     <div class="project-content">
@@ -288,11 +280,8 @@
                 
                 <div class="project-card">
                     <div class="project-image">
-                        <div class="project-visual">
-                            <div class="visual-element neural-network"></div>
-                            <div class="visual-element brain-waves"></div>
-                            <div class="visual-element data-stream"></div>
-                            <div class="project-title-overlay">NEURAL DECODING</div>
+                        <div class="project-icon">
+                            <i class="fas fa-brain"></i>
                         </div>
                     </div>
                     <div class="project-content">
@@ -321,11 +310,8 @@
                 
                 <div class="project-card">
                     <div class="project-image">
-                        <div class="project-visual">
-                            <div class="visual-element drone-swarm"></div>
-                            <div class="visual-element radar-waves"></div>
-                            <div class="visual-element duke-logo"></div>
-                            <div class="project-title-overlay">UAV RESEARCH</div>
+                        <div class="project-icon">
+                            <i class="fas fa-drone"></i>
                         </div>
                     </div>
                     <div class="project-content">
@@ -354,11 +340,8 @@
                 
                 <div class="project-card">
                     <div class="project-image">
-                        <div class="project-visual">
-                            <div class="visual-element stock-chart"></div>
-                            <div class="visual-element dollar-symbols"></div>
-                            <div class="visual-element investment-graph"></div>
-                            <div class="project-title-overlay">INVESTMENT FUND</div>
+                        <div class="project-icon">
+                            <i class="fas fa-chart-line"></i>
                         </div>
                     </div>
                     <div class="project-content">
@@ -385,11 +368,8 @@
                 
                 <div class="project-card">
                     <div class="project-image">
-                        <div class="project-visual">
-                            <div class="visual-element satellite-dish"></div>
-                            <div class="visual-element earth-orbit"></div>
-                            <div class="visual-element space-data"></div>
-                            <div class="project-title-overlay">SPACE GRANT</div>
+                        <div class="project-icon">
+                            <i class="fas fa-satellite"></i>
                         </div>
                     </div>
                     <div class="project-content">
@@ -411,146 +391,6 @@
                                 <i class="fas fa-calendar"></i>
                                 <span>2024-2025</span>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Experience Section -->
-    <section id="experience" class="experience">
-        <div class="section-container">
-            <div class="section-header">
-                <h2 class="section-title">Professional Experience</h2>
-                <div class="section-subtitle">Research and technical roles shaping the future</div>
-            </div>
-            
-            <div class="experience-timeline">
-                <div class="timeline-line"></div>
-                
-                <div class="experience-card">
-                    <div class="experience-date">2025 - Present</div>
-                    <div class="experience-visual">
-                        <div class="visual-element amber-logo"></div>
-                        <div class="visual-element uav-formation"></div>
-                        <div class="visual-element control-theory"></div>
-                        <div class="experience-title-overlay">AMBER LAB</div>
-                    </div>
-                    <div class="experience-content">
-                        <h3 class="experience-title">Research Fellow @ AMBER Lab, Caltech</h3>
-                        <p class="experience-description">Utilizing algebraic graph theory in control theory to ensure safety and coordination in multi-agent UAV systems. Setting up experiments for multi-agent UAV system and studying Control Barrier Functions (CBFs) to enforce safety guarantees.</p>
-                        <div class="experience-tech">
-                            <span class="tech-tag">Control Theory</span>
-                            <span class="tech-tag">Multi-Agent Systems</span>
-                            <span class="tech-tag">UAV</span>
-                            <span class="tech-tag">Graph Theory</span>
-                            <span class="tech-tag">CBF</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="experience-card">
-                    <div class="experience-date">2024 - 2025</div>
-                    <div class="experience-visual">
-                        <div class="visual-element caltech-logo"></div>
-                        <div class="visual-element brain-scan"></div>
-                        <div class="visual-element ml-model"></div>
-                        <div class="experience-title-overlay">PERONA LAB</div>
-                    </div>
-                    <div class="experience-content">
-                        <h3 class="experience-title">ML Research @ Caltech (Perona Lab)</h3>
-                        <p class="experience-description">Worked on neural decoding project analyzing brain activity using intracranial EEG (sEEG) and single-neuron data. Extracted movie features using pre-trained neural networks and GPT-4, applying ML models including MLP, LSTM, and BiLSTM. Paper accepted to ICML 2025 workshop.</p>
-                        <div class="experience-tech">
-                            <span class="tech-tag">sEEG</span>
-                            <span class="tech-tag">Neural Decoding</span>
-                            <span class="tech-tag">GPT-4</span>
-                            <span class="tech-tag">LSTM</span>
-                            <span class="tech-tag">ICML</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="experience-card">
-                    <div class="experience-date">2024</div>
-                    <div class="experience-visual">
-                        <div class="visual-element guam-island"></div>
-                        <div class="visual-element satellite-data"></div>
-                        <div class="visual-element fluid-lens"></div>
-                        <div class="experience-title-overlay">NASA GUAM</div>
-                    </div>
-                    <div class="experience-content">
-                        <h3 class="experience-title">NASA Space Grant Research Intern</h3>
-                        <p class="experience-description">Working with Machine Learning algorithms to analyze orthomosaic datasets gathered with fluid lensing technology and remote pilot drones. Collaborating with NASA Guam Space Grant & NASA Guam EPSCoR.</p>
-                        <div class="experience-tech">
-                            <span class="tech-tag">Machine Learning</span>
-                            <span class="tech-tag">Orthomosaic</span>
-                            <span class="tech-tag">Fluid Lensing</span>
-                            <span class="tech-tag">NASA</span>
-                            <span class="tech-tag">Drone Tech</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="experience-card">
-                    <div class="experience-date">2024</div>
-                    <div class="experience-visual">
-                        <div class="visual-element duke-shield"></div>
-                        <div class="visual-element radar-array"></div>
-                        <div class="visual-element cyber-security"></div>
-                        <div class="experience-title-overlay">DUKE REU</div>
-                    </div>
-                    <div class="experience-content">
-                        <h3 class="experience-title">REU @ Duke Athena AI Institute</h3>
-                        <p class="experience-description">Worked with mmWave radar to develop black-box real time automotive radar attack framework. Implemented microcontroller and Raspberry Pi-based function generator emulator for time synchronization and radar triggering.</p>
-                        <div class="experience-tech">
-                            <span class="tech-tag">mmWave Radar</span>
-                            <span class="tech-tag">Cybersecurity</span>
-                            <span class="tech-tag">Raspberry Pi</span>
-                            <span class="tech-tag">Real-time Systems</span>
-                            <span class="tech-tag">NSF REU</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="experience-card">
-                    <div class="experience-date">2022</div>
-                    <div class="experience-visual">
-                        <div class="visual-element uog-logo"></div>
-                        <div class="visual-element math-symbols"></div>
-                        <div class="visual-element magic-field"></div>
-                        <div class="experience-title-overlay">UOG RESEARCH</div>
-                    </div>
-                    <div class="experience-content">
-                        <h3 class="experience-title">Research Assistant @ University of Guam</h3>
-                        <p class="experience-description">Research on "An Error-Correcting Magic Trick using the 9 Element Field" funded by Mathematical Association of America. Worked with undergraduate students and faculty under NSF & NASA Space Grant. Presented at conferences and public venues.</p>
-                        <div class="experience-tech">
-                            <span class="tech-tag">Mathematics</span>
-                            <span class="tech-tag">Finite Fields</span>
-                            <span class="tech-tag">Error Correction</span>
-                            <span class="tech-tag">MAA</span>
-                            <span class="tech-tag">Research</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="experience-card">
-                    <div class="experience-date">2020-2022</div>
-                    <div class="experience-visual">
-                        <div class="visual-element seoul-tech"></div>
-                        <div class="visual-element display-tech"></div>
-                        <div class="visual-element molecular-structure"></div>
-                        <div class="experience-title-overlay">SEOUL TECH</div>
-                    </div>
-                    <div class="experience-content">
-                        <h3 class="experience-title">Research @ Seoul National University</h3>
-                        <p class="experience-description">Research on "Development of Low-Cost Transparent and Flexible Hydroxypropyl Cellulose Display" at Advanced Institute of Convergence Technology. Won 1st place at 2022 Guam Island wide Science Fair in Physical Science and Math category.</p>
-                        <div class="experience-tech">
-                            <span class="tech-tag">Materials Science</span>
-                            <span class="tech-tag">Display Technology</span>
-                            <span class="tech-tag">Cellulose</span>
-                            <span class="tech-tag">1st Place</span>
-                            <span class="tech-tag">Innovation</span>
                         </div>
                     </div>
                 </div>

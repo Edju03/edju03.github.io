@@ -19,6 +19,7 @@ function initializeApp() {
     initializeAnimations();
     initializeStats();
     initializeContactForm();
+    initializeCursorTrail();
     initializeScrollIndicator();
     initializeTheme();
     
@@ -61,19 +62,17 @@ function resizeCanvas() {
 }
 
 function createParticles() {
-    const particleCount = Math.floor((window.innerWidth * window.innerHeight) / 12000);
+    const particleCount = Math.floor((window.innerWidth * window.innerHeight) / 15000);
     
     for (let i = 0; i < particleCount; i++) {
         particles.push({
             x: Math.random() * window.innerWidth,
             y: Math.random() * window.innerHeight,
-            vx: (Math.random() - 0.5) * 0.8,
-            vy: (Math.random() - 0.5) * 0.8,
-            size: Math.random() * 2 + 1,
-            opacity: Math.random() * 0.4 + 0.4,
-            color: `rgba(0, 212, 255, ${Math.random() * 0.4 + 0.3})`,
-            originalX: 0,
-            originalY: 0
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5,
+            size: Math.random() * 2 + 0.5,
+            opacity: Math.random() * 0.5 + 0.2,
+            color: `hsl(${190 + Math.random() * 20}, 100%, 50%)`
         });
     }
 }
@@ -81,9 +80,7 @@ function createParticles() {
 function animateParticles() {
     if (!particlesCtx) return;
     
-    // Clear canvas with slight fade effect
-    particlesCtx.fillStyle = 'rgba(10, 10, 10, 0.1)';
-    particlesCtx.fillRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+    particlesCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
     
     particles.forEach((particle, index) => {
         // Update position
@@ -96,58 +93,41 @@ function animateParticles() {
         if (particle.y < 0) particle.y = particlesCanvas.height;
         if (particle.y > particlesCanvas.height) particle.y = 0;
         
-        // Enhanced mouse interaction
+        // Mouse interaction
         const dx = mouseX - particle.x;
         const dy = mouseY - particle.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
-        if (distance < 150) {
-            const force = (150 - distance) / 150;
-            const angle = Math.atan2(dy, dx);
-            
-            // Responsive repulsion
-            particle.vx -= Math.cos(angle) * force * 0.02;
-            particle.vy -= Math.sin(angle) * force * 0.02;
-            
-            // Size and opacity change near cursor
-            const currentSize = particle.size * (1 + force * 0.3);
-            const currentOpacity = Math.min(1, particle.opacity + force * 0.4);
-            
-            // Draw enhanced particle near cursor
-            particlesCtx.beginPath();
-            particlesCtx.arc(particle.x, particle.y, currentSize, 0, Math.PI * 2);
-            particlesCtx.fillStyle = `rgba(0, 212, 255, ${currentOpacity})`;
-            particlesCtx.globalAlpha = currentOpacity;
-            particlesCtx.fill();
-        } else {
-            // Draw normal particle
-            particlesCtx.beginPath();
-            particlesCtx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-            particlesCtx.fillStyle = particle.color;
-            particlesCtx.globalAlpha = particle.opacity;
-            particlesCtx.fill();
+        if (distance < 100) {
+            const force = (100 - distance) / 100;
+            particle.vx += dx * force * 0.001;
+            particle.vy += dy * force * 0.001;
         }
         
         // Apply friction
-        particle.vx *= 0.98;
-        particle.vy *= 0.98;
+        particle.vx *= 0.99;
+        particle.vy *= 0.99;
+        
+        // Draw particle
+        particlesCtx.beginPath();
+        particlesCtx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        particlesCtx.fillStyle = particle.color;
+        particlesCtx.globalAlpha = particle.opacity;
+        particlesCtx.fill();
         
         // Draw connections
         particles.forEach((otherParticle, otherIndex) => {
-            if (index !== otherIndex && index < otherIndex) {
+            if (index !== otherIndex) {
                 const dx = particle.x - otherParticle.x;
                 const dy = particle.y - otherParticle.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
-                if (distance < 100) {
-                    const opacity = (100 - distance) / 100 * 0.3;
-                    
+                if (distance < 80) {
                     particlesCtx.beginPath();
                     particlesCtx.moveTo(particle.x, particle.y);
                     particlesCtx.lineTo(otherParticle.x, otherParticle.y);
-                    particlesCtx.strokeStyle = `rgba(0, 212, 255, ${opacity})`;
-                    particlesCtx.globalAlpha = opacity;
-                    particlesCtx.lineWidth = 1;
+                    particlesCtx.strokeStyle = '#00d4ff';
+                    particlesCtx.globalAlpha = (80 - distance) / 80 * 0.2;
                     particlesCtx.stroke();
                 }
             }
@@ -408,11 +388,39 @@ function initializeContactForm() {
     });
 }
 
-// Mouse tracking for particles
-document.addEventListener('mousemove', function(e) {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-});
+// Cursor Trail
+function initializeCursorTrail() {
+    const cursorTrail = document.querySelector('.cursor-trail');
+    if (!cursorTrail) return;
+    
+    let cursorX = 0, cursorY = 0;
+    let trailX = 0, trailY = 0;
+    
+    document.addEventListener('mousemove', function(e) {
+        cursorX = e.clientX;
+        cursorY = e.clientY;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        
+        cursorTrail.style.opacity = '1';
+    });
+    
+    document.addEventListener('mouseleave', function() {
+        cursorTrail.style.opacity = '0';
+    });
+    
+    function updateCursorTrail() {
+        trailX += (cursorX - trailX) * 0.1;
+        trailY += (cursorY - trailY) * 0.1;
+        
+        cursorTrail.style.left = trailX - 10 + 'px';
+        cursorTrail.style.top = trailY - 10 + 'px';
+        
+        requestAnimationFrame(updateCursorTrail);
+    }
+    
+    updateCursorTrail();
+}
 
 // Scroll Indicator
 function initializeScrollIndicator() {
