@@ -19,7 +19,6 @@ function initializeApp() {
     initializeAnimations();
     initializeStats();
     initializeContactForm();
-    initializeCursorTrail();
     initializeScrollIndicator();
     initializeTheme();
     
@@ -62,17 +61,19 @@ function resizeCanvas() {
 }
 
 function createParticles() {
-    const particleCount = Math.floor((window.innerWidth * window.innerHeight) / 15000);
+    const particleCount = Math.floor((window.innerWidth * window.innerHeight) / 12000);
     
     for (let i = 0; i < particleCount; i++) {
         particles.push({
             x: Math.random() * window.innerWidth,
             y: Math.random() * window.innerHeight,
-            vx: (Math.random() - 0.5) * 0.5,
-            vy: (Math.random() - 0.5) * 0.5,
+            vx: (Math.random() - 0.5) * 0.8,
+            vy: (Math.random() - 0.5) * 0.8,
             size: Math.random() * 2 + 1,
-            opacity: Math.random() * 0.5 + 0.3,
-            color: `rgba(0, 212, 255, ${Math.random() * 0.3 + 0.2})`
+            opacity: Math.random() * 0.4 + 0.4,
+            color: `rgba(0, 212, 255, ${Math.random() * 0.4 + 0.3})`,
+            originalX: 0,
+            originalY: 0
         });
     }
 }
@@ -80,8 +81,9 @@ function createParticles() {
 function animateParticles() {
     if (!particlesCtx) return;
     
-    // Clear canvas
-    particlesCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+    // Clear canvas with slight fade effect
+    particlesCtx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+    particlesCtx.fillRect(0, 0, particlesCanvas.width, particlesCanvas.height);
     
     particles.forEach((particle, index) => {
         // Update position
@@ -94,40 +96,51 @@ function animateParticles() {
         if (particle.y < 0) particle.y = particlesCanvas.height;
         if (particle.y > particlesCanvas.height) particle.y = 0;
         
-        // Simple mouse interaction
+        // Enhanced mouse interaction
         const dx = mouseX - particle.x;
         const dy = mouseY - particle.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
-        if (distance < 100) {
-            const force = (100 - distance) / 100;
+        if (distance < 150) {
+            const force = (150 - distance) / 150;
             const angle = Math.atan2(dy, dx);
             
-            // Gentle repulsion
-            particle.vx -= Math.cos(angle) * force * 0.01;
-            particle.vy -= Math.sin(angle) * force * 0.01;
+            // Responsive repulsion
+            particle.vx -= Math.cos(angle) * force * 0.02;
+            particle.vy -= Math.sin(angle) * force * 0.02;
+            
+            // Size and opacity change near cursor
+            const currentSize = particle.size * (1 + force * 0.3);
+            const currentOpacity = Math.min(1, particle.opacity + force * 0.4);
+            
+            // Draw enhanced particle near cursor
+            particlesCtx.beginPath();
+            particlesCtx.arc(particle.x, particle.y, currentSize, 0, Math.PI * 2);
+            particlesCtx.fillStyle = `rgba(0, 212, 255, ${currentOpacity})`;
+            particlesCtx.globalAlpha = currentOpacity;
+            particlesCtx.fill();
+        } else {
+            // Draw normal particle
+            particlesCtx.beginPath();
+            particlesCtx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            particlesCtx.fillStyle = particle.color;
+            particlesCtx.globalAlpha = particle.opacity;
+            particlesCtx.fill();
         }
         
         // Apply friction
-        particle.vx *= 0.99;
-        particle.vy *= 0.99;
+        particle.vx *= 0.98;
+        particle.vy *= 0.98;
         
-        // Draw particle
-        particlesCtx.beginPath();
-        particlesCtx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        particlesCtx.fillStyle = particle.color;
-        particlesCtx.globalAlpha = particle.opacity;
-        particlesCtx.fill();
-        
-        // Draw simple connections
+        // Draw connections
         particles.forEach((otherParticle, otherIndex) => {
             if (index !== otherIndex && index < otherIndex) {
                 const dx = particle.x - otherParticle.x;
                 const dy = particle.y - otherParticle.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
-                if (distance < 80) {
-                    const opacity = (80 - distance) / 80 * 0.2;
+                if (distance < 100) {
+                    const opacity = (100 - distance) / 100 * 0.3;
                     
                     particlesCtx.beginPath();
                     particlesCtx.moveTo(particle.x, particle.y);
@@ -395,52 +408,11 @@ function initializeContactForm() {
     });
 }
 
-// Custom Cursor
-function initializeCursorTrail() {
-    const cursorTrail = document.querySelector('.cursor-trail');
-    if (!cursorTrail) return;
-    
-    let cursorX = 0, cursorY = 0;
-    let trailX = 0, trailY = 0;
-    
-    document.addEventListener('mousemove', function(e) {
-        cursorX = e.clientX;
-        cursorY = e.clientY;
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        
-        cursorTrail.style.opacity = '1';
-    });
-    
-    document.addEventListener('mouseleave', function() {
-        cursorTrail.style.opacity = '0';
-    });
-    
-    // Add hover effects for interactive elements
-    const interactiveElements = document.querySelectorAll('a, button, .project-card, .experience-card, .nav-link, .btn, .tech-tag');
-    
-    interactiveElements.forEach(element => {
-        element.addEventListener('mouseenter', function() {
-            cursorTrail.classList.add('hover');
-        });
-        
-        element.addEventListener('mouseleave', function() {
-            cursorTrail.classList.remove('hover');
-        });
-    });
-    
-    function updateCursorTrail() {
-        trailX += (cursorX - trailX) * 0.2;
-        trailY += (cursorY - trailY) * 0.2;
-        
-        cursorTrail.style.left = trailX - 10 + 'px';
-        cursorTrail.style.top = trailY - 10 + 'px';
-        
-        requestAnimationFrame(updateCursorTrail);
-    }
-    
-    updateCursorTrail();
-}
+// Mouse tracking for particles
+document.addEventListener('mousemove', function(e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
 
 // Scroll Indicator
 function initializeScrollIndicator() {
