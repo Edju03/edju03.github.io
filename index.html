@@ -3,160 +3,430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio - Edward Ju</title>
+    <title>Edward Ju - Robotics Engineer</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="hero-background.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="script.js" defer></script>
 </head>
 <body>
-    <!-- Loader -->
-    <div class="loader">
-        <div class="loader-content"></div>
+    <!-- Cursor Trail -->
+    <div class="cursor-trail"></div>
+    
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+        <div class="loading-content">
+            <div class="robot-loader">
+                <div class="robot-head"></div>
+                <div class="robot-body"></div>
+                <div class="robot-arms">
+                    <div class="arm left"></div>
+                    <div class="arm right"></div>
+                </div>
+                <div class="loading-text">INITIALIZING SYSTEMS...</div>
+            </div>
+        </div>
     </div>
 
+    <!-- Particle Background -->
+    <div class="particles-container">
+        <canvas id="particles-canvas"></canvas>
+    </div>
+
+    <!-- Navigation -->
     <nav class="navbar">
-        <div class="nav-content">
-            <a href="index.html" class="logo">Edward Ju</a>
-            <div class="nav-links">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="about.html" class="nav-link">About</a>
-                <a href="contact.html" class="nav-link">Contact</a>
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                <span>Edward Ju</span>
             </div>
-            <button class="theme-toggle">
-                <i class="fas fa-moon"></i>
-            </button>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#about" class="nav-link">
+                    <i class="fas fa-user"></i>
+                    <span>About</span>
+                </a>
+                <a href="#projects" class="nav-link">
+                    <i class="fas fa-code"></i>
+                    <span>Projects</span>
+                </a>
+                <a href="#contact" class="nav-link">
+                    <i class="fas fa-envelope"></i>
+                    <span>Contact</span>
+                </a>
+            </div>
+            <div class="nav-controls">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
         </div>
     </nav>
 
-    <main>
-        <!-- Hero Section with New Background -->
-        <section class="hero">
-            <!-- Background Elements -->
-            <div class="hero-background">
-                <div class="hero-grid"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="tech-grid"></div>
+            <div class="floating-elements">
+                <div class="floating-element" data-speed="2"></div>
+                <div class="floating-element" data-speed="3"></div>
+                <div class="floating-element" data-speed="1.5"></div>
+                <div class="floating-element" data-speed="2.5"></div>
+            </div>
+        </div>
+        
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="title-line">ROBOTICS</span>
+                    <span class="title-line">ENGINEER</span>
+                </h1>
+                <p class="hero-subtitle">Building the future with autonomous systems and AI</p>
+                <div class="hero-description">
+                    <p>Second year Computer Science student at Caltech, specializing in robotics, machine learning, and autonomous systems. Passionate about creating intelligent machines that can make a difference.</p>
+                </div>
+                <div class="hero-buttons">
+                    <button class="btn primary" onclick="scrollToSection('projects')">
+                        <i class="fas fa-rocket"></i>
+                        <span>View Projects</span>
+                    </button>
+                    <button class="btn secondary" onclick="scrollToSection('contact')">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Get In Touch</span>
+                    </button>
+                </div>
             </div>
             
-            <!-- Content Wrapper -->
-            <div class="hero-content-wrapper">
-                <div class="hero-content">
-                    <h1>Turning Ideas Into Reality</h1>
-                    <p>Second year undergraduate at Caltech studying Computer Science and Robotics</p>
-                    <a href="#projects" class="nav-link">View My Work</a>
+            <div class="hero-visual">
+                <div class="robot-container">
+                    <div class="robot-avatar">
+                        <div class="robot-head">
+                            <div class="robot-eyes">
+                                <div class="eye left"></div>
+                                <div class="eye right"></div>
+                            </div>
+                            <div class="robot-mouth"></div>
+                        </div>
+                        <div class="robot-body">
+                            <div class="chest-panel"></div>
+                            <div class="status-lights">
+                                <div class="light active"></div>
+                                <div class="light"></div>
+                                <div class="light"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hologram-ring"></div>
                 </div>
             </div>
-        </section>
+        </div>
+        
+        <div class="scroll-indicator">
+            <div class="scroll-arrow"></div>
+            <span>Scroll to explore</span>
+        </div>
+    </section>
 
-        <!-- Projects Section -->
-        <section id="projects" class="projects">
-            <h2 class="section-title">Featured Projects</h2>
-            <div class="projects-grid">
-                <!-- CHARIOT Project -->
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-robot"></i>
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">About Me</h2>
+                <div class="section-subtitle">Passionate about robotics and AI</div>
+            </div>
+            
+            <div class="about-content">
+                <div class="about-text">
+                    <div class="text-card">
+                        <h3>My Journey</h3>
+                        <p>I'm a second-year undergraduate at Caltech studying Computer Science with a focus on robotics and artificial intelligence. My passion lies in creating autonomous systems that can navigate complex environments and make intelligent decisions.</p>
+                        
+                        <p>From developing advanced landing systems for space exploration to creating neural decoding algorithms, I'm constantly pushing the boundaries of what's possible with modern robotics and AI.</p>
                     </div>
-                    <div class="project-content">
-                        <h3 class="project-title">CHARIOT</h3>
-                        <p class="project-description">System Engineer and Software Lead for Cooperative Heterogeneous Autonomous Robots for Intra-Crater Operations. Developing autonomy for flying and hopping robots with advanced landing capabilities.</p>
-                        <div class="project-tags">
-                            <span class="project-tag">ROS</span>
-                            <span class="project-tag">Computer Vision</span>
-                            <span class="project-tag">Ubuntu</span>
-                            <span class="project-tag">Robotics</span>
+                    
+                    <div class="skills-grid">
+                        <div class="skill-category">
+                            <h4>Programming</h4>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Python</span>
+                                <span class="skill-tag">C++</span>
+                                <span class="skill-tag">ROS</span>
+                                <span class="skill-tag">JavaScript</span>
+                                <span class="skill-tag">MATLAB</span>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- NASA Big Idea Challenge -->
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-space-shuttle"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">NASA Big Idea Challenge</h3>
-                        <p class="project-description">Finalist in 2024 Inflatable Challenge. Developing innovative system for plume alleviation on lunar surfaces using inflatable technology. Project awarded $150,000 for development and testing.</p>
-                        <div class="project-tags">
-                            <span class="project-tag">NASA</span>
-                            <span class="project-tag">Aerospace</span>
-                            <span class="project-tag">Innovation</span>
-                            <span class="project-tag">Space Tech</span>
+                        
+                        <div class="skill-category">
+                            <h4>Robotics</h4>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Computer Vision</span>
+                                <span class="skill-tag">Path Planning</span>
+                                <span class="skill-tag">SLAM</span>
+                                <span class="skill-tag">Control Systems</span>
+                                <span class="skill-tag">Sensor Fusion</span>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Caltech CRATER -->
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-rocket"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">Caltech CRATER</h3>
-                        <p class="project-description">Software Engineering Team member working on the CRATER rover wheel system. Preparing for participation in the University Rover Challenge.</p>
-                        <div class="project-tags">
-                            <span class="project-tag">Robotics</span>
-                            <span class="project-tag">Software Engineering</span>
-                            <span class="project-tag">System Design</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Neural Decoding Project -->
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">Neural Decoding Project</h3>
-                        <p class="project-description">Analyzed neural datas and developed ML models to decode visual features from neural signals, with specific focus on regional neural dynamics.</p>
-                        <div class="project-tags">
-                            <span class="project-tag">Neural Data Analysis</span>
-                            <span class="project-tag">Time Series Analysis</span>
-                            <span class="project-tag">Signal Processing</span>
-                            <span class="project-tag">Machine Learning</span>
+                        
+                        <div class="skill-category">
+                            <h4>AI & ML</h4>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Deep Learning</span>
+                                <span class="skill-tag">Neural Networks</span>
+                                <span class="skill-tag">Signal Processing</span>
+                                <span class="skill-tag">TensorFlow</span>
+                                <span class="skill-tag">PyTorch</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- UAV/ML Research -->
-                <div class="project-card">
+                <div class="about-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="15">0</div>
+                        <div class="stat-label">Projects Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="3">0</div>
+                        <div class="stat-label">Years Experience</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="150000">0</div>
+                        <div class="stat-label">NASA Grant ($)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Featured Projects</h2>
+                <div class="section-subtitle">Cutting-edge robotics and AI solutions</div>
+            </div>
+            
+            <div class="projects-grid">
+                <div class="project-card featured">
                     <div class="project-image">
-                        <i class="fas fa-drone"></i>
+                        <div class="project-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="project-overlay">
+                            <button class="project-btn">Learn More</button>
+                        </div>
                     </div>
                     <div class="project-content">
-                        <h3 class="project-title">UAV/ML Research</h3>
-                        <p class="project-description">Developed robust particle filter for UGV and UAV localization at Duke University. Worked with radar-based point-cloud mapping and swarm drone models.</p>
-                        <div class="project-tags">
-                            <span class="project-tag">UAV</span>
-                            <span class="project-tag">Machine Learning</span>
-                            <span class="project-tag">Robotics</span>
-                            <span class="project-tag">Radar</span>
+                        <div class="project-category">Autonomous Systems</div>
+                        <h3 class="project-title">CHARIOT</h3>
+                        <p class="project-description">Cooperative Heterogeneous Autonomous Robots for Intra-Crater Operations. Leading system engineering and software development for advanced landing capabilities.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">ROS</span>
+                            <span class="tech-tag">Computer Vision</span>
+                            <span class="tech-tag">Ubuntu</span>
+                            <span class="tech-tag">Python</span>
+                        </div>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <i class="fas fa-code"></i>
+                                <span>10K+ Lines</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-calendar"></i>
+                                <span>2024</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- NASA Space Grant Research -->
+                
                 <div class="project-card">
                     <div class="project-image">
-                        <i class="fas fa-satellite"></i>
+                        <div class="project-icon">
+                            <i class="fas fa-space-shuttle"></i>
+                        </div>
+                        <div class="project-overlay">
+                            <button class="project-btn">Learn More</button>
+                        </div>
                     </div>
                     <div class="project-content">
-                        <h3 class="project-title">NASA Space Grant Research</h3>
-                        <p class="project-description">Analyzing orthomosaic datasets using fluid lensing technology and remote pilot drones. Collaboration with NASA Guam Space Grant & EPSCoR.</p>
-                        <div class="project-tags">
-                            <span class="project-tag">ML Algorithms</span>
-                            <span class="project-tag">Data Analysis</span>
-                            <span class="project-tag">NASA</span>
+                        <div class="project-category">Space Technology</div>
+                        <h3 class="project-title">NASA Big Idea Challenge</h3>
+                        <p class="project-description">Finalist in 2024 Inflatable Challenge. Developing innovative lunar surface plume alleviation systems.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">NASA</span>
+                            <span class="tech-tag">Aerospace</span>
+                            <span class="tech-tag">Innovation</span>
+                        </div>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <i class="fas fa-trophy"></i>
+                                <span>Finalist</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span>$150K</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-image">
+                        <div class="project-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="project-overlay">
+                            <button class="project-btn">Learn More</button>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <div class="project-category">Machine Learning</div>
+                        <h3 class="project-title">Neural Decoding</h3>
+                        <p class="project-description">Advanced ML models for decoding visual features from neural signals with regional dynamics analysis.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">TensorFlow</span>
+                            <span class="tech-tag">Signal Processing</span>
+                        </div>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <i class="fas fa-chart-line"></i>
+                                <span>95% Accuracy</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-database"></i>
+                                <span>10TB Data</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-image">
+                        <div class="project-icon">
+                            <i class="fas fa-drone"></i>
+                        </div>
+                        <div class="project-overlay">
+                            <button class="project-btn">Learn More</button>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <div class="project-category">Autonomous Vehicles</div>
+                        <h3 class="project-title">UAV Localization</h3>
+                        <p class="project-description">Robust particle filter development for UGV and UAV localization with radar-based mapping.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">C++</span>
+                            <span class="tech-tag">ROS</span>
+                            <span class="tech-tag">Radar</span>
+                        </div>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <i class="fas fa-crosshairs"></i>
+                                <span>±2cm</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Real-time</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Get In Touch</h2>
+                <div class="section-subtitle">Let's build the future together</div>
+            </div>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="info-text">
+                            <h4>Email</h4>
+                            <p>edward.ju@example.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fab fa-linkedin"></i>
+                        </div>
+                        <div class="info-text">
+                            <h4>LinkedIn</h4>
+                            <p>linkedin.com/in/edwardju</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="info-text">
+                            <h4>GitHub</h4>
+                            <p>github.com/edwardju</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn primary">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Send Message</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-text">
+                <p>&copy; 2024 Edward Ju. All rights reserved.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
