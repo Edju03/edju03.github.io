@@ -1224,6 +1224,11 @@ body {
         gap: var(--spacing-xl);
     }
     
+    .about-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-lg);
+    }
+    
     .contact-content {
         grid-template-columns: 1fr;
         gap: var(--spacing-xl);
@@ -1262,6 +1267,11 @@ body {
         align-items: center;
     }
     
+    .about-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-sm);
+    }
+    
     .nav-container {
         padding: 0 var(--spacing-md);
     }
@@ -1287,6 +1297,11 @@ body {
     
     .stat-number {
         font-size: 2rem;
+    }
+    
+    .about-stats {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
     }
     
     .contact-form {
