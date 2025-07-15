@@ -442,9 +442,36 @@ function initializeScrollIndicator() {
     });
 }
 
-// Theme Toggle (removed - no longer needed)
+// Theme Toggle
 function initializeTheme() {
-    // Theme toggle functionality removed
+    const themeToggle = document.querySelector('.theme-toggle');
+    if (!themeToggle) return;
+    
+    // Check for saved theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeToggle.querySelector('i').classList.replace('fa-moon', 'fa-sun');
+    }
+    
+    themeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('light-theme');
+        const icon = this.querySelector('i');
+        
+        if (document.body.classList.contains('light-theme')) {
+            icon.classList.replace('fa-moon', 'fa-sun');
+            localStorage.setItem('theme', 'light');
+        } else {
+            icon.classList.replace('fa-sun', 'fa-moon');
+            localStorage.setItem('theme', 'dark');
+        }
+        
+        // Add theme transition effect
+        document.body.style.transition = 'all 0.3s ease';
+        setTimeout(() => {
+            document.body.style.transition = '';
+        }, 300);
+    });
 }
 
 // Loading Screen
