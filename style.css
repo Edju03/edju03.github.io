@@ -423,6 +423,117 @@ body {
     animation-delay: 4.5s;
 }
 
+/* CFD Simulation */
+.cfd-simulation {
+    position: absolute;
+    top: 20%;
+    right: 8%;
+    width: 280px;
+    height: 200px;
+    opacity: 0.4;
+    z-index: 1;
+}
+
+#cfd-canvas {
+    width: 100%;
+    height: 100%;
+    filter: blur(0.3px) brightness(1.1);
+}
+
+.physics-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.navier-stokes-equation {
+    position: absolute;
+    bottom: -30px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+.equation-title {
+    font-family: var(--font-primary);
+    font-size: 0.8rem;
+    color: var(--primary-accent);
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.equation-formula {
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+}
+
+/* Thruster Simulation */
+.thruster-simulation {
+    position: absolute;
+    bottom: 15%;
+    right: 12%;
+    width: 220px;
+    height: 160px;
+    opacity: 0.35;
+    z-index: 1;
+}
+
+#thruster-canvas {
+    width: 100%;
+    height: 100%;
+    filter: blur(0.4px) brightness(1.15);
+}
+
+.thruster-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.vector-field {
+    position: absolute;
+    font-family: var(--font-primary);
+    font-size: 0.75rem;
+    color: var(--primary-accent);
+    text-shadow: 0 0 6px rgba(0, 212, 255, 0.6);
+    opacity: 0.8;
+    animation: vectorFloat 5s ease-in-out infinite;
+}
+
+.vf-1 {
+    top: 20%;
+    left: 15%;
+    animation-delay: 0s;
+}
+
+.vf-2 {
+    bottom: 25%;
+    right: 20%;
+    animation-delay: 2s;
+    color: var(--secondary-accent);
+    text-shadow: 0 0 6px rgba(255, 107, 53, 0.6);
+}
+
+.vf-3 {
+    top: 60%;
+    left: 60%;
+    animation-delay: 4s;
+    color: var(--success-color);
+    text-shadow: 0 0 6px rgba(0, 255, 136, 0.6);
+}
+
 .floating-elements {
     position: absolute;
     top: 0;
@@ -2368,6 +2479,25 @@ body {
     }
 }
 
+@keyframes vectorFloat {
+    0%, 100% { 
+        transform: translate(0, 0) scale(1);
+        opacity: 0.8;
+    }
+    25% { 
+        transform: translate(-3px, -5px) scale(1.1);
+        opacity: 1;
+    }
+    50% { 
+        transform: translate(2px, -8px) scale(1.05);
+        opacity: 0.9;
+    }
+    75% { 
+        transform: translate(-1px, -3px) scale(1.08);
+        opacity: 0.95;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .hero-content {
@@ -2400,6 +2530,18 @@ body {
         width: 250px;
         height: 300px;
         left: 5%;
+    }
+    
+    .cfd-simulation {
+        width: 200px;
+        height: 150px;
+        right: 5%;
+    }
+    
+    .thruster-simulation {
+        width: 180px;
+        height: 120px;
+        right: 8%;
     }
 }
 
@@ -2438,6 +2580,18 @@ body {
         width: 200px;
         height: 250px;
         left: 2%;
+    }
+    
+    .cfd-simulation {
+        width: 160px;
+        height: 120px;
+        right: 3%;
+    }
+    
+    .thruster-simulation {
+        width: 140px;
+        height: 100px;
+        right: 5%;
     }
     
     .hero-buttons {

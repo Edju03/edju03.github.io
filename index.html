@@ -85,6 +85,23 @@
                     <div class="equation-float eq-4">τ = 15.7 Nm</div>
                 </div>
             </div>
+            <div class="cfd-simulation">
+                <canvas id="cfd-canvas"></canvas>
+                <div class="physics-overlay">
+                    <div class="navier-stokes-equation">
+                        <div class="equation-title">Navier-Stokes</div>
+                        <div class="equation-formula">∂u/∂t + u∇u = -∇p/ρ + ν∇²u</div>
+                    </div>
+                </div>
+            </div>
+            <div class="thruster-simulation">
+                <canvas id="thruster-canvas"></canvas>
+                <div class="thruster-overlay">
+                    <div class="vector-field vf-1">∇p</div>
+                    <div class="vector-field vf-2">∇T</div>
+                    <div class="vector-field vf-3">Ma = 2.4</div>
+                </div>
+            </div>
             <div class="floating-elements">
                 <div class="floating-element" data-speed="2"></div>
                 <div class="floating-element" data-speed="3"></div>

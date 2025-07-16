@@ -16,6 +16,8 @@ function initializeApp() {
     initializeParticles();
     initializeDroneSwarm();
     initializeRoboticArm();
+    initializeCFDSimulation();
+    initializeThrusterSimulation();
     initializeNavigation();
     initializeHero();
     initializeAnimations();
@@ -771,6 +773,404 @@ function drawEnergyOrb() {
         roboticArmCtx.arc(particleX, particleY, 2, 0, Math.PI * 2);
         roboticArmCtx.fill();
     }
+}
+
+// CFD Simulation System
+let cfdCanvas, cfdCtx;
+let streamlines = [];
+let vortices = [];
+let flowField = [];
+
+function initializeCFDSimulation() {
+    cfdCanvas = document.getElementById('cfd-canvas');
+    if (!cfdCanvas) return;
+    
+    cfdCtx = cfdCanvas.getContext('2d');
+    
+    // Set canvas size
+    resizeCFDCanvas();
+    window.addEventListener('resize', resizeCFDCanvas);
+    
+    // Create flow field and streamlines
+    createFlowField();
+    createStreamlines();
+    createVortices();
+    
+    // Start animation loop
+    animateCFDSimulation();
+}
+
+function resizeCFDCanvas() {
+    if (!cfdCanvas) return;
+    
+    const container = cfdCanvas.parentElement;
+    cfdCanvas.width = container.offsetWidth;
+    cfdCanvas.height = container.offsetHeight;
+}
+
+function createFlowField() {
+    flowField = [];
+    const gridSize = 20;
+    
+    for (let x = 0; x < cfdCanvas.width; x += gridSize) {
+        for (let y = 0; y < cfdCanvas.height; y += gridSize) {
+            // Create a complex flow pattern around the robotic arm workspace
+            const centerX = cfdCanvas.width * 0.3;
+            const centerY = cfdCanvas.height * 0.6;
+            
+            const dx = x - centerX;
+            const dy = y - centerY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            // Create swirling flow around the workspace
+            const angle = Math.atan2(dy, dx) + Math.sin(distance * 0.02) * 0.5;
+            const speed = Math.max(0.1, 2 - distance * 0.01);
+            
+            flowField.push({
+                x: x,
+                y: y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                pressure: Math.sin(distance * 0.05) * 0.5 + 0.5
+            });
+        }
+    }
+}
+
+function createStreamlines() {
+    streamlines = [];
+    
+    for (let i = 0; i < 25; i++) {
+        const startX = Math.random() * cfdCanvas.width;
+        const startY = Math.random() * cfdCanvas.height;
+        
+        streamlines.push({
+            points: [{x: startX, y: startY}],
+            maxLength: 80,
+            age: 0,
+            color: `hsl(${180 + Math.random() * 40}, 70%, 60%)`, // Cyan to blue range
+            opacity: 0.6 + Math.random() * 0.4
+        });
+    }
+}
+
+function createVortices() {
+    vortices = [];
+    
+    // Create 3-4 main vortices in the flow
+    for (let i = 0; i < 4; i++) {
+        vortices.push({
+            x: Math.random() * cfdCanvas.width,
+            y: Math.random() * cfdCanvas.height,
+            radius: 20 + Math.random() * 30,
+            strength: (Math.random() - 0.5) * 0.02,
+            age: 0,
+            maxAge: 300 + Math.random() * 200
+        });
+    }
+}
+
+function animateCFDSimulation() {
+    if (!cfdCtx) return;
+    
+    // Clear canvas with fade effect
+    cfdCtx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+    cfdCtx.fillRect(0, 0, cfdCanvas.width, cfdCanvas.height);
+    
+    const time = Date.now() * 0.001;
+    
+    // Update and draw streamlines
+    streamlines.forEach((streamline, index) => {
+        const currentPoint = streamline.points[streamline.points.length - 1];
+        
+        // Calculate flow velocity at current position
+        let vx = 0, vy = 0;
+        
+        // Sample from flow field
+        const gridX = Math.floor(currentPoint.x / 20) * 20;
+        const gridY = Math.floor(currentPoint.y / 20) * 20;
+        
+        const fieldPoint = flowField.find(p => p.x === gridX && p.y === gridY);
+        if (fieldPoint) {
+            vx += fieldPoint.vx;
+            vy += fieldPoint.vy;
+        }
+        
+        // Add vortex influences
+        vortices.forEach(vortex => {
+            const dx = currentPoint.x - vortex.x;
+            const dy = currentPoint.y - vortex.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < vortex.radius * 2) {
+                const influence = vortex.strength * (1 - distance / (vortex.radius * 2));
+                vx += -dy * influence;
+                vy += dx * influence;
+            }
+        });
+        
+        // Add some turbulence
+        vx += (Math.random() - 0.5) * 0.5;
+        vy += (Math.random() - 0.5) * 0.5;
+        
+        // Add new point to streamline
+        const newX = currentPoint.x + vx;
+        const newY = currentPoint.y + vy;
+        
+        // Boundary conditions
+        if (newX > 0 && newX < cfdCanvas.width && newY > 0 && newY < cfdCanvas.height) {
+            streamline.points.push({x: newX, y: newY});
+        } else {
+            // Restart streamline from random position
+            streamline.points = [{
+                x: Math.random() * cfdCanvas.width,
+                y: Math.random() * cfdCanvas.height
+            }];
+        }
+        
+        // Limit streamline length
+        if (streamline.points.length > streamline.maxLength) {
+            streamline.points.shift();
+        }
+        
+        // Draw streamline
+        if (streamline.points.length > 1) {
+            cfdCtx.strokeStyle = streamline.color.replace('60%', `${streamline.opacity * 60}%`);
+            cfdCtx.lineWidth = 1.5;
+            cfdCtx.lineCap = 'round';
+            
+            cfdCtx.beginPath();
+            cfdCtx.moveTo(streamline.points[0].x, streamline.points[0].y);
+            
+            for (let i = 1; i < streamline.points.length; i++) {
+                const alpha = i / streamline.points.length;
+                cfdCtx.globalAlpha = alpha * streamline.opacity;
+                cfdCtx.lineTo(streamline.points[i].x, streamline.points[i].y);
+            }
+            
+            cfdCtx.stroke();
+            cfdCtx.globalAlpha = 1;
+        }
+    });
+    
+    // Update and draw vortices
+    vortices.forEach((vortex, index) => {
+        vortex.age++;
+        
+        // Move vortices slowly
+        vortex.x += Math.sin(time * 0.5 + index) * 0.3;
+        vortex.y += Math.cos(time * 0.3 + index) * 0.2;
+        
+        // Draw vortex as spiral
+        const spiralTurns = 3;
+        const maxRadius = vortex.radius;
+        
+        cfdCtx.strokeStyle = `rgba(0, 212, 255, 0.4)`;
+        cfdCtx.lineWidth = 2;
+        
+        cfdCtx.beginPath();
+        for (let angle = 0; angle < spiralTurns * Math.PI * 2; angle += 0.2) {
+            const radius = (angle / (spiralTurns * Math.PI * 2)) * maxRadius;
+            const x = vortex.x + Math.cos(angle + time * vortex.strength * 10) * radius;
+            const y = vortex.y + Math.sin(angle + time * vortex.strength * 10) * radius;
+            
+            if (angle === 0) {
+                cfdCtx.moveTo(x, y);
+            } else {
+                cfdCtx.lineTo(x, y);
+            }
+        }
+        cfdCtx.stroke();
+        
+        // Regenerate vortex if too old
+        if (vortex.age > vortex.maxAge) {
+            vortex.x = Math.random() * cfdCanvas.width;
+            vortex.y = Math.random() * cfdCanvas.height;
+            vortex.age = 0;
+        }
+    });
+    
+    requestAnimationFrame(animateCFDSimulation);
+}
+
+// Thruster Simulation System
+let thrusterCanvas, thrusterCtx;
+let shockDiamonds = [];
+let exhaustParticles = [];
+let pressureWaves = [];
+
+function initializeThrusterSimulation() {
+    thrusterCanvas = document.getElementById('thruster-canvas');
+    if (!thrusterCanvas) return;
+    
+    thrusterCtx = thrusterCanvas.getContext('2d');
+    
+    // Set canvas size
+    resizeThrusterCanvas();
+    window.addEventListener('resize', resizeThrusterCanvas);
+    
+    // Create thruster elements
+    createShockDiamonds();
+    createExhaustParticles();
+    createPressureWaves();
+    
+    // Start animation loop
+    animateThrusterSimulation();
+}
+
+function resizeThrusterCanvas() {
+    if (!thrusterCanvas) return;
+    
+    const container = thrusterCanvas.parentElement;
+    thrusterCanvas.width = container.offsetWidth;
+    thrusterCanvas.height = container.offsetHeight;
+}
+
+function createShockDiamonds() {
+    shockDiamonds = [];
+    
+    // Create diamond pattern in exhaust plume
+    for (let i = 0; i < 6; i++) {
+        shockDiamonds.push({
+            x: 30 + i * 25,
+            y: thrusterCanvas.height * 0.5,
+            width: 20 - i * 2,
+            height: 15 - i * 1.5,
+            phase: i * Math.PI / 3,
+            intensity: 0.8 - i * 0.1
+        });
+    }
+}
+
+function createExhaustParticles() {
+    exhaustParticles = [];
+    
+    for (let i = 0; i < 60; i++) {
+        exhaustParticles.push({
+            x: 10 + Math.random() * 20,
+            y: thrusterCanvas.height * 0.5 + (Math.random() - 0.5) * 20,
+            vx: 2 + Math.random() * 3,
+            vy: (Math.random() - 0.5) * 0.5,
+            size: 1 + Math.random() * 2,
+            temperature: 0.7 + Math.random() * 0.3,
+            life: 1
+        });
+    }
+}
+
+function createPressureWaves() {
+    pressureWaves = [];
+    
+    for (let i = 0; i < 4; i++) {
+        pressureWaves.push({
+            x: 20,
+            y: thrusterCanvas.height * 0.5,
+            radius: 20 + i * 15,
+            maxRadius: 80,
+            speed: 0.8 + i * 0.2,
+            intensity: 0.6 - i * 0.1
+        });
+    }
+}
+
+function animateThrusterSimulation() {
+    if (!thrusterCtx) return;
+    
+    // Clear canvas
+    thrusterCtx.fillStyle = 'rgba(10, 10, 10, 0.2)';
+    thrusterCtx.fillRect(0, 0, thrusterCanvas.width, thrusterCanvas.height);
+    
+    const time = Date.now() * 0.001;
+    
+    // Draw shock diamonds
+    shockDiamonds.forEach((diamond, index) => {
+        const oscillation = Math.sin(time * 3 + diamond.phase) * 0.3;
+        
+        thrusterCtx.strokeStyle = `rgba(255, 107, 53, ${diamond.intensity + oscillation})`;
+        thrusterCtx.lineWidth = 2;
+        
+        // Draw diamond shape
+        thrusterCtx.beginPath();
+        thrusterCtx.moveTo(diamond.x - diamond.width/2, diamond.y);
+        thrusterCtx.lineTo(diamond.x, diamond.y - diamond.height/2);
+        thrusterCtx.lineTo(diamond.x + diamond.width/2, diamond.y);
+        thrusterCtx.lineTo(diamond.x, diamond.y + diamond.height/2);
+        thrusterCtx.closePath();
+        thrusterCtx.stroke();
+        
+        // Add glow effect
+        thrusterCtx.shadowColor = '#ff6b35';
+        thrusterCtx.shadowBlur = 8;
+        thrusterCtx.stroke();
+        thrusterCtx.shadowBlur = 0;
+    });
+    
+    // Update and draw exhaust particles
+    exhaustParticles.forEach((particle, index) => {
+        // Update particle physics
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.vy += (Math.random() - 0.5) * 0.1; // Turbulence
+        particle.life -= 0.01;
+        particle.size *= 0.995;
+        
+        // Temperature-based color
+        const red = Math.floor(255 * particle.temperature);
+        const green = Math.floor(150 * (1 - particle.temperature));
+        const blue = Math.floor(50 * (1 - particle.temperature));
+        
+        thrusterCtx.fillStyle = `rgba(${red}, ${green}, ${blue}, ${particle.life})`;
+        thrusterCtx.beginPath();
+        thrusterCtx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        thrusterCtx.fill();
+        
+        // Reset particle if dead or out of bounds
+        if (particle.life <= 0 || particle.x > thrusterCanvas.width) {
+            particle.x = 10 + Math.random() * 20;
+            particle.y = thrusterCanvas.height * 0.5 + (Math.random() - 0.5) * 20;
+            particle.vx = 2 + Math.random() * 3;
+            particle.vy = (Math.random() - 0.5) * 0.5;
+            particle.size = 1 + Math.random() * 2;
+            particle.temperature = 0.7 + Math.random() * 0.3;
+            particle.life = 1;
+        }
+    });
+    
+    // Update and draw pressure waves
+    pressureWaves.forEach((wave, index) => {
+        wave.radius += wave.speed;
+        
+        if (wave.radius > wave.maxRadius) {
+            wave.radius = 20;
+        }
+        
+        thrusterCtx.strokeStyle = `rgba(0, 212, 255, ${wave.intensity * (1 - wave.radius / wave.maxRadius)})`;
+        thrusterCtx.lineWidth = 1;
+        thrusterCtx.beginPath();
+        thrusterCtx.arc(wave.x, wave.y, wave.radius, 0, Math.PI * 2);
+        thrusterCtx.stroke();
+    });
+    
+    // Draw velocity vectors
+    for (let i = 0; i < 8; i++) {
+        const x = 40 + i * 20;
+        const y = thrusterCanvas.height * 0.5 + Math.sin(time * 2 + i * 0.5) * 10;
+        const length = 15 + Math.sin(time * 3 + i) * 5;
+        
+        thrusterCtx.strokeStyle = 'rgba(0, 255, 136, 0.6)';
+        thrusterCtx.lineWidth = 1.5;
+        thrusterCtx.beginPath();
+        thrusterCtx.moveTo(x, y);
+        thrusterCtx.lineTo(x + length, y);
+        
+        // Arrowhead
+        thrusterCtx.lineTo(x + length - 3, y - 2);
+        thrusterCtx.moveTo(x + length, y);
+        thrusterCtx.lineTo(x + length - 3, y + 2);
+        thrusterCtx.stroke();
+    }
+    
+    requestAnimationFrame(animateThrusterSimulation);
 }
 
 // Navigation
