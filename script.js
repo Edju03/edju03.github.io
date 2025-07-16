@@ -141,38 +141,46 @@ function animateParticles() {
     requestAnimationFrame(animateParticles);
 }
 
-// Pathfinding Swarm System
-let droneSwarmCanvas, droneSwarmCtx;
-let drones = [];
-let maze = [];
-let mazeWidth = 25;
-let mazeHeight = 20;
-let cellSize = 20;
-let startPoint = {x: 1, y: 1};
-let endPoint = {x: 23, y: 18};
-let solutionPath = [];
+// 3D Scanning Drone Swarm System
+let droneSwarmCanvas, droneSwarmCtx, errorGraphCanvas, errorGraphCtx;
+let scanningDrones = [];
+let artifact = {};
+let pointCloud = [];
+let reconstructedWireframe = [];
+let lidarScans = [];
+let radarSweeps = [];
 let animationTime = 0;
 let simulationStartTime = 0;
-let pathFound = false;
+let scanCompleteness = 0;
+let reconstructionError = [];
+let maxReconstructionPoints = 3000;
 
 function initializeDroneSwarm() {
     droneSwarmCanvas = document.getElementById('drone-swarm-canvas');
+    errorGraphCanvas = document.getElementById('error-graph-canvas');
+    
     if (!droneSwarmCanvas) return;
     
     droneSwarmCtx = droneSwarmCanvas.getContext('2d');
+    if (errorGraphCanvas) {
+        errorGraphCtx = errorGraphCanvas.getContext('2d');
+    }
     
     // Set canvas size
     resizeDroneCanvas();
     window.addEventListener('resize', resizeDroneCanvas);
     
-    // Generate complex maze
-    generateMaze();
+    // Create mysterious crystalline artifact
+    createCrystallineArtifact();
     
-    // Create micro-drones for pathfinding
-    createPathfindingSwarm();
+    // Create scanning drone swarm
+    createScanningDroneSwarm();
+    
+    // Initialize reconstruction tracking
+    initializeReconstruction();
     
     // Start animation loop
-    animatePathfindingSwarm();
+    animateScanningSwarm();
     
     // Update stats display
     updateSwarmStats();
@@ -188,373 +196,453 @@ function resizeDroneCanvas() {
     droneSwarmCanvas.height = container.offsetHeight;
 }
 
-function generateMaze() {
-    // Initialize maze with walls
-    maze = [];
-    for (let y = 0; y < mazeHeight; y++) {
-        maze[y] = [];
-        for (let x = 0; x < mazeWidth; x++) {
-            maze[y][x] = 1; // 1 = wall, 0 = path
-        }
-    }
+function createCrystallineArtifact() {
+    const centerX = droneSwarmCanvas.width / 2;
+    const centerY = droneSwarmCanvas.height / 2;
     
-    // Recursive backtracking maze generation
-    function carvePath(x, y) {
-        maze[y][x] = 0;
-        
-        const directions = [
-            [0, -2], [2, 0], [0, 2], [-2, 0]
-        ].sort(() => Math.random() - 0.5);
-        
-        for (let [dx, dy] of directions) {
-            const nx = x + dx;
-            const ny = y + dy;
-            
-            if (nx > 0 && nx < mazeWidth - 1 && ny > 0 && ny < mazeHeight - 1 && maze[ny][nx] === 1) {
-                maze[y + dy/2][x + dx/2] = 0;
-                carvePath(nx, ny);
-            }
-        }
-    }
+    artifact = {
+        centerX: centerX,
+        centerY: centerY,
+        radius: 60,
+        vertices: [],
+        faces: [],
+        rotation: { x: 0, y: 0, z: 0 },
+        rotationSpeed: { x: 0.008, y: 0.012, z: 0.005 }
+    };
     
-    carvePath(startPoint.x, startPoint.y);
+    // Create complex crystalline structure (icosahedron-like)
+    const phi = (1 + Math.sqrt(5)) / 2; // Golden ratio
+    const scale = 30;
     
-    // Ensure start and end are paths
-    maze[startPoint.y][startPoint.x] = 0;
-    maze[endPoint.y][endPoint.x] = 0;
+    // Define vertices of an icosahedron
+    const baseVertices = [
+        [-1, phi, 0], [1, phi, 0], [-1, -phi, 0], [1, -phi, 0],
+        [0, -1, phi], [0, 1, phi], [0, -1, -phi], [0, 1, -phi],
+        [phi, 0, -1], [phi, 0, 1], [-phi, 0, -1], [-phi, 0, 1]
+    ];
     
-    // Add some additional paths for complexity
-    for (let i = 0; i < 15; i++) {
-        const x = Math.floor(Math.random() * (mazeWidth - 2)) + 1;
-        const y = Math.floor(Math.random() * (mazeHeight - 2)) + 1;
-        if (Math.random() < 0.3) maze[y][x] = 0;
-    }
+    // Normalize and scale vertices
+    artifact.vertices = baseVertices.map(v => {
+        const length = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+        return [
+            (v[0] / length) * scale,
+            (v[1] / length) * scale,
+            (v[2] / length) * scale
+        ];
+    });
+    
+    // Define faces (triangles) - simplified for performance
+    artifact.faces = [
+        [0, 11, 5], [0, 5, 1], [0, 1, 7], [0, 7, 10], [0, 10, 11],
+        [1, 5, 9], [5, 11, 4], [11, 10, 2], [10, 7, 6], [7, 1, 8],
+        [3, 9, 4], [3, 4, 2], [3, 2, 6], [3, 6, 8], [3, 8, 9],
+        [4, 9, 5], [2, 4, 11], [6, 2, 10], [8, 6, 7], [9, 8, 1]
+    ];
 }
 
-function createPathfindingSwarm() {
-    const droneCount = 800; // Swarm agents for pathfinding
+function createScanningDroneSwarm() {
+    const droneCount = 12; // Elite scanning UAVs
+    scanningDrones = [];
     
-    // A* pathfinding algorithm to find solution
-    solutionPath = findPath(startPoint, endPoint);
+    const centerX = artifact.centerX;
+    const centerY = artifact.centerY;
+    const orbitRadius = 120;
     
     for (let i = 0; i < droneCount; i++) {
-        // Start drones at random valid positions
-        let startX, startY;
-        do {
-            startX = Math.floor(Math.random() * mazeWidth);
-            startY = Math.floor(Math.random() * mazeHeight);
-        } while (maze[startY][startX] === 1);
+        const angle = (i / droneCount) * Math.PI * 2;
+        const orbitHeight = Math.sin(i * 0.5) * 40; // Varied orbit heights
         
-        drones.push({
-            mazeX: startX,
-            mazeY: startY,
-            x: startX * cellSize + cellSize/2 + 50,
-            y: startY * cellSize + cellSize/2 + 50,
-            targetX: endPoint.x * cellSize + cellSize/2 + 50,
-            targetY: endPoint.y * cellSize + cellSize/2 + 50,
-            vx: 0,
-            vy: 0,
-            size: Math.random() * 1.2 + 0.8,
-            brightness: Math.random() * 0.4 + 0.6,
+        scanningDrones.push({
+            id: i,
+            x: centerX + Math.cos(angle) * orbitRadius,
+            y: centerY + Math.sin(angle) * orbitRadius,
+            z: orbitHeight,
+            targetAngle: angle,
+            orbitRadius: orbitRadius + Math.random() * 20 - 10,
+            orbitSpeed: 0.01 + Math.random() * 0.005,
+            verticalOscillation: Math.random() * 0.008 + 0.003,
+            phase: i * Math.PI / 6,
+            size: 3 + Math.random() * 2,
+            brightness: 0.8 + Math.random() * 0.2,
+            
+            // Sensor systems
+            lidarActive: Math.random() < 0.7,
+            radarActive: Math.random() < 0.5,
+            lidarConeAngle: Math.PI / 8,
+            lidarRange: 80,
+            radarSweepAngle: 0,
+            radarSweepSpeed: 0.05,
+            
+            // Data collection
+            scanData: [],
+            contributedPoints: 0,
+            
+            // Visual trail
             trailX: [],
             trailY: [],
-            explorationRadius: Math.random() * 3 + 2,
-            pathfindingState: 'exploring', // exploring, following, arrived
-            foundPath: false,
-            pathIndex: 0,
-            lastMove: Date.now()
+            maxTrailLength: 15
         });
     }
     
     // Update drone count display
-    document.getElementById('drone-count').textContent = droneCount.toLocaleString();
+    document.getElementById('drone-count').textContent = droneCount.toString();
 }
 
-function findPath(start, end) {
-    // A* pathfinding implementation
-    const openList = [{x: start.x, y: start.y, f: 0, g: 0, h: 0, parent: null}];
-    const closedList = [];
+function initializeReconstruction() {
+    pointCloud = [];
+    reconstructedWireframe = [];
+    reconstructionError = [];
+    scanCompleteness = 0;
     
-    while (openList.length > 0) {
-        let current = openList[0];
-        let currentIndex = 0;
-        
-        for (let i = 1; i < openList.length; i++) {
-            if (openList[i].f < current.f) {
-                current = openList[i];
-                currentIndex = i;
-            }
-        }
-        
-        openList.splice(currentIndex, 1);
-        closedList.push(current);
-        
-        if (current.x === end.x && current.y === end.y) {
-            const path = [];
-            let curr = current;
-            while (curr) {
-                path.unshift({x: curr.x, y: curr.y});
-                curr = curr.parent;
-            }
-            return path;
-        }
-        
-        const neighbors = [
-            {x: current.x + 1, y: current.y},
-            {x: current.x - 1, y: current.y},
-            {x: current.x, y: current.y + 1},
-            {x: current.x, y: current.y - 1}
-        ];
-        
-        for (let neighbor of neighbors) {
-            if (neighbor.x < 0 || neighbor.x >= mazeWidth || 
-                neighbor.y < 0 || neighbor.y >= mazeHeight ||
-                maze[neighbor.y][neighbor.x] === 1) continue;
-            
-            if (closedList.some(node => node.x === neighbor.x && node.y === neighbor.y)) continue;
-            
-            const g = current.g + 1;
-            const h = Math.abs(neighbor.x - end.x) + Math.abs(neighbor.y - end.y);
-            const f = g + h;
-            
-            const existing = openList.find(node => node.x === neighbor.x && node.y === neighbor.y);
-            if (!existing) {
-                openList.push({...neighbor, f, g, h, parent: current});
-            } else if (g < existing.g) {
-                existing.g = g;
-                existing.f = f;
-                existing.parent = current;
-            }
-        }
+    // Initialize error tracking with high initial error
+    for (let i = 0; i < 50; i++) {
+        reconstructionError.push(1.0 - (i * 0.015));
     }
-    
-    return []; // No path found
 }
 
-function animatePathfindingSwarm() {
+function animateScanningSwarm() {
     if (!droneSwarmCtx) return;
     
     animationTime += 16; // ~60fps
     
-    // Clear canvas with trail effect
-    droneSwarmCtx.fillStyle = 'rgba(10, 10, 10, 0.15)';
+    // Clear canvas with subtle trail effect
+    droneSwarmCtx.fillStyle = 'rgba(10, 10, 10, 0.1)';
     droneSwarmCtx.fillRect(0, 0, droneSwarmCanvas.width, droneSwarmCanvas.height);
     
-    // Draw maze structure
-    drawMaze();
+    const time = Date.now() * 0.001;
     
-    // Update simulation time
-    const elapsedTime = (Date.now() - simulationStartTime) / 1000;
-    document.getElementById('solution-time').textContent = elapsedTime.toFixed(2) + 's';
+    // Update artifact rotation
+    artifact.rotation.x += artifact.rotationSpeed.x;
+    artifact.rotation.y += artifact.rotationSpeed.y;
+    artifact.rotation.z += artifact.rotationSpeed.z;
     
-    // Check if solution is converged
-    const arrivedDrones = drones.filter(d => d.pathfindingState === 'arrived').length;
-    const progressPercent = Math.floor((arrivedDrones / drones.length) * 100);
+    // Draw the mysterious crystalline artifact
+    drawCrystallineArtifact();
     
-    if (!pathFound && progressPercent > 15) {
-        pathFound = true;
-        document.getElementById('formation-progress').textContent = 'SOLUTION CONVERGED';
-    } else if (!pathFound) {
-        document.getElementById('formation-progress').textContent = 'ANALYZING';
-    }
+    // Update and draw scanning drones
+    updateScanningDrones(time);
     
-    // Animate pathfinding drones
-    drones.forEach((drone, index) => {
-        // Pathfinding behavior
-        if (drone.pathfindingState === 'exploring') {
-            // Random exploration with bias toward target
-            const targetAngle = Math.atan2(drone.targetY - drone.y, drone.targetX - drone.x);
-            const explorationAngle = targetAngle + (Math.random() - 0.5) * Math.PI;
-            
-            drone.vx += Math.cos(explorationAngle) * 0.3;
-            drone.vy += Math.sin(explorationAngle) * 0.3;
-            
-            // Check if close to solution path
-            if (solutionPath.length > 0) {
-                for (let pathPoint of solutionPath) {
-                    const pathX = pathPoint.x * cellSize + cellSize/2 + 50;
-                    const pathY = pathPoint.y * cellSize + cellSize/2 + 50;
-                    const dist = Math.sqrt((drone.x - pathX) ** 2 + (drone.y - pathY) ** 2);
-                    
-                    if (dist < 30 && Math.random() < 0.1) {
-                        drone.pathfindingState = 'following';
-                        drone.foundPath = true;
-                        break;
-                    }
-                }
-            }
-        } else if (drone.pathfindingState === 'following' && solutionPath.length > 0) {
-            // Follow the solution path
-            const targetIndex = Math.min(drone.pathIndex, solutionPath.length - 1);
-            const pathPoint = solutionPath[targetIndex];
-            const pathX = pathPoint.x * cellSize + cellSize/2 + 50;
-            const pathY = pathPoint.y * cellSize + cellSize/2 + 50;
-            
-            drone.vx += (pathX - drone.x) * 0.08;
-            drone.vy += (pathY - drone.y) * 0.08;
-            
-            const dist = Math.sqrt((drone.x - pathX) ** 2 + (drone.y - pathY) ** 2);
-            if (dist < 15 && drone.pathIndex < solutionPath.length - 1) {
-                drone.pathIndex++;
-            } else if (drone.pathIndex >= solutionPath.length - 1 && dist < 20) {
-                drone.pathfindingState = 'arrived';
-            }
-        }
+    // Process point cloud generation
+    generatePointCloudData();
+    
+    // Draw point cloud
+    drawPointCloud();
+    
+    // Draw reconstructed wireframe
+    drawReconstructedWireframe();
+    
+    // Update scan completeness
+    updateScanCompleteness();
+    
+    // Draw sensor visualizations
+    drawSensorVisualizations();
+    
+    // Update reconstruction error graph
+    updateReconstructionGraph();
+    
+    requestAnimationFrame(animateScanningSwarm);
+}
+
+function drawCrystallineArtifact() {
+    const centerX = artifact.centerX;
+    const centerY = artifact.centerY;
+    
+    // Rotate and project vertices
+    const projectedVertices = artifact.vertices.map(vertex => {
+        // Apply rotations
+        let [x, y, z] = vertex;
         
-        // Apply velocity damping and constraints
-        drone.vx *= 0.92;
-        drone.vy *= 0.92;
+        // Rotate around Y axis
+        const cosY = Math.cos(artifact.rotation.y);
+        const sinY = Math.sin(artifact.rotation.y);
+        const newX = x * cosY - z * sinY;
+        const newZ = x * sinY + z * cosY;
+        x = newX;
+        z = newZ;
         
-        // Update position
-        drone.x += drone.vx;
-        drone.y += drone.vy;
+        // Rotate around X axis
+        const cosX = Math.cos(artifact.rotation.x);
+        const sinX = Math.sin(artifact.rotation.x);
+        const newY = y * cosX - z * sinX;
+        z = y * sinX + z * cosX;
+        y = newY;
         
-        // Boundary constraints (keep in maze area)
-        drone.x = Math.max(50, Math.min(drone.x, mazeWidth * cellSize + 50));
-        drone.y = Math.max(50, Math.min(drone.y, mazeHeight * cellSize + 50));
+        // Project to 2D (simple orthographic projection)
+        return {
+            x: centerX + x,
+            y: centerY + y,
+            z: z
+        };
+    });
+    
+    // Draw faces with depth-based opacity
+    artifact.faces.forEach(face => {
+        const v1 = projectedVertices[face[0]];
+        const v2 = projectedVertices[face[1]];
+        const v3 = projectedVertices[face[2]];
         
-        // Wall collision detection and avoidance
-        const mazeX = Math.floor((drone.x - 50) / cellSize);
-        const mazeY = Math.floor((drone.y - 50) / cellSize);
+        // Calculate average depth
+        const avgZ = (v1.z + v2.z + v3.z) / 3;
+        const depthAlpha = 0.3 + (avgZ / 60) * 0.4;
         
-        if (mazeX >= 0 && mazeX < mazeWidth && mazeY >= 0 && mazeY < mazeHeight) {
-            if (maze[mazeY][mazeX] === 1) {
-                drone.vx *= -0.5;
-                drone.vy *= -0.5;
-                drone.x += drone.vx * 2;
-                drone.y += drone.vy * 2;
-            }
+        droneSwarmCtx.strokeStyle = `rgba(0, 255, 136, ${Math.max(0.1, depthAlpha)})`;
+        droneSwarmCtx.lineWidth = 1.5;
+        
+        droneSwarmCtx.beginPath();
+        droneSwarmCtx.moveTo(v1.x, v1.y);
+        droneSwarmCtx.lineTo(v2.x, v2.y);
+        droneSwarmCtx.lineTo(v3.x, v3.y);
+        droneSwarmCtx.closePath();
+        droneSwarmCtx.stroke();
+    });
+    
+    // Add crystalline glow effect
+    droneSwarmCtx.shadowColor = '#00ff88';
+    droneSwarmCtx.shadowBlur = 10;
+    
+    // Draw vertices as glowing points
+    projectedVertices.forEach(vertex => {
+        droneSwarmCtx.fillStyle = `rgba(0, 255, 136, 0.8)`;
+        droneSwarmCtx.beginPath();
+        droneSwarmCtx.arc(vertex.x, vertex.y, 2, 0, Math.PI * 2);
+        droneSwarmCtx.fill();
+    });
+    
+    droneSwarmCtx.shadowBlur = 0;
+}
+
+function updateScanningDrones(time) {
+    scanningDrones.forEach(drone => {
+        // Update orbital motion
+        drone.targetAngle += drone.orbitSpeed;
+        drone.z = Math.sin(time * drone.verticalOscillation + drone.phase) * 30;
+        
+        // Calculate orbital position
+        drone.x = artifact.centerX + Math.cos(drone.targetAngle) * drone.orbitRadius;
+        drone.y = artifact.centerY + Math.sin(drone.targetAngle) * drone.orbitRadius;
+        
+        // Update sensor sweeps
+        if (drone.radarActive) {
+            drone.radarSweepAngle += drone.radarSweepSpeed;
+            if (drone.radarSweepAngle > Math.PI * 2) drone.radarSweepAngle = 0;
         }
         
         // Store trail
         drone.trailX.push(drone.x);
         drone.trailY.push(drone.y);
-        if (drone.trailX.length > 8) {
+        if (drone.trailX.length > drone.maxTrailLength) {
             drone.trailX.shift();
             drone.trailY.shift();
         }
         
-        // Draw drone trail with different colors based on state
+        // Draw drone trail
         if (drone.trailX.length > 1) {
+            droneSwarmCtx.strokeStyle = 'rgba(0, 212, 255, 0.3)';
+            droneSwarmCtx.lineWidth = 1;
             droneSwarmCtx.beginPath();
             droneSwarmCtx.moveTo(drone.trailX[0], drone.trailY[0]);
             for (let i = 1; i < drone.trailX.length; i++) {
+                const alpha = i / drone.trailX.length;
+                droneSwarmCtx.globalAlpha = alpha * 0.3;
                 droneSwarmCtx.lineTo(drone.trailX[i], drone.trailY[i]);
             }
-            
-            let trailColor = '0, 212, 255'; // cyan for exploring
-            if (drone.pathfindingState === 'following') trailColor = '0, 255, 136'; // green for following
-            if (drone.pathfindingState === 'arrived') trailColor = '255, 107, 53'; // orange for arrived
-            
-            droneSwarmCtx.strokeStyle = `rgba(${trailColor}, ${0.4 * drone.brightness})`;
-            droneSwarmCtx.lineWidth = 0.8;
             droneSwarmCtx.stroke();
+            droneSwarmCtx.globalAlpha = 1;
         }
         
-        // Draw drone with state-based coloring
-        let droneColor = '0, 212, 255'; // cyan for exploring
-        let glowIntensity = 0.6;
-        
-        if (drone.pathfindingState === 'following') {
-            droneColor = '0, 255, 136'; // green for following path
-            glowIntensity = 0.8;
-        } else if (drone.pathfindingState === 'arrived') {
-            droneColor = '255, 107, 53'; // orange for arrived
-            glowIntensity = 1.0;
-        }
-        
-        const alpha = drone.brightness * (0.7 + 0.3 * Math.sin(animationTime * 0.008 + index));
-        
+        // Draw drone
+        const pulseIntensity = 0.8 + 0.2 * Math.sin(time * 3 + drone.phase);
+        droneSwarmCtx.fillStyle = `rgba(0, 212, 255, ${pulseIntensity})`;
         droneSwarmCtx.beginPath();
         droneSwarmCtx.arc(drone.x, drone.y, drone.size, 0, Math.PI * 2);
-        droneSwarmCtx.fillStyle = `rgba(${droneColor}, ${alpha})`;
         droneSwarmCtx.fill();
         
         // Add glow effect
-        droneSwarmCtx.shadowColor = `rgb(${droneColor})`;
-        droneSwarmCtx.shadowBlur = 4 * glowIntensity;
+        droneSwarmCtx.shadowColor = '#00d4ff';
+        droneSwarmCtx.shadowBlur = 8;
         droneSwarmCtx.fill();
         droneSwarmCtx.shadowBlur = 0;
     });
-    
-    // Draw solution path if found
-    if (pathFound && solutionPath.length > 1) {
-        drawSolutionPath();
-    }
-    
-    requestAnimationFrame(animatePathfindingSwarm);
 }
 
-function drawMaze() {
-    // Draw maze structure as wireframe
-    droneSwarmCtx.strokeStyle = 'rgba(0, 212, 255, 0.15)';
-    droneSwarmCtx.lineWidth = 1;
-    
-    for (let y = 0; y < mazeHeight; y++) {
-        for (let x = 0; x < mazeWidth; x++) {
-            if (maze[y][x] === 1) { // Wall
-                const posX = x * cellSize + 50;
-                const posY = y * cellSize + 50;
-                
-                droneSwarmCtx.strokeRect(posX, posY, cellSize, cellSize);
-            }
+function generatePointCloudData() {
+    // Add new points to cloud based on scanning progress
+    if (pointCloud.length < maxReconstructionPoints) {
+        const pointsToAdd = Math.min(15, maxReconstructionPoints - pointCloud.length);
+        
+        for (let i = 0; i < pointsToAdd; i++) {
+            // Generate points around the artifact with some noise
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 40 + Math.random() * 40;
+            const noise = (Math.random() - 0.5) * 8;
+            
+            pointCloud.push({
+                x: artifact.centerX + Math.cos(angle) * radius + noise,
+                y: artifact.centerY + Math.sin(angle) * radius + noise,
+                intensity: 0.4 + Math.random() * 0.6,
+                age: 0,
+                maxAge: 180 + Math.random() * 120
+            });
         }
     }
     
-    // Draw start and end points with special highlighting
-    droneSwarmCtx.fillStyle = 'rgba(0, 255, 136, 0.6)';
-    droneSwarmCtx.fillRect(
-        startPoint.x * cellSize + 50 + 2, 
-        startPoint.y * cellSize + 50 + 2, 
-        cellSize - 4, cellSize - 4
-    );
+    // Update existing points
+    pointCloud.forEach(point => {
+        point.age++;
+        point.intensity *= 0.998; // Fade over time
+    });
     
-    droneSwarmCtx.fillStyle = 'rgba(255, 107, 53, 0.6)';
-    droneSwarmCtx.fillRect(
-        endPoint.x * cellSize + 50 + 2, 
-        endPoint.y * cellSize + 50 + 2, 
-        cellSize - 4, cellSize - 4
-    );
+    // Remove old points
+    pointCloud = pointCloud.filter(point => point.age < point.maxAge && point.intensity > 0.1);
 }
 
-function drawSolutionPath() {
-    if (solutionPath.length < 2) return;
+function drawPointCloud() {
+    // Draw shimmering nebula of point cloud data
+    pointCloud.forEach(point => {
+        const twinkle = 0.5 + 0.5 * Math.sin(Date.now() * 0.01 + point.x * 0.1);
+        const alpha = point.intensity * twinkle;
+        
+        droneSwarmCtx.fillStyle = `rgba(0, 212, 255, ${alpha})`;
+        droneSwarmCtx.beginPath();
+        droneSwarmCtx.arc(point.x, point.y, 1, 0, Math.PI * 2);
+        droneSwarmCtx.fill();
+        
+        // Add subtle glow to some points
+        if (Math.random() < 0.3) {
+            droneSwarmCtx.shadowColor = '#00d4ff';
+            droneSwarmCtx.shadowBlur = 3;
+            droneSwarmCtx.fill();
+            droneSwarmCtx.shadowBlur = 0;
+        }
+    });
+}
+
+function drawReconstructedWireframe() {
+    // Draw wireframe reconstruction emerging from point cloud
+    if (pointCloud.length > 100) {
+        const progress = Math.min(1, (pointCloud.length - 100) / (maxReconstructionPoints - 100));
+        
+        // Draw simplified wireframe version of artifact
+        const centerX = artifact.centerX + 120; // Offset to the side
+        const centerY = artifact.centerY;
+        const scale = 0.7;
+        
+        droneSwarmCtx.strokeStyle = `rgba(255, 107, 53, ${0.4 + progress * 0.4})`;
+        droneSwarmCtx.lineWidth = 2;
+        
+        // Draw a simplified wireframe based on the original artifact
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const radius = 35 * scale;
+            const x1 = centerX + Math.cos(angle) * radius;
+            const y1 = centerY + Math.sin(angle) * radius;
+            const x2 = centerX + Math.cos(angle + Math.PI/4) * radius * 0.7;
+            const y2 = centerY + Math.sin(angle + Math.PI/4) * radius * 0.7;
+            
+            droneSwarmCtx.beginPath();
+            droneSwarmCtx.moveTo(x1, y1);
+            droneSwarmCtx.lineTo(x2, y2);
+            droneSwarmCtx.stroke();
+        }
+        
+        // Add glow effect
+        droneSwarmCtx.shadowColor = '#ff6b35';
+        droneSwarmCtx.shadowBlur = 6;
+        droneSwarmCtx.stroke();
+        droneSwarmCtx.shadowBlur = 0;
+    }
+}
+
+function updateScanCompleteness() {
+    scanCompleteness = Math.min(100, (pointCloud.length / maxReconstructionPoints) * 100);
+    document.getElementById('solution-time').textContent = scanCompleteness.toFixed(1) + '%';
+    document.getElementById('point-cloud-count').textContent = pointCloud.length.toLocaleString();
     
-    // Draw the optimal path with glowing effect
-    droneSwarmCtx.strokeStyle = 'rgba(255, 107, 53, 0.8)';
-    droneSwarmCtx.lineWidth = 3;
-    droneSwarmCtx.lineCap = 'round';
-    droneSwarmCtx.lineJoin = 'round';
+    if (scanCompleteness > 80) {
+        document.getElementById('formation-progress').textContent = 'RECONSTRUCTION COMPLETE';
+    } else if (scanCompleteness > 40) {
+        document.getElementById('formation-progress').textContent = 'FUSING DATA';
+    } else {
+        document.getElementById('formation-progress').textContent = 'SCANNING';
+    }
+}
+
+function drawSensorVisualizations() {
+    scanningDrones.forEach(drone => {
+        const angleToArtifact = Math.atan2(artifact.centerY - drone.y, artifact.centerX - drone.x);
+        
+        // Draw LiDAR cone
+        if (drone.lidarActive) {
+            droneSwarmCtx.strokeStyle = 'rgba(0, 255, 136, 0.2)';
+            droneSwarmCtx.lineWidth = 1;
+            
+            const coneAngle = drone.lidarConeAngle;
+            const range = drone.lidarRange;
+            
+            droneSwarmCtx.beginPath();
+            droneSwarmCtx.moveTo(drone.x, drone.y);
+            droneSwarmCtx.lineTo(
+                drone.x + Math.cos(angleToArtifact - coneAngle/2) * range,
+                drone.y + Math.sin(angleToArtifact - coneAngle/2) * range
+            );
+            droneSwarmCtx.moveTo(drone.x, drone.y);
+            droneSwarmCtx.lineTo(
+                drone.x + Math.cos(angleToArtifact + coneAngle/2) * range,
+                drone.y + Math.sin(angleToArtifact + coneAngle/2) * range
+            );
+            droneSwarmCtx.stroke();
+        }
+        
+        // Draw mmWave radar sweep
+        if (drone.radarActive) {
+            droneSwarmCtx.strokeStyle = 'rgba(255, 107, 53, 0.3)';
+            droneSwarmCtx.lineWidth = 2;
+            
+            const sweepAngle = drone.radarSweepAngle;
+            const sweepRange = 60;
+            
+            droneSwarmCtx.beginPath();
+            droneSwarmCtx.moveTo(drone.x, drone.y);
+            droneSwarmCtx.lineTo(
+                drone.x + Math.cos(sweepAngle) * sweepRange,
+                drone.y + Math.sin(sweepAngle) * sweepRange
+            );
+            droneSwarmCtx.stroke();
+        }
+    });
+}
+
+function updateReconstructionGraph() {
+    if (!errorGraphCtx) return;
     
-    droneSwarmCtx.beginPath();
-    for (let i = 0; i < solutionPath.length; i++) {
-        const point = solutionPath[i];
-        const x = point.x * cellSize + cellSize/2 + 50;
-        const y = point.y * cellSize + cellSize/2 + 50;
+    // Add new error data point
+    const newError = Math.max(0.05, 0.9 - (scanCompleteness * 0.01));
+    reconstructionError.push(newError);
+    if (reconstructionError.length > 60) {
+        reconstructionError.shift();
+    }
+    
+    // Clear and draw graph
+    errorGraphCtx.fillStyle = 'rgba(10, 10, 10, 0.8)';
+    errorGraphCtx.fillRect(0, 0, 120, 60);
+    
+    // Draw error curve
+    errorGraphCtx.strokeStyle = '#ff6b35';
+    errorGraphCtx.lineWidth = 2;
+    errorGraphCtx.beginPath();
+    
+    for (let i = 0; i < reconstructionError.length; i++) {
+        const x = (i / (reconstructionError.length - 1)) * 120;
+        const y = 60 - (reconstructionError[i] * 50);
         
         if (i === 0) {
-            droneSwarmCtx.moveTo(x, y);
+            errorGraphCtx.moveTo(x, y);
         } else {
-            droneSwarmCtx.lineTo(x, y);
+            errorGraphCtx.lineTo(x, y);
         }
     }
     
-    // Add glow effect to solution path
-    droneSwarmCtx.shadowColor = '#ff6b35';
-    droneSwarmCtx.shadowBlur = 8;
-    droneSwarmCtx.stroke();
-    droneSwarmCtx.shadowBlur = 0;
-    
-    // Draw path nodes
-    droneSwarmCtx.fillStyle = 'rgba(255, 107, 53, 0.9)';
-    for (let point of solutionPath) {
-        const x = point.x * cellSize + cellSize/2 + 50;
-        const y = point.y * cellSize + cellSize/2 + 50;
-        
-        droneSwarmCtx.beginPath();
-        droneSwarmCtx.arc(x, y, 2, 0, Math.PI * 2);
-        droneSwarmCtx.fill();
-    }
+    errorGraphCtx.stroke();
 }
 
 function updateSwarmStats() {
@@ -563,13 +651,13 @@ function updateSwarmStats() {
         const progressEl = document.getElementById('formation-progress');
         
         if (droneCountEl && progressEl) {
-            // Add subtle animation to stats (update for smaller drone count)
-            const currentCount = parseInt(droneCountEl.textContent.replace(/,/g, ''));
-            if (currentCount < 800) {
-                droneCountEl.textContent = Math.min(800, currentCount + 25).toLocaleString();
+            // Add subtle animation to stats for scanning drones
+            const currentCount = parseInt(droneCountEl.textContent);
+            if (currentCount < 12) {
+                droneCountEl.textContent = Math.min(12, currentCount + 1).toString();
             }
         }
-    }, 100);
+    }, 200);
 }
 
 // Robotic Arm Blueprint System

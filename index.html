@@ -136,20 +136,34 @@
                 <div class="drone-swarm-container">
                     <canvas id="drone-swarm-canvas"></canvas>
                     <div class="swarm-overlay">
-                        <div class="simulation-label">SWARM PATHFINDING</div>
+                        <div class="simulation-label">3D RECONSTRUCTION</div>
                         <div class="swarm-stats">
                             <div class="stat-item">
                                 <span class="stat-value" id="drone-count">0</span>
-                                <span class="stat-label">ACTIVE AGENTS</span>
+                                <span class="stat-label">ACTIVE UAVs</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-value" id="formation-progress">ANALYZING</span>
+                                <span class="stat-value" id="formation-progress">SCANNING</span>
                                 <span class="stat-label">STATUS</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-value" id="solution-time">0.00s</span>
-                                <span class="stat-label">SOLVE TIME</span>
+                                <span class="stat-value" id="solution-time">0.0%</span>
+                                <span class="stat-label">COMPLETENESS</span>
                             </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="point-cloud-count">0</span>
+                                <span class="stat-label">POINT CLOUD</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sensor-fusion-overlay">
+                        <div class="filter-visualization">
+                            <div class="filter-label">KALMAN FILTER</div>
+                            <div class="filter-equation">x̂ₖ = Fₖx̂ₖ₋₁ + Kₖ(zₖ - Hₖx̂ₖ₋₁)</div>
+                        </div>
+                        <div class="reconstruction-graph">
+                            <canvas id="error-graph-canvas" width="120" height="60"></canvas>
+                            <div class="graph-label">Reconstruction Error</div>
                         </div>
                     </div>
                     <div class="depth-field-overlay"></div>
