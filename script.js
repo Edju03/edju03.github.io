@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeApp() {
     // Initialize all components
     initializeParticles();
+    initializeDroneSwarm();
     initializeNavigation();
     initializeHero();
     initializeAnimations();
@@ -135,6 +136,238 @@ function animateParticles() {
     });
     
     requestAnimationFrame(animateParticles);
+}
+
+// Drone Swarm System
+let droneSwarmCanvas, droneSwarmCtx;
+let drones = [];
+let hypercubeVertices = [];
+let formationProgress = 0;
+let targetFormation = 'hypercube';
+let animationTime = 0;
+
+function initializeDroneSwarm() {
+    droneSwarmCanvas = document.getElementById('drone-swarm-canvas');
+    if (!droneSwarmCanvas) return;
+    
+    droneSwarmCtx = droneSwarmCanvas.getContext('2d');
+    
+    // Set canvas size
+    resizeDroneCanvas();
+    window.addEventListener('resize', resizeDroneCanvas);
+    
+    // Create hypercube vertices (4D projected to 2D)
+    createHypercubeVertices();
+    
+    // Create micro-drones
+    createDroneSwarm();
+    
+    // Start animation loop
+    animateDroneSwarm();
+    
+    // Update stats display
+    updateSwarmStats();
+}
+
+function resizeDroneCanvas() {
+    if (!droneSwarmCanvas) return;
+    
+    const container = droneSwarmCanvas.parentElement;
+    droneSwarmCanvas.width = container.offsetWidth;
+    droneSwarmCanvas.height = container.offsetHeight;
+}
+
+function createHypercubeVertices() {
+    hypercubeVertices = [];
+    const centerX = 250;
+    const centerY = 250;
+    const scale = 80;
+    
+    // 4D hypercube vertices projected to 2D
+    // Using a simplified projection for visual effect
+    const vertices4D = [
+        [-1, -1, -1, -1], [1, -1, -1, -1], [-1, 1, -1, -1], [1, 1, -1, -1],
+        [-1, -1, 1, -1], [1, -1, 1, -1], [-1, 1, 1, -1], [1, 1, 1, -1],
+        [-1, -1, -1, 1], [1, -1, -1, 1], [-1, 1, -1, 1], [1, 1, -1, 1],
+        [-1, -1, 1, 1], [1, -1, 1, 1], [-1, 1, 1, 1], [1, 1, 1, 1]
+    ];
+    
+    vertices4D.forEach((vertex, i) => {
+        // Project 4D to 2D with rotation and perspective
+        const time = Date.now() * 0.001;
+        const rotX = Math.cos(time * 0.3) * vertex[0] - Math.sin(time * 0.3) * vertex[3];
+        const rotY = vertex[1];
+        const rotZ = Math.cos(time * 0.2) * vertex[2] - Math.sin(time * 0.2) * vertex[3];
+        
+        hypercubeVertices.push({
+            x: centerX + rotX * scale,
+            y: centerY + rotY * scale,
+            z: rotZ * scale,
+            originalIndex: i
+        });
+    });
+}
+
+function createDroneSwarm() {
+    const droneCount = 2000; // Thousands of micro-drones
+    
+    for (let i = 0; i < droneCount; i++) {
+        drones.push({
+            x: Math.random() * 500,
+            y: Math.random() * 500,
+            z: Math.random() * 200 - 100,
+            targetX: 0,
+            targetY: 0,
+            targetZ: 0,
+            vx: 0,
+            vy: 0,
+            vz: 0,
+            size: Math.random() * 1.5 + 0.5,
+            brightness: Math.random() * 0.5 + 0.5,
+            trailX: [],
+            trailY: [],
+            targetVertex: i % hypercubeVertices.length,
+            formationDelay: Math.random() * 1000
+        });
+    }
+    
+    // Update drone count display
+    document.getElementById('drone-count').textContent = droneCount.toLocaleString();
+}
+
+function animateDroneSwarm() {
+    if (!droneSwarmCtx) return;
+    
+    animationTime += 16; // ~60fps
+    
+    // Clear canvas with trail effect
+    droneSwarmCtx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+    droneSwarmCtx.fillRect(0, 0, droneSwarmCanvas.width, droneSwarmCanvas.height);
+    
+    // Update hypercube vertices rotation
+    createHypercubeVertices();
+    
+    // Calculate formation progress
+    formationProgress = Math.min(100, (animationTime - 2000) / 50);
+    if (formationProgress < 0) formationProgress = 0;
+    
+    // Update formation progress display
+    document.getElementById('formation-progress').textContent = Math.floor(formationProgress) + '%';
+    
+    // Animate drones
+    drones.forEach((drone, index) => {
+        if (animationTime > drone.formationDelay) {
+            // Calculate target position (hypercube vertex with some variation)
+            const targetVertex = hypercubeVertices[drone.targetVertex];
+            const variation = 20;
+            
+            drone.targetX = targetVertex.x + (Math.sin(animationTime * 0.001 + index) * variation);
+            drone.targetY = targetVertex.y + (Math.cos(animationTime * 0.001 + index) * variation);
+            drone.targetZ = targetVertex.z + (Math.sin(animationTime * 0.002 + index) * variation);
+            
+            // Apply flocking behavior and formation attraction
+            const formationStrength = formationProgress / 100;
+            
+            // Move towards target position
+            drone.vx += (drone.targetX - drone.x) * 0.02 * formationStrength;
+            drone.vy += (drone.targetY - drone.y) * 0.02 * formationStrength;
+            drone.vz += (drone.targetZ - drone.z) * 0.01 * formationStrength;
+            
+            // Add some random movement for organic feel
+            drone.vx += (Math.random() - 0.5) * 0.5 * (1 - formationStrength);
+            drone.vy += (Math.random() - 0.5) * 0.5 * (1 - formationStrength);
+            drone.vz += (Math.random() - 0.5) * 0.3 * (1 - formationStrength);
+            
+            // Apply velocity damping
+            drone.vx *= 0.95;
+            drone.vy *= 0.95;
+            drone.vz *= 0.95;
+            
+            // Update position
+            drone.x += drone.vx;
+            drone.y += drone.vy;
+            drone.z += drone.vz;
+            
+            // Store trail
+            drone.trailX.push(drone.x);
+            drone.trailY.push(drone.y);
+            if (drone.trailX.length > 5) {
+                drone.trailX.shift();
+                drone.trailY.shift();
+            }
+        }
+        
+        // Draw drone trail
+        if (drone.trailX.length > 1) {
+            droneSwarmCtx.beginPath();
+            droneSwarmCtx.moveTo(drone.trailX[0], drone.trailY[0]);
+            for (let i = 1; i < drone.trailX.length; i++) {
+                droneSwarmCtx.lineTo(drone.trailX[i], drone.trailY[i]);
+            }
+            droneSwarmCtx.strokeStyle = `rgba(0, 212, 255, ${0.2 * drone.brightness})`;
+            droneSwarmCtx.lineWidth = 0.5;
+            droneSwarmCtx.stroke();
+        }
+        
+        // Draw drone
+        const size = drone.size * (1 + drone.z * 0.002); // Perspective scaling
+        const alpha = drone.brightness * (0.8 + 0.2 * Math.sin(animationTime * 0.01 + index));
+        
+        droneSwarmCtx.beginPath();
+        droneSwarmCtx.arc(drone.x, drone.y, size, 0, Math.PI * 2);
+        droneSwarmCtx.fillStyle = `rgba(0, 212, 255, ${alpha})`;
+        droneSwarmCtx.fill();
+        
+        // Add glow effect
+        droneSwarmCtx.shadowColor = '#00d4ff';
+        droneSwarmCtx.shadowBlur = 5;
+        droneSwarmCtx.fill();
+        droneSwarmCtx.shadowBlur = 0;
+    });
+    
+    // Draw connections between nearby drones (hypercube edges)
+    if (formationProgress > 50) {
+        drawHypercubeConnections();
+    }
+    
+    requestAnimationFrame(animateDroneSwarm);
+}
+
+function drawHypercubeConnections() {
+    // Draw edges of the hypercube
+    const edges = [
+        [0,1], [2,3], [4,5], [6,7], [8,9], [10,11], [12,13], [14,15], // edges of cubes
+        [0,2], [1,3], [4,6], [5,7], [8,10], [9,11], [12,14], [13,15],
+        [0,4], [1,5], [2,6], [3,7], [8,12], [9,13], [10,14], [11,15],
+        [0,8], [1,9], [2,10], [3,11], [4,12], [5,13], [6,14], [7,15] // 4D connections
+    ];
+    
+    edges.forEach(edge => {
+        const v1 = hypercubeVertices[edge[0]];
+        const v2 = hypercubeVertices[edge[1]];
+        
+        droneSwarmCtx.beginPath();
+        droneSwarmCtx.moveTo(v1.x, v1.y);
+        droneSwarmCtx.lineTo(v2.x, v2.y);
+        droneSwarmCtx.strokeStyle = `rgba(0, 212, 255, ${0.3 * (formationProgress - 50) / 50})`;
+        droneSwarmCtx.lineWidth = 1;
+        droneSwarmCtx.stroke();
+    });
+}
+
+function updateSwarmStats() {
+    setInterval(() => {
+        const droneCountEl = document.getElementById('drone-count');
+        const progressEl = document.getElementById('formation-progress');
+        
+        if (droneCountEl && progressEl) {
+            // Add subtle animation to stats
+            const currentCount = parseInt(droneCountEl.textContent.replace(/,/g, ''));
+            if (currentCount < 2000) {
+                droneCountEl.textContent = Math.min(2000, currentCount + 50).toLocaleString();
+            }
+        }
+    }, 100);
 }
 
 // Navigation

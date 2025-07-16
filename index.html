@@ -107,25 +107,28 @@
             </div>
             
             <div class="hero-visual">
-                <div class="robot-container">
-                    <div class="robot-avatar">
-                        <div class="robot-head">
-                            <div class="robot-eyes">
-                                <div class="eye left"></div>
-                                <div class="eye right"></div>
+                <div class="drone-swarm-container">
+                    <canvas id="drone-swarm-canvas"></canvas>
+                    <div class="swarm-overlay">
+                        <div class="hypercube-label">4D HYPERCUBE FORMATION</div>
+                        <div class="swarm-stats">
+                            <div class="stat-item">
+                                <span class="stat-value" id="drone-count">0</span>
+                                <span class="stat-label">MICRO-DRONES</span>
                             </div>
-                            <div class="robot-mouth"></div>
-                        </div>
-                        <div class="robot-body">
-                            <div class="chest-panel"></div>
-                            <div class="status-lights">
-                                <div class="light active"></div>
-                                <div class="light"></div>
-                                <div class="light"></div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="formation-progress">0%</span>
+                                <span class="stat-label">FORMATION</span>
                             </div>
                         </div>
                     </div>
-                    <div class="hologram-ring"></div>
+                    <div class="depth-field-overlay"></div>
+                    <div class="tech-elements">
+                        <div class="tech-element tech-1"></div>
+                        <div class="tech-element tech-2"></div>
+                        <div class="tech-element tech-3"></div>
+                        <div class="tech-element tech-4"></div>
+                    </div>
                 </div>
             </div>
         </div>
