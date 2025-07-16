@@ -76,6 +76,15 @@
     <section id="home" class="hero">
         <div class="hero-background">
             <div class="tech-grid"></div>
+            <div class="robotic-arm-blueprint">
+                <canvas id="robotic-arm-canvas"></canvas>
+                <div class="kinematic-overlay">
+                    <div class="equation-float eq-1">θ₁ = 45°</div>
+                    <div class="equation-float eq-2">L₁ = 120mm</div>
+                    <div class="equation-float eq-3">v = 2.3 m/s</div>
+                    <div class="equation-float eq-4">τ = 15.7 Nm</div>
+                </div>
+            </div>
             <div class="floating-elements">
                 <div class="floating-element" data-speed="2"></div>
                 <div class="floating-element" data-speed="3"></div>
@@ -110,15 +119,19 @@
                 <div class="drone-swarm-container">
                     <canvas id="drone-swarm-canvas"></canvas>
                     <div class="swarm-overlay">
-                        <div class="hypercube-label">4D HYPERCUBE FORMATION</div>
+                        <div class="simulation-label">SWARM PATHFINDING</div>
                         <div class="swarm-stats">
                             <div class="stat-item">
                                 <span class="stat-value" id="drone-count">0</span>
-                                <span class="stat-label">MICRO-DRONES</span>
+                                <span class="stat-label">ACTIVE AGENTS</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-value" id="formation-progress">0%</span>
-                                <span class="stat-label">FORMATION</span>
+                                <span class="stat-value" id="formation-progress">ANALYZING</span>
+                                <span class="stat-label">STATUS</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="solution-time">0.00s</span>
+                                <span class="stat-label">SOLVE TIME</span>
                             </div>
                         </div>
                     </div>

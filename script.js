@@ -15,6 +15,7 @@ function initializeApp() {
     // Initialize all components
     initializeParticles();
     initializeDroneSwarm();
+    initializeRoboticArm();
     initializeNavigation();
     initializeHero();
     initializeAnimations();
@@ -138,13 +139,19 @@ function animateParticles() {
     requestAnimationFrame(animateParticles);
 }
 
-// Drone Swarm System
+// Pathfinding Swarm System
 let droneSwarmCanvas, droneSwarmCtx;
 let drones = [];
-let hypercubeVertices = [];
-let formationProgress = 0;
-let targetFormation = 'hypercube';
+let maze = [];
+let mazeWidth = 25;
+let mazeHeight = 20;
+let cellSize = 20;
+let startPoint = {x: 1, y: 1};
+let endPoint = {x: 23, y: 18};
+let solutionPath = [];
 let animationTime = 0;
+let simulationStartTime = 0;
+let pathFound = false;
 
 function initializeDroneSwarm() {
     droneSwarmCanvas = document.getElementById('drone-swarm-canvas');
@@ -156,17 +163,19 @@ function initializeDroneSwarm() {
     resizeDroneCanvas();
     window.addEventListener('resize', resizeDroneCanvas);
     
-    // Create hypercube vertices (4D projected to 2D)
-    createHypercubeVertices();
+    // Generate complex maze
+    generateMaze();
     
-    // Create micro-drones
-    createDroneSwarm();
+    // Create micro-drones for pathfinding
+    createPathfindingSwarm();
     
     // Start animation loop
-    animateDroneSwarm();
+    animatePathfindingSwarm();
     
     // Update stats display
     updateSwarmStats();
+    
+    simulationStartTime = Date.now();
 }
 
 function resizeDroneCanvas() {
@@ -177,57 +186,81 @@ function resizeDroneCanvas() {
     droneSwarmCanvas.height = container.offsetHeight;
 }
 
-function createHypercubeVertices() {
-    hypercubeVertices = [];
-    const centerX = 250;
-    const centerY = 250;
-    const scale = 80;
+function generateMaze() {
+    // Initialize maze with walls
+    maze = [];
+    for (let y = 0; y < mazeHeight; y++) {
+        maze[y] = [];
+        for (let x = 0; x < mazeWidth; x++) {
+            maze[y][x] = 1; // 1 = wall, 0 = path
+        }
+    }
     
-    // 4D hypercube vertices projected to 2D
-    // Using a simplified projection for visual effect
-    const vertices4D = [
-        [-1, -1, -1, -1], [1, -1, -1, -1], [-1, 1, -1, -1], [1, 1, -1, -1],
-        [-1, -1, 1, -1], [1, -1, 1, -1], [-1, 1, 1, -1], [1, 1, 1, -1],
-        [-1, -1, -1, 1], [1, -1, -1, 1], [-1, 1, -1, 1], [1, 1, -1, 1],
-        [-1, -1, 1, 1], [1, -1, 1, 1], [-1, 1, 1, 1], [1, 1, 1, 1]
-    ];
-    
-    vertices4D.forEach((vertex, i) => {
-        // Project 4D to 2D with rotation and perspective
-        const time = Date.now() * 0.001;
-        const rotX = Math.cos(time * 0.3) * vertex[0] - Math.sin(time * 0.3) * vertex[3];
-        const rotY = vertex[1];
-        const rotZ = Math.cos(time * 0.2) * vertex[2] - Math.sin(time * 0.2) * vertex[3];
+    // Recursive backtracking maze generation
+    function carvePath(x, y) {
+        maze[y][x] = 0;
         
-        hypercubeVertices.push({
-            x: centerX + rotX * scale,
-            y: centerY + rotY * scale,
-            z: rotZ * scale,
-            originalIndex: i
-        });
-    });
+        const directions = [
+            [0, -2], [2, 0], [0, 2], [-2, 0]
+        ].sort(() => Math.random() - 0.5);
+        
+        for (let [dx, dy] of directions) {
+            const nx = x + dx;
+            const ny = y + dy;
+            
+            if (nx > 0 && nx < mazeWidth - 1 && ny > 0 && ny < mazeHeight - 1 && maze[ny][nx] === 1) {
+                maze[y + dy/2][x + dx/2] = 0;
+                carvePath(nx, ny);
+            }
+        }
+    }
+    
+    carvePath(startPoint.x, startPoint.y);
+    
+    // Ensure start and end are paths
+    maze[startPoint.y][startPoint.x] = 0;
+    maze[endPoint.y][endPoint.x] = 0;
+    
+    // Add some additional paths for complexity
+    for (let i = 0; i < 15; i++) {
+        const x = Math.floor(Math.random() * (mazeWidth - 2)) + 1;
+        const y = Math.floor(Math.random() * (mazeHeight - 2)) + 1;
+        if (Math.random() < 0.3) maze[y][x] = 0;
+    }
 }
 
-function createDroneSwarm() {
-    const droneCount = 2000; // Thousands of micro-drones
+function createPathfindingSwarm() {
+    const droneCount = 800; // Swarm agents for pathfinding
+    
+    // A* pathfinding algorithm to find solution
+    solutionPath = findPath(startPoint, endPoint);
     
     for (let i = 0; i < droneCount; i++) {
+        // Start drones at random valid positions
+        let startX, startY;
+        do {
+            startX = Math.floor(Math.random() * mazeWidth);
+            startY = Math.floor(Math.random() * mazeHeight);
+        } while (maze[startY][startX] === 1);
+        
         drones.push({
-            x: Math.random() * 500,
-            y: Math.random() * 500,
-            z: Math.random() * 200 - 100,
-            targetX: 0,
-            targetY: 0,
-            targetZ: 0,
+            mazeX: startX,
+            mazeY: startY,
+            x: startX * cellSize + cellSize/2 + 50,
+            y: startY * cellSize + cellSize/2 + 50,
+            targetX: endPoint.x * cellSize + cellSize/2 + 50,
+            targetY: endPoint.y * cellSize + cellSize/2 + 50,
             vx: 0,
             vy: 0,
-            vz: 0,
-            size: Math.random() * 1.5 + 0.5,
-            brightness: Math.random() * 0.5 + 0.5,
+            size: Math.random() * 1.2 + 0.8,
+            brightness: Math.random() * 0.4 + 0.6,
             trailX: [],
             trailY: [],
-            targetVertex: i % hypercubeVertices.length,
-            formationDelay: Math.random() * 1000
+            explorationRadius: Math.random() * 3 + 2,
+            pathfindingState: 'exploring', // exploring, following, arrived
+            foundPath: false,
+            pathIndex: 0,
+            lastMove: Date.now()
         });
     }
     
@@ -235,124 +268,291 @@ function createDroneSwarm() {
     document.getElementById('drone-count').textContent = droneCount.toLocaleString();
 }
 
-function animateDroneSwarm() {
+function findPath(start, end) {
+    // A* pathfinding implementation
+    const openList = [{x: start.x, y: start.y, f: 0, g: 0, h: 0, parent: null}];
+    const closedList = [];
+    
+    while (openList.length > 0) {
+        let current = openList[0];
+        let currentIndex = 0;
+        
+        for (let i = 1; i < openList.length; i++) {
+            if (openList[i].f < current.f) {
+                current = openList[i];
+                currentIndex = i;
+            }
+        }
+        
+        openList.splice(currentIndex, 1);
+        closedList.push(current);
+        
+        if (current.x === end.x && current.y === end.y) {
+            const path = [];
+            let curr = current;
+            while (curr) {
+                path.unshift({x: curr.x, y: curr.y});
+                curr = curr.parent;
+            }
+            return path;
+        }
+        
+        const neighbors = [
+            {x: current.x + 1, y: current.y},
+            {x: current.x - 1, y: current.y},
+            {x: current.x, y: current.y + 1},
+            {x: current.x, y: current.y - 1}
+        ];
+        
+        for (let neighbor of neighbors) {
+            if (neighbor.x < 0 || neighbor.x >= mazeWidth || 
+                neighbor.y < 0 || neighbor.y >= mazeHeight ||
+                maze[neighbor.y][neighbor.x] === 1) continue;
+            
+            if (closedList.some(node => node.x === neighbor.x && node.y === neighbor.y)) continue;
+            
+            const g = current.g + 1;
+            const h = Math.abs(neighbor.x - end.x) + Math.abs(neighbor.y - end.y);
+            const f = g + h;
+            
+            const existing = openList.find(node => node.x === neighbor.x && node.y === neighbor.y);
+            if (!existing) {
+                openList.push({...neighbor, f, g, h, parent: current});
+            } else if (g < existing.g) {
+                existing.g = g;
+                existing.f = f;
+                existing.parent = current;
+            }
+        }
+    }
+    
+    return []; // No path found
+}
+
+function animatePathfindingSwarm() {
     if (!droneSwarmCtx) return;
     
     animationTime += 16; // ~60fps
     
     // Clear canvas with trail effect
-    droneSwarmCtx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+    droneSwarmCtx.fillStyle = 'rgba(10, 10, 10, 0.15)';
     droneSwarmCtx.fillRect(0, 0, droneSwarmCanvas.width, droneSwarmCanvas.height);
     
-    // Update hypercube vertices rotation
-    createHypercubeVertices();
+    // Draw maze structure
+    drawMaze();
     
-    // Calculate formation progress
-    formationProgress = Math.min(100, (animationTime - 2000) / 50);
-    if (formationProgress < 0) formationProgress = 0;
+    // Update simulation time
+    const elapsedTime = (Date.now() - simulationStartTime) / 1000;
+    document.getElementById('solution-time').textContent = elapsedTime.toFixed(2) + 's';
     
-    // Update formation progress display
-    document.getElementById('formation-progress').textContent = Math.floor(formationProgress) + '%';
+    // Check if solution is converged
+    const arrivedDrones = drones.filter(d => d.pathfindingState === 'arrived').length;
+    const progressPercent = Math.floor((arrivedDrones / drones.length) * 100);
     
-    // Animate drones
+    if (!pathFound && progressPercent > 15) {
+        pathFound = true;
+        document.getElementById('formation-progress').textContent = 'SOLUTION CONVERGED';
+    } else if (!pathFound) {
+        document.getElementById('formation-progress').textContent = 'ANALYZING';
+    }
+    
+    // Animate pathfinding drones
     drones.forEach((drone, index) => {
-        if (animationTime > drone.formationDelay) {
-            // Calculate target position (hypercube vertex with some variation)
-            const targetVertex = hypercubeVertices[drone.targetVertex];
-            const variation = 20;
+        // Pathfinding behavior
+        if (drone.pathfindingState === 'exploring') {
+            // Random exploration with bias toward target
+            const targetAngle = Math.atan2(drone.targetY - drone.y, drone.targetX - drone.x);
+            const explorationAngle = targetAngle + (Math.random() - 0.5) * Math.PI;
             
-            drone.targetX = targetVertex.x + (Math.sin(animationTime * 0.001 + index) * variation);
-            drone.targetY = targetVertex.y + (Math.cos(animationTime * 0.001 + index) * variation);
-            drone.targetZ = targetVertex.z + (Math.sin(animationTime * 0.002 + index) * variation);
+            drone.vx += Math.cos(explorationAngle) * 0.3;
+            drone.vy += Math.sin(explorationAngle) * 0.3;
             
-            // Apply flocking behavior and formation attraction
-            const formationStrength = formationProgress / 100;
+            // Check if close to solution path
+            if (solutionPath.length > 0) {
+                for (let pathPoint of solutionPath) {
+                    const pathX = pathPoint.x * cellSize + cellSize/2 + 50;
+                    const pathY = pathPoint.y * cellSize + cellSize/2 + 50;
+                    const dist = Math.sqrt((drone.x - pathX) ** 2 + (drone.y - pathY) ** 2);
+                    
+                    if (dist < 30 && Math.random() < 0.1) {
+                        drone.pathfindingState = 'following';
+                        drone.foundPath = true;
+                        break;
+                    }
+                }
+            }
+        } else if (drone.pathfindingState === 'following' && solutionPath.length > 0) {
+            // Follow the solution path
+            const targetIndex = Math.min(drone.pathIndex, solutionPath.length - 1);
+            const pathPoint = solutionPath[targetIndex];
+            const pathX = pathPoint.x * cellSize + cellSize/2 + 50;
+            const pathY = pathPoint.y * cellSize + cellSize/2 + 50;
             
-            // Move towards target position
-            drone.vx += (drone.targetX - drone.x) * 0.02 * formationStrength;
-            drone.vy += (drone.targetY - drone.y) * 0.02 * formationStrength;
-            drone.vz += (drone.targetZ - drone.z) * 0.01 * formationStrength;
+            drone.vx += (pathX - drone.x) * 0.08;
+            drone.vy += (pathY - drone.y) * 0.08;
             
-            // Add some random movement for organic feel
-            drone.vx += (Math.random() - 0.5) * 0.5 * (1 - formationStrength);
-            drone.vy += (Math.random() - 0.5) * 0.5 * (1 - formationStrength);
-            drone.vz += (Math.random() - 0.5) * 0.3 * (1 - formationStrength);
-            
-            // Apply velocity damping
-            drone.vx *= 0.95;
-            drone.vy *= 0.95;
-            drone.vz *= 0.95;
-            
-            // Update position
-            drone.x += drone.vx;
-            drone.y += drone.vy;
-            drone.z += drone.vz;
-            
-            // Store trail
-            drone.trailX.push(drone.x);
-            drone.trailY.push(drone.y);
-            if (drone.trailX.length > 5) {
-                drone.trailX.shift();
-                drone.trailY.shift();
+            const dist = Math.sqrt((drone.x - pathX) ** 2 + (drone.y - pathY) ** 2);
+            if (dist < 15 && drone.pathIndex < solutionPath.length - 1) {
+                drone.pathIndex++;
+            } else if (drone.pathIndex >= solutionPath.length - 1 && dist < 20) {
+                drone.pathfindingState = 'arrived';
             }
         }
         
-        // Draw drone trail
+        // Apply velocity damping and constraints
+        drone.vx *= 0.92;
+        drone.vy *= 0.92;
+        
+        // Update position
+        drone.x += drone.vx;
+        drone.y += drone.vy;
+        
+        // Boundary constraints (keep in maze area)
+        drone.x = Math.max(50, Math.min(drone.x, mazeWidth * cellSize + 50));
+        drone.y = Math.max(50, Math.min(drone.y, mazeHeight * cellSize + 50));
+        
+        // Wall collision detection and avoidance
+        const mazeX = Math.floor((drone.x - 50) / cellSize);
+        const mazeY = Math.floor((drone.y - 50) / cellSize);
+        
+        if (mazeX >= 0 && mazeX < mazeWidth && mazeY >= 0 && mazeY < mazeHeight) {
+            if (maze[mazeY][mazeX] === 1) {
+                drone.vx *= -0.5;
+                drone.vy *= -0.5;
+                drone.x += drone.vx * 2;
+                drone.y += drone.vy * 2;
+            }
+        }
+        
+        // Store trail
+        drone.trailX.push(drone.x);
+        drone.trailY.push(drone.y);
+        if (drone.trailX.length > 8) {
+            drone.trailX.shift();
+            drone.trailY.shift();
+        }
+        
+        // Draw drone trail with different colors based on state
         if (drone.trailX.length > 1) {
             droneSwarmCtx.beginPath();
             droneSwarmCtx.moveTo(drone.trailX[0], drone.trailY[0]);
             for (let i = 1; i < drone.trailX.length; i++) {
                 droneSwarmCtx.lineTo(drone.trailX[i], drone.trailY[i]);
             }
-            droneSwarmCtx.strokeStyle = `rgba(0, 212, 255, ${0.2 * drone.brightness})`;
-            droneSwarmCtx.lineWidth = 0.5;
+            
+            let trailColor = '0, 212, 255'; // cyan for exploring
+            if (drone.pathfindingState === 'following') trailColor = '0, 255, 136'; // green for following
+            if (drone.pathfindingState === 'arrived') trailColor = '255, 107, 53'; // orange for arrived
+            
+            droneSwarmCtx.strokeStyle = `rgba(${trailColor}, ${0.4 * drone.brightness})`;
+            droneSwarmCtx.lineWidth = 0.8;
             droneSwarmCtx.stroke();
         }
         
-        // Draw drone
-        const size = drone.size * (1 + drone.z * 0.002); // Perspective scaling
-        const alpha = drone.brightness * (0.8 + 0.2 * Math.sin(animationTime * 0.01 + index));
+        // Draw drone with state-based coloring
+        let droneColor = '0, 212, 255'; // cyan for exploring
+        let glowIntensity = 0.6;
+        
+        if (drone.pathfindingState === 'following') {
+            droneColor = '0, 255, 136'; // green for following path
+            glowIntensity = 0.8;
+        } else if (drone.pathfindingState === 'arrived') {
+            droneColor = '255, 107, 53'; // orange for arrived
+            glowIntensity = 1.0;
+        }
+        
+        const alpha = drone.brightness * (0.7 + 0.3 * Math.sin(animationTime * 0.008 + index));
         
         droneSwarmCtx.beginPath();
-        droneSwarmCtx.arc(drone.x, drone.y, size, 0, Math.PI * 2);
-        droneSwarmCtx.fillStyle = `rgba(0, 212, 255, ${alpha})`;
+        droneSwarmCtx.arc(drone.x, drone.y, drone.size, 0, Math.PI * 2);
+        droneSwarmCtx.fillStyle = `rgba(${droneColor}, ${alpha})`;
         droneSwarmCtx.fill();
         
         // Add glow effect
-        droneSwarmCtx.shadowColor = '#00d4ff';
-        droneSwarmCtx.shadowBlur = 5;
+        droneSwarmCtx.shadowColor = `rgb(${droneColor})`;
+        droneSwarmCtx.shadowBlur = 4 * glowIntensity;
         droneSwarmCtx.fill();
         droneSwarmCtx.shadowBlur = 0;
     });
     
-    // Draw connections between nearby drones (hypercube edges)
-    if (formationProgress > 50) {
-        drawHypercubeConnections();
+    // Draw solution path if found
+    if (pathFound && solutionPath.length > 1) {
+        drawSolutionPath();
     }
     
-    requestAnimationFrame(animateDroneSwarm);
+    requestAnimationFrame(animatePathfindingSwarm);
 }
 
-function drawHypercubeConnections() {
-    // Draw edges of the hypercube
-    const edges = [
-        [0,1], [2,3], [4,5], [6,7], [8,9], [10,11], [12,13], [14,15], // edges of cubes
-        [0,2], [1,3], [4,6], [5,7], [8,10], [9,11], [12,14], [13,15],
-        [0,4], [1,5], [2,6], [3,7], [8,12], [9,13], [10,14], [11,15],
-        [0,8], [1,9], [2,10], [3,11], [4,12], [5,13], [6,14], [7,15] // 4D connections
-    ];
+function drawMaze() {
+    // Draw maze structure as wireframe
+    droneSwarmCtx.strokeStyle = 'rgba(0, 212, 255, 0.15)';
+    droneSwarmCtx.lineWidth = 1;
     
-    edges.forEach(edge => {
-        const v1 = hypercubeVertices[edge[0]];
-        const v2 = hypercubeVertices[edge[1]];
+    for (let y = 0; y < mazeHeight; y++) {
+        for (let x = 0; x < mazeWidth; x++) {
+            if (maze[y][x] === 1) { // Wall
+                const posX = x * cellSize + 50;
+                const posY = y * cellSize + 50;
+                
+                droneSwarmCtx.strokeRect(posX, posY, cellSize, cellSize);
+            }
+        }
+    }
+    
+    // Draw start and end points with special highlighting
+    droneSwarmCtx.fillStyle = 'rgba(0, 255, 136, 0.6)';
+    droneSwarmCtx.fillRect(
+        startPoint.x * cellSize + 50 + 2, 
+        startPoint.y * cellSize + 50 + 2, 
+        cellSize - 4, cellSize - 4
+    );
+    
+    droneSwarmCtx.fillStyle = 'rgba(255, 107, 53, 0.6)';
+    droneSwarmCtx.fillRect(
+        endPoint.x * cellSize + 50 + 2, 
+        endPoint.y * cellSize + 50 + 2, 
+        cellSize - 4, cellSize - 4
+    );
+}
+
+function drawSolutionPath() {
+    if (solutionPath.length < 2) return;
+    
+    // Draw the optimal path with glowing effect
+    droneSwarmCtx.strokeStyle = 'rgba(255, 107, 53, 0.8)';
+    droneSwarmCtx.lineWidth = 3;
+    droneSwarmCtx.lineCap = 'round';
+    droneSwarmCtx.lineJoin = 'round';
+    
+    droneSwarmCtx.beginPath();
+    for (let i = 0; i < solutionPath.length; i++) {
+        const point = solutionPath[i];
+        const x = point.x * cellSize + cellSize/2 + 50;
+        const y = point.y * cellSize + cellSize/2 + 50;
+        
+        if (i === 0) {
+            droneSwarmCtx.moveTo(x, y);
+        } else {
+            droneSwarmCtx.lineTo(x, y);
+        }
+    }
+    
+    // Add glow effect to solution path
+    droneSwarmCtx.shadowColor = '#ff6b35';
+    droneSwarmCtx.shadowBlur = 8;
+    droneSwarmCtx.stroke();
+    droneSwarmCtx.shadowBlur = 0;
+    
+    // Draw path nodes
+    droneSwarmCtx.fillStyle = 'rgba(255, 107, 53, 0.9)';
+    for (let point of solutionPath) {
+        const x = point.x * cellSize + cellSize/2 + 50;
+        const y = point.y * cellSize + cellSize/2 + 50;
         
         droneSwarmCtx.beginPath();
-        droneSwarmCtx.moveTo(v1.x, v1.y);
-        droneSwarmCtx.lineTo(v2.x, v2.y);
-        droneSwarmCtx.strokeStyle = `rgba(0, 212, 255, ${0.3 * (formationProgress - 50) / 50})`;
-        droneSwarmCtx.lineWidth = 1;
-        droneSwarmCtx.stroke();
-    });
+        droneSwarmCtx.arc(x, y, 2, 0, Math.PI * 2);
+        droneSwarmCtx.fill();
+    }
 }
 
 function updateSwarmStats() {
@@ -361,13 +561,216 @@ function updateSwarmStats() {
         const progressEl = document.getElementById('formation-progress');
         
         if (droneCountEl && progressEl) {
-            // Add subtle animation to stats
+            // Add subtle animation to stats (update for smaller drone count)
             const currentCount = parseInt(droneCountEl.textContent.replace(/,/g, ''));
-            if (currentCount < 2000) {
-                droneCountEl.textContent = Math.min(2000, currentCount + 50).toLocaleString();
+            if (currentCount < 800) {
+                droneCountEl.textContent = Math.min(800, currentCount + 25).toLocaleString();
             }
         }
     }, 100);
+}
+
+// Robotic Arm Blueprint System
+let roboticArmCanvas, roboticArmCtx;
+let armSegments = [];
+let energyOrb = { x: 0, y: 0, brightness: 1, angle: 0 };
+
+function initializeRoboticArm() {
+    roboticArmCanvas = document.getElementById('robotic-arm-canvas');
+    if (!roboticArmCanvas) return;
+    
+    roboticArmCtx = roboticArmCanvas.getContext('2d');
+    
+    // Set canvas size
+    resizeRoboticArmCanvas();
+    window.addEventListener('resize', resizeRoboticArmCanvas);
+    
+    // Create robotic arm segments
+    createRoboticArmSegments();
+    
+    // Start animation loop
+    animateRoboticArm();
+}
+
+function resizeRoboticArmCanvas() {
+    if (!roboticArmCanvas) return;
+    
+    const container = roboticArmCanvas.parentElement;
+    roboticArmCanvas.width = container.offsetWidth;
+    roboticArmCanvas.height = container.offsetHeight;
+}
+
+function createRoboticArmSegments() {
+    // Define 6-DOF robotic arm segments
+    armSegments = [
+        { length: 60, angle: 0, baseAngle: 0, speed: 0.8, x: 150, y: 350 }, // Base
+        { length: 80, angle: -30, baseAngle: -30, speed: 1.2, x: 0, y: 0 }, // Shoulder
+        { length: 70, angle: 45, baseAngle: 45, speed: 1.5, x: 0, y: 0 }, // Elbow
+        { length: 50, angle: -20, baseAngle: -20, speed: 2.0, x: 0, y: 0 }, // Wrist 1
+        { length: 30, angle: 10, baseAngle: 10, speed: 2.5, x: 0, y: 0 }, // Wrist 2
+        { length: 25, angle: 0, baseAngle: 0, speed: 3.0, x: 0, y: 0 }  // End effector
+    ];
+}
+
+function animateRoboticArm() {
+    if (!roboticArmCtx) return;
+    
+    // Clear canvas
+    roboticArmCtx.clearRect(0, 0, roboticArmCanvas.width, roboticArmCanvas.height);
+    
+    const time = Date.now() * 0.001;
+    
+    // Update arm segment angles with smooth motion
+    armSegments.forEach((segment, index) => {
+        segment.angle = segment.baseAngle + Math.sin(time * segment.speed) * 15;
+    });
+    
+    // Calculate forward kinematics
+    let currentX = armSegments[0].x;
+    let currentY = armSegments[0].y;
+    let cumulativeAngle = 0;
+    
+    for (let i = 0; i < armSegments.length; i++) {
+        const segment = armSegments[i];
+        cumulativeAngle += segment.angle * Math.PI / 180;
+        
+        const nextX = currentX + Math.cos(cumulativeAngle) * segment.length;
+        const nextY = currentY + Math.sin(cumulativeAngle) * segment.length;
+        
+        segment.x = currentX;
+        segment.y = currentY;
+        segment.endX = nextX;
+        segment.endY = nextY;
+        
+        currentX = nextX;
+        currentY = nextY;
+    }
+    
+    // Update energy orb position (end effector position)
+    const lastSegment = armSegments[armSegments.length - 1];
+    energyOrb.x = lastSegment.endX;
+    energyOrb.y = lastSegment.endY;
+    energyOrb.brightness = 0.7 + 0.3 * Math.sin(time * 4);
+    energyOrb.angle += 0.1;
+    
+    // Draw robotic arm wireframe
+    drawRoboticArmWireframe();
+    
+    // Draw kinematic data and measurement arcs
+    drawKinematicData();
+    
+    // Draw energy orb
+    drawEnergyOrb();
+    
+    requestAnimationFrame(animateRoboticArm);
+}
+
+function drawRoboticArmWireframe() {
+    roboticArmCtx.strokeStyle = 'rgba(0, 212, 255, 0.6)';
+    roboticArmCtx.lineWidth = 2;
+    roboticArmCtx.lineCap = 'round';
+    
+    // Draw arm segments
+    for (let i = 0; i < armSegments.length; i++) {
+        const segment = armSegments[i];
+        
+        roboticArmCtx.beginPath();
+        roboticArmCtx.moveTo(segment.x, segment.y);
+        roboticArmCtx.lineTo(segment.endX, segment.endY);
+        roboticArmCtx.stroke();
+        
+        // Draw joints
+        roboticArmCtx.fillStyle = 'rgba(0, 212, 255, 0.8)';
+        roboticArmCtx.beginPath();
+        roboticArmCtx.arc(segment.x, segment.y, 4, 0, Math.PI * 2);
+        roboticArmCtx.fill();
+        
+        // Draw joint frame (coordinate system)
+        if (i < 3) { // Only show for main joints
+            const angle = armSegments.slice(0, i + 1).reduce((sum, seg) => sum + seg.angle, 0) * Math.PI / 180;
+            drawCoordinateFrame(segment.x, segment.y, angle, 15);
+        }
+    }
+    
+    // Draw base platform
+    roboticArmCtx.strokeStyle = 'rgba(0, 212, 255, 0.4)';
+    roboticArmCtx.beginPath();
+    roboticArmCtx.arc(armSegments[0].x, armSegments[0].y, 20, 0, Math.PI * 2);
+    roboticArmCtx.stroke();
+}
+
+function drawCoordinateFrame(x, y, angle, size) {
+    roboticArmCtx.lineWidth = 1.5;
+    
+    // X-axis (red)
+    roboticArmCtx.strokeStyle = 'rgba(255, 107, 53, 0.7)';
+    roboticArmCtx.beginPath();
+    roboticArmCtx.moveTo(x, y);
+    roboticArmCtx.lineTo(x + Math.cos(angle) * size, y + Math.sin(angle) * size);
+    roboticArmCtx.stroke();
+    
+    // Y-axis (green)
+    roboticArmCtx.strokeStyle = 'rgba(0, 255, 136, 0.7)';
+    roboticArmCtx.beginPath();
+    roboticArmCtx.moveTo(x, y);
+    roboticArmCtx.lineTo(x + Math.cos(angle + Math.PI/2) * size, y + Math.sin(angle + Math.PI/2) * size);
+    roboticArmCtx.stroke();
+}
+
+function drawKinematicData() {
+    // Draw measurement arcs at key joints
+    armSegments.forEach((segment, index) => {
+        if (index < 3) { // Main joints only
+            const startAngle = index === 0 ? 0 : armSegments.slice(0, index).reduce((sum, seg) => sum + seg.angle, 0) * Math.PI / 180;
+            const endAngle = startAngle + segment.angle * Math.PI / 180;
+            
+            roboticArmCtx.strokeStyle = 'rgba(255, 107, 53, 0.5)';
+            roboticArmCtx.lineWidth = 1;
+            roboticArmCtx.beginPath();
+            roboticArmCtx.arc(segment.x, segment.y, 25 + index * 5, startAngle, endAngle);
+            roboticArmCtx.stroke();
+            
+            // Add angle text
+            const midAngle = (startAngle + endAngle) / 2;
+            const textX = segment.x + Math.cos(midAngle) * (30 + index * 5);
+            const textY = segment.y + Math.sin(midAngle) * (30 + index * 5);
+            
+            roboticArmCtx.fillStyle = 'rgba(0, 212, 255, 0.8)';
+            roboticArmCtx.font = '10px Orbitron';
+            roboticArmCtx.textAlign = 'center';
+            roboticArmCtx.fillText(`${segment.angle.toFixed(1)}°`, textX, textY);
+        }
+    });
+}
+
+function drawEnergyOrb() {
+    // Draw shimmering energy orb at end effector
+    const orbSize = 8 + 3 * Math.sin(Date.now() * 0.008);
+    
+    // Main orb
+    roboticArmCtx.fillStyle = `rgba(255, 107, 53, ${energyOrb.brightness})`;
+    roboticArmCtx.beginPath();
+    roboticArmCtx.arc(energyOrb.x, energyOrb.y, orbSize, 0, Math.PI * 2);
+    roboticArmCtx.fill();
+    
+    // Glow effect
+    roboticArmCtx.shadowColor = '#ff6b35';
+    roboticArmCtx.shadowBlur = 15;
+    roboticArmCtx.fill();
+    roboticArmCtx.shadowBlur = 0;
+    
+    // Energy particles around orb
+    for (let i = 0; i < 6; i++) {
+        const particleAngle = energyOrb.angle + (i * Math.PI * 2 / 6);
+        const particleRadius = 15 + 5 * Math.sin(Date.now() * 0.01 + i);
+        const particleX = energyOrb.x + Math.cos(particleAngle) * particleRadius;
+        const particleY = energyOrb.y + Math.sin(particleAngle) * particleRadius;
+        
+        roboticArmCtx.fillStyle = 'rgba(0, 212, 255, 0.6)';
+        roboticArmCtx.beginPath();
+        roboticArmCtx.arc(particleX, particleY, 2, 0, Math.PI * 2);
+        roboticArmCtx.fill();
+    }
 }
 
 // Navigation
