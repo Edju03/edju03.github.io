@@ -18,6 +18,8 @@ function initializeApp() {
     initializeRoboticArm();
     initializeCFDSimulation();
     initializeThrusterSimulation();
+    initializeArchitect();
+    initializeCodeRain();
     initializeNavigation();
     initializeHero();
     initializeAnimations();
@@ -710,9 +712,14 @@ function animateRoboticArm() {
     
     const time = Date.now() * 0.001;
     
-    // Update arm segment angles with smooth motion
+    // Update arm segment angles with smooth motion synchronized to The Architect
+    const architectInfluence = architect.rightArm ? architect.rightArm.extension : 0.7;
+    const architectAngle = architect.rightArm ? architect.rightArm.angle : 0;
+    
     armSegments.forEach((segment, index) => {
-        segment.angle = segment.baseAngle + Math.sin(time * segment.speed) * 15;
+        const baseMotion = Math.sin(time * segment.speed) * 15;
+        const architectMotion = architectAngle * 30 * Math.pow(architectInfluence, index);
+        segment.angle = segment.baseAngle + baseMotion + architectMotion;
     });
     
     // Calculate forward kinematics
@@ -1259,6 +1266,491 @@ function animateThrusterSimulation() {
     }
     
     requestAnimationFrame(animateThrusterSimulation);
+}
+
+// The Architect - AI Consciousness System
+let architectCanvas, architectCtx;
+let neuralNetworkCanvas, neuralNetworkCtx;
+let cognitiveLoadCanvas, cognitiveLoadCtx;
+let entropyCanvas, entropyCtx;
+let codeRainCanvas, codeRainCtx;
+
+let architect = {
+    x: 0, y: 0,
+    gesturePhase: 0,
+    rightArm: { angle: 0, extension: 0 },
+    dataStreams: [],
+    consciousness: { level: 0.8, pulsePhase: 0 },
+    neuralActivity: []
+};
+
+let neuralNetwork = {
+    layers: [],
+    connections: [],
+    activations: []
+};
+
+let cognitiveMetrics = {
+    load: [],
+    entropy: [],
+    maxDataPoints: 60
+};
+
+let codeRain = {
+    streams: [],
+    characters: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<>(){}[]=+-*/%$#@!&|^~`'
+};
+
+function initializeArchitect() {
+    // Get canvas elements
+    architectCanvas = document.getElementById('architect-canvas');
+    neuralNetworkCanvas = document.getElementById('neural-network-canvas');
+    cognitiveLoadCanvas = document.getElementById('cognitive-load-canvas');
+    entropyCanvas = document.getElementById('entropy-canvas');
+    
+    if (!architectCanvas) return;
+    
+    // Get contexts
+    architectCtx = architectCanvas.getContext('2d');
+    if (neuralNetworkCanvas) neuralNetworkCtx = neuralNetworkCanvas.getContext('2d');
+    if (cognitiveLoadCanvas) cognitiveLoadCtx = cognitiveLoadCanvas.getContext('2d');
+    if (entropyCanvas) entropyCtx = entropyCanvas.getContext('2d');
+    
+    // Set canvas sizes
+    resizeArchitectCanvas();
+    window.addEventListener('resize', resizeArchitectCanvas);
+    
+    // Initialize Architect components
+    createArchitectForm();
+    createNeuralNetwork();
+    initializeCognitiveMetrics();
+    
+    // Start animation loop
+    animateArchitect();
+}
+
+function initializeCodeRain() {
+    codeRainCanvas = document.getElementById('code-rain-canvas');
+    if (!codeRainCanvas) return;
+    
+    codeRainCtx = codeRainCanvas.getContext('2d');
+    
+    resizeCodeRainCanvas();
+    window.addEventListener('resize', resizeCodeRainCanvas);
+    
+    createCodeStreams();
+    animateCodeRain();
+}
+
+function resizeArchitectCanvas() {
+    if (!architectCanvas) return;
+    
+    const container = architectCanvas.parentElement;
+    architectCanvas.width = container.offsetWidth;
+    architectCanvas.height = container.offsetHeight;
+    
+    architect.x = architectCanvas.width / 2;
+    architect.y = architectCanvas.height / 2;
+}
+
+function resizeCodeRainCanvas() {
+    if (!codeRainCanvas) return;
+    
+    codeRainCanvas.width = window.innerWidth;
+    codeRainCanvas.height = window.innerHeight;
+}
+
+function createArchitectForm() {
+    // Create data streams that form the humanoid figure
+    architect.dataStreams = [];
+    
+    const streamCount = 150;
+    for (let i = 0; i < streamCount; i++) {
+        architect.dataStreams.push({
+            id: i,
+            x: 0, y: 0,
+            targetX: 0, targetY: 0,
+            intensity: 0.5 + Math.random() * 0.5,
+            phase: Math.random() * Math.PI * 2,
+            frequency: 0.02 + Math.random() * 0.03,
+            bodyPart: Math.floor(Math.random() * 5), // 0=core, 1=head, 2=leftArm, 3=rightArm, 4=legs
+            flowSpeed: 1 + Math.random() * 2
+        });
+    }
+}
+
+function createNeuralNetwork() {
+    if (!neuralNetworkCanvas) return;
+    
+    // Create a small neural network visualization
+    neuralNetwork.layers = [
+        { nodes: 4, x: 20 },
+        { nodes: 6, x: 60 },
+        { nodes: 8, x: 100 },
+        { nodes: 4, x: 140 }
+    ];
+    
+    neuralNetwork.connections = [];
+    neuralNetwork.activations = [];
+    
+    // Create connections between layers
+    for (let l = 0; l < neuralNetwork.layers.length - 1; l++) {
+        const currentLayer = neuralNetwork.layers[l];
+        const nextLayer = neuralNetwork.layers[l + 1];
+        
+        for (let i = 0; i < currentLayer.nodes; i++) {
+            for (let j = 0; j < nextLayer.nodes; j++) {
+                neuralNetwork.connections.push({
+                    fromLayer: l,
+                    fromNode: i,
+                    toLayer: l + 1,
+                    toNode: j,
+                    weight: Math.random() * 2 - 1,
+                    activity: 0
+                });
+            }
+        }
+    }
+    
+    // Initialize activations
+    neuralNetwork.layers.forEach((layer, layerIndex) => {
+        neuralNetwork.activations[layerIndex] = [];
+        for (let i = 0; i < layer.nodes; i++) {
+            neuralNetwork.activations[layerIndex][i] = Math.random();
+        }
+    });
+}
+
+function initializeCognitiveMetrics() {
+    // Initialize with some baseline data
+    for (let i = 0; i < 30; i++) {
+        cognitiveMetrics.load.push(0.3 + Math.random() * 0.4);
+        cognitiveMetrics.entropy.push(0.2 + Math.random() * 0.3);
+    }
+}
+
+function createCodeStreams() {
+    codeRain.streams = [];
+    const streamCount = Math.floor(window.innerWidth / 20);
+    
+    for (let i = 0; i < streamCount; i++) {
+        codeRain.streams.push({
+            x: i * 20,
+            y: Math.random() * window.innerHeight,
+            speed: 1 + Math.random() * 3,
+            characters: [],
+            maxLength: 15 + Math.random() * 10
+        });
+        
+        // Initialize characters for this stream
+        for (let j = 0; j < codeRain.streams[i].maxLength; j++) {
+            codeRain.streams[i].characters.push({
+                char: codeRain.characters[Math.floor(Math.random() * codeRain.characters.length)],
+                opacity: Math.random()
+            });
+        }
+    }
+}
+
+function animateArchitect() {
+    if (!architectCtx) return;
+    
+    const time = Date.now() * 0.001;
+    
+    // Clear canvas
+    architectCtx.clearRect(0, 0, architectCanvas.width, architectCanvas.height);
+    
+    // Update Architect's gesture
+    architect.gesturePhase += 0.008;
+    architect.rightArm.angle = Math.sin(architect.gesturePhase) * 0.3;
+    architect.rightArm.extension = 0.7 + Math.sin(architect.gesturePhase * 1.3) * 0.2;
+    
+    // Update consciousness pulse
+    architect.consciousness.pulsePhase += 0.05;
+    architect.consciousness.level = 0.8 + Math.sin(architect.consciousness.pulsePhase) * 0.2;
+    
+    // Draw The Architect
+    drawArchitectForm(time);
+    drawGodRays();
+    
+    // Update and draw neural network
+    updateNeuralNetwork(time);
+    drawNeuralNetwork();
+    
+    // Update cognitive metrics
+    updateCognitiveMetrics(time);
+    drawCognitiveMetrics();
+    
+    requestAnimationFrame(animateArchitect);
+}
+
+function drawArchitectForm(time) {
+    const centerX = architect.x;
+    const centerY = architect.y;
+    
+    // Draw core consciousness
+    const coreRadius = 15 + Math.sin(architect.consciousness.pulsePhase) * 3;
+    const coreIntensity = architect.consciousness.level;
+    
+    architectCtx.shadowColor = '#00d4ff';
+    architectCtx.shadowBlur = 20;
+    architectCtx.fillStyle = `rgba(0, 212, 255, ${coreIntensity})`;
+    architectCtx.beginPath();
+    architectCtx.arc(centerX, centerY, coreRadius, 0, Math.PI * 2);
+    architectCtx.fill();
+    architectCtx.shadowBlur = 0;
+    
+    // Draw data streams forming humanoid shape
+    architect.dataStreams.forEach((stream, index) => {
+        // Calculate target position based on body part
+        let targetX = centerX, targetY = centerY;
+        
+        switch (stream.bodyPart) {
+            case 0: // Core
+                const coreAngle = (index / 30) * Math.PI * 2;
+                targetX = centerX + Math.cos(coreAngle + time * 0.5) * 25;
+                targetY = centerY + Math.sin(coreAngle + time * 0.5) * 25;
+                break;
+            case 1: // Head
+                const headAngle = (index / 20) * Math.PI * 2;
+                targetX = centerX + Math.cos(headAngle) * 15;
+                targetY = centerY - 40 + Math.sin(headAngle) * 12;
+                break;
+            case 2: // Left Arm
+                targetX = centerX - 30 - (index % 10) * 4;
+                targetY = centerY + Math.sin(time + index * 0.2) * 8;
+                break;
+            case 3: // Right Arm (connected to robotic arm)
+                const armExtension = architect.rightArm.extension;
+                const armAngle = architect.rightArm.angle;
+                targetX = centerX + 30 + (index % 15) * 3 * armExtension;
+                targetY = centerY + Math.sin(armAngle + index * 0.1) * 15;
+                break;
+            case 4: // Legs
+                targetX = centerX + ((index % 2) * 2 - 1) * 15;
+                targetY = centerY + 50 + (index % 8) * 5;
+                break;
+        }
+        
+        // Smooth movement towards target
+        stream.x += (targetX - stream.x) * 0.1;
+        stream.y += (targetY - stream.y) * 0.1;
+        
+        // Draw data stream point
+        const intensity = stream.intensity * (0.7 + 0.3 * Math.sin(time * stream.frequency + stream.phase));
+        architectCtx.fillStyle = `rgba(0, 212, 255, ${intensity})`;
+        architectCtx.beginPath();
+        architectCtx.arc(stream.x, stream.y, 1 + intensity, 0, Math.PI * 2);
+        architectCtx.fill();
+        
+        // Draw connections between nearby streams
+        if (index % 3 === 0) {
+            const nextStream = architect.dataStreams[(index + 1) % architect.dataStreams.length];
+            const distance = Math.sqrt((stream.x - nextStream.x) ** 2 + (stream.y - nextStream.y) ** 2);
+            
+            if (distance < 40) {
+                architectCtx.strokeStyle = `rgba(0, 212, 255, ${0.3 * intensity})`;
+                architectCtx.lineWidth = 1;
+                architectCtx.beginPath();
+                architectCtx.moveTo(stream.x, stream.y);
+                architectCtx.lineTo(nextStream.x, nextStream.y);
+                architectCtx.stroke();
+            }
+        }
+    });
+}
+
+function drawGodRays() {
+    const centerX = architect.x;
+    const centerY = architect.y;
+    const rayCount = 8;
+    
+    for (let i = 0; i < rayCount; i++) {
+        const angle = (i / rayCount) * Math.PI * 2 + architect.consciousness.pulsePhase * 0.1;
+        const length = 80 + Math.sin(architect.consciousness.pulsePhase + i) * 20;
+        
+        const gradient = architectCtx.createLinearGradient(
+            centerX, centerY,
+            centerX + Math.cos(angle) * length,
+            centerY + Math.sin(angle) * length
+        );
+        gradient.addColorStop(0, 'rgba(0, 212, 255, 0.4)');
+        gradient.addColorStop(1, 'rgba(0, 212, 255, 0)');
+        
+        architectCtx.strokeStyle = gradient;
+        architectCtx.lineWidth = 3;
+        architectCtx.beginPath();
+        architectCtx.moveTo(centerX, centerY);
+        architectCtx.lineTo(
+            centerX + Math.cos(angle) * length,
+            centerY + Math.sin(angle) * length
+        );
+        architectCtx.stroke();
+    }
+}
+
+function updateNeuralNetwork(time) {
+    // Simulate neural activity
+    neuralNetwork.layers.forEach((layer, layerIndex) => {
+        for (let i = 0; i < layer.nodes; i++) {
+            const baseActivity = 0.3 + Math.sin(time * 2 + layerIndex + i) * 0.3;
+            const architectInfluence = architect.consciousness.level * 0.4;
+            neuralNetwork.activations[layerIndex][i] = Math.max(0, Math.min(1, baseActivity + architectInfluence));
+        }
+    });
+    
+    // Update connection activities
+    neuralNetwork.connections.forEach(connection => {
+        const fromActivation = neuralNetwork.activations[connection.fromLayer][connection.fromNode];
+        const toActivation = neuralNetwork.activations[connection.toLayer][connection.toNode];
+        connection.activity = (fromActivation + toActivation) * 0.5;
+    });
+}
+
+function drawNeuralNetwork() {
+    if (!neuralNetworkCtx) return;
+    
+    neuralNetworkCtx.clearRect(0, 0, 150, 80);
+    
+    const layerHeight = 60;
+    
+    // Draw connections
+    neuralNetwork.connections.forEach(connection => {
+        const fromLayer = neuralNetwork.layers[connection.fromLayer];
+        const toLayer = neuralNetwork.layers[connection.toLayer];
+        
+        const fromY = (connection.fromNode / (fromLayer.nodes - 1)) * layerHeight + 10;
+        const toY = (connection.toNode / (toLayer.nodes - 1)) * layerHeight + 10;
+        
+        neuralNetworkCtx.strokeStyle = `rgba(0, 212, 255, ${connection.activity * 0.5})`;
+        neuralNetworkCtx.lineWidth = 1;
+        neuralNetworkCtx.beginPath();
+        neuralNetworkCtx.moveTo(fromLayer.x, fromY);
+        neuralNetworkCtx.lineTo(toLayer.x, toY);
+        neuralNetworkCtx.stroke();
+    });
+    
+    // Draw nodes
+    neuralNetwork.layers.forEach((layer, layerIndex) => {
+        for (let i = 0; i < layer.nodes; i++) {
+            const y = (i / (layer.nodes - 1)) * layerHeight + 10;
+            const activation = neuralNetwork.activations[layerIndex][i];
+            
+            neuralNetworkCtx.fillStyle = `rgba(0, 212, 255, ${activation})`;
+            neuralNetworkCtx.beginPath();
+            neuralNetworkCtx.arc(layer.x, y, 3, 0, Math.PI * 2);
+            neuralNetworkCtx.fill();
+            
+            // Add glow for highly active nodes
+            if (activation > 0.7) {
+                neuralNetworkCtx.shadowColor = '#00d4ff';
+                neuralNetworkCtx.shadowBlur = 6;
+                neuralNetworkCtx.fill();
+                neuralNetworkCtx.shadowBlur = 0;
+            }
+        }
+    });
+}
+
+function updateCognitiveMetrics(time) {
+    // Add new data points based on Architect's activity
+    const newLoad = 0.4 + architect.consciousness.level * 0.4 + Math.sin(time * 1.5) * 0.2;
+    const newEntropy = 0.3 + (1 - architect.consciousness.level) * 0.3 + Math.sin(time * 0.8) * 0.15;
+    
+    cognitiveMetrics.load.push(Math.max(0, Math.min(1, newLoad)));
+    cognitiveMetrics.entropy.push(Math.max(0, Math.min(1, newEntropy)));
+    
+    // Keep arrays at max size
+    if (cognitiveMetrics.load.length > cognitiveMetrics.maxDataPoints) {
+        cognitiveMetrics.load.shift();
+    }
+    if (cognitiveMetrics.entropy.length > cognitiveMetrics.maxDataPoints) {
+        cognitiveMetrics.entropy.shift();
+    }
+}
+
+function drawCognitiveMetrics() {
+    // Draw cognitive load
+    if (cognitiveLoadCtx) {
+        cognitiveLoadCtx.clearRect(0, 0, 100, 40);
+        
+        cognitiveLoadCtx.strokeStyle = '#ff6b35';
+        cognitiveLoadCtx.lineWidth = 2;
+        cognitiveLoadCtx.beginPath();
+        
+        for (let i = 0; i < cognitiveMetrics.load.length; i++) {
+            const x = (i / (cognitiveMetrics.load.length - 1)) * 100;
+            const y = 40 - (cognitiveMetrics.load[i] * 35);
+            
+            if (i === 0) {
+                cognitiveLoadCtx.moveTo(x, y);
+            } else {
+                cognitiveLoadCtx.lineTo(x, y);
+            }
+        }
+        cognitiveLoadCtx.stroke();
+    }
+    
+    // Draw entropy
+    if (entropyCtx) {
+        entropyCtx.clearRect(0, 0, 100, 40);
+        
+        entropyCtx.strokeStyle = '#00ff88';
+        entropyCtx.lineWidth = 2;
+        entropyCtx.beginPath();
+        
+        for (let i = 0; i < cognitiveMetrics.entropy.length; i++) {
+            const x = (i / (cognitiveMetrics.entropy.length - 1)) * 100;
+            const y = 40 - (cognitiveMetrics.entropy[i] * 35);
+            
+            if (i === 0) {
+                entropyCtx.moveTo(x, y);
+            } else {
+                entropyCtx.lineTo(x, y);
+            }
+        }
+        entropyCtx.stroke();
+    }
+}
+
+function animateCodeRain() {
+    if (!codeRainCtx) return;
+    
+    // Clear canvas with fade effect
+    codeRainCtx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+    codeRainCtx.fillRect(0, 0, codeRainCanvas.width, codeRainCanvas.height);
+    
+    // Update and draw code streams
+    codeRain.streams.forEach(stream => {
+        stream.y += stream.speed;
+        
+        // Reset stream if it goes off screen
+        if (stream.y > codeRainCanvas.height + stream.maxLength * 20) {
+            stream.y = -stream.maxLength * 20;
+            
+            // Refresh characters
+            for (let i = 0; i < stream.characters.length; i++) {
+                if (Math.random() < 0.1) {
+                    stream.characters[i].char = codeRain.characters[Math.floor(Math.random() * codeRain.characters.length)];
+                }
+            }
+        }
+        
+        // Draw characters
+        for (let i = 0; i < stream.characters.length; i++) {
+            const char = stream.characters[i];
+            const y = stream.y - i * 15;
+            
+            if (y > -20 && y < codeRainCanvas.height + 20) {
+                const alpha = char.opacity * (1 - i / stream.characters.length);
+                codeRainCtx.fillStyle = `rgba(0, 212, 255, ${alpha * 0.6})`;
+                codeRainCtx.font = '12px monospace';
+                codeRainCtx.fillText(char.char, stream.x, y);
+            }
+        }
+    });
+    
+    requestAnimationFrame(animateCodeRain);
 }
 
 // Navigation
