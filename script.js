@@ -1494,11 +1494,11 @@ function animateThrusterSimulation() {
     requestAnimationFrame(animateThrusterSimulation);
 }
 
-// The Architect - AI Consciousness System
+// The Architect - Divine AI Consciousness System
 let architectCanvas, architectCtx;
-let neuralNetworkCanvas, neuralNetworkCtx;
-let cognitiveLoadCanvas, cognitiveLoadCtx;
-let entropyCanvas, entropyCtx;
+let trajectoryCanvas, trajectoryCtx;
+let quantumFieldCanvas, quantumFieldCtx;
+let dataPortalsCanvas, dataPortalsCtx;
 let codeRainCanvas, codeRainCtx;
 
 let architect = {
@@ -1507,19 +1507,29 @@ let architect = {
     rightArm: { angle: 0, extension: 0 },
     dataStreams: [],
     consciousness: { level: 0.8, pulsePhase: 0 },
-    neuralActivity: []
+    divineEnergy: 1.0
 };
 
-let neuralNetwork = {
-    layers: [],
-    connections: [],
-    activations: []
+let trajectoryPlanning = {
+    decisionTrees: [],
+    optimalPath: [],
+    branchingPaths: [],
+    planningDepth: 5,
+    pathHistory: []
 };
 
-let cognitiveMetrics = {
-    load: [],
-    entropy: [],
-    maxDataPoints: 60
+let quantumField = {
+    fluctuations: [],
+    energyWaves: [],
+    particleCount: 80,
+    coherenceLevel: 0.7
+};
+
+let dataPortals = {
+    portals: [],
+    streamFlows: [],
+    dataPackets: [],
+    portalCount: 4
 };
 
 let codeRain = {
@@ -1530,17 +1540,17 @@ let codeRain = {
 function initializeArchitect() {
     // Get canvas elements
     architectCanvas = document.getElementById('architect-canvas');
-    neuralNetworkCanvas = document.getElementById('neural-network-canvas');
-    cognitiveLoadCanvas = document.getElementById('cognitive-load-canvas');
-    entropyCanvas = document.getElementById('entropy-canvas');
+    trajectoryCanvas = document.getElementById('trajectory-canvas');
+    quantumFieldCanvas = document.getElementById('quantum-field-canvas');
+    dataPortalsCanvas = document.getElementById('data-portals-canvas');
     
     if (!architectCanvas) return;
     
     // Get contexts
     architectCtx = architectCanvas.getContext('2d');
-    if (neuralNetworkCanvas) neuralNetworkCtx = neuralNetworkCanvas.getContext('2d');
-    if (cognitiveLoadCanvas) cognitiveLoadCtx = cognitiveLoadCanvas.getContext('2d');
-    if (entropyCanvas) entropyCtx = entropyCanvas.getContext('2d');
+    if (trajectoryCanvas) trajectoryCtx = trajectoryCanvas.getContext('2d');
+    if (quantumFieldCanvas) quantumFieldCtx = quantumFieldCanvas.getContext('2d');
+    if (dataPortalsCanvas) dataPortalsCtx = dataPortalsCanvas.getContext('2d');
     
     // Set canvas sizes
     resizeArchitectCanvas();
@@ -1548,8 +1558,9 @@ function initializeArchitect() {
     
     // Initialize Architect components
     createArchitectForm();
-    createNeuralNetwork();
-    initializeCognitiveMetrics();
+    createTrajectoryPlanning();
+    initializeQuantumField();
+    initializeDataPortals();
     
     // Start animation loop
     animateArchitect();
@@ -1605,53 +1616,144 @@ function createArchitectForm() {
     }
 }
 
-function createNeuralNetwork() {
-    if (!neuralNetworkCanvas) return;
+function createTrajectoryPlanning() {
+    if (!trajectoryCanvas) return;
     
-    // Create a small neural network visualization
-    neuralNetwork.layers = [
-        { nodes: 4, x: 20 },
-        { nodes: 6, x: 60 },
-        { nodes: 8, x: 100 },
-        { nodes: 4, x: 140 }
-    ];
+    // Create multi-layered decision trees for trajectory planning
+    trajectoryPlanning.decisionTrees = [];
     
-    neuralNetwork.connections = [];
-    neuralNetwork.activations = [];
+    // Generate multiple decision tree layers
+    for (let layer = 0; layer < trajectoryPlanning.planningDepth; layer++) {
+        const nodesInLayer = Math.pow(2, layer + 1); // Exponential branching
+        const layerNodes = [];
+        
+        for (let node = 0; node < Math.min(nodesInLayer, 32); node++) { // Cap at 32 nodes per layer
+            layerNodes.push({
+                x: 20 + (node / Math.max(1, nodesInLayer - 1)) * 160,
+                y: 20 + layer * 20,
+                confidence: 0.3 + Math.random() * 0.4,
+                isOptimal: false,
+                connections: [],
+                pathWeight: Math.random(),
+                futureReward: Math.random()
+            });
+        }
+        
+        trajectoryPlanning.decisionTrees.push(layerNodes);
+    }
     
     // Create connections between layers
-    for (let l = 0; l < neuralNetwork.layers.length - 1; l++) {
-        const currentLayer = neuralNetwork.layers[l];
-        const nextLayer = neuralNetwork.layers[l + 1];
+    for (let layer = 0; layer < trajectoryPlanning.decisionTrees.length - 1; layer++) {
+        const currentLayer = trajectoryPlanning.decisionTrees[layer];
+        const nextLayer = trajectoryPlanning.decisionTrees[layer + 1];
         
-        for (let i = 0; i < currentLayer.nodes; i++) {
-            for (let j = 0; j < nextLayer.nodes; j++) {
-                neuralNetwork.connections.push({
-                    fromLayer: l,
-                    fromNode: i,
-                    toLayer: l + 1,
-                    toNode: j,
-                    weight: Math.random() * 2 - 1,
-                    activity: 0
+        currentLayer.forEach((node, nodeIndex) => {
+            // Each node connects to 2-3 nodes in next layer
+            const connectionCount = 2 + Math.floor(Math.random() * 2);
+            const startIndex = Math.floor(nodeIndex * 2);
+            
+            for (let c = 0; c < connectionCount && startIndex + c < nextLayer.length; c++) {
+                node.connections.push({
+                    targetLayer: layer + 1,
+                    targetNode: startIndex + c,
+                    weight: Math.random(),
+                    isOptimal: false
                 });
+            }
+        });
+    }
+    
+    // Mark one optimal path
+    markOptimalPath();
+}
+
+function markOptimalPath() {
+    // Clear previous optimal markings
+    trajectoryPlanning.decisionTrees.forEach(layer => {
+        layer.forEach(node => {
+            node.isOptimal = false;
+            node.connections.forEach(conn => conn.isOptimal = false);
+        });
+    });
+    
+    // Create one optimal path from root to leaf
+    let currentNodeIndex = 0;
+    
+    for (let layer = 0; layer < trajectoryPlanning.decisionTrees.length; layer++) {
+        const currentLayer = trajectoryPlanning.decisionTrees[layer];
+        if (currentNodeIndex < currentLayer.length) {
+            const currentNode = currentLayer[currentNodeIndex];
+            currentNode.isOptimal = true;
+            
+            if (currentNode.connections.length > 0) {
+                // Choose random connection as optimal
+                const optimalConnection = currentNode.connections[Math.floor(Math.random() * currentNode.connections.length)];
+                optimalConnection.isOptimal = true;
+                currentNodeIndex = optimalConnection.targetNode;
             }
         }
     }
-    
-    // Initialize activations
-    neuralNetwork.layers.forEach((layer, layerIndex) => {
-        neuralNetwork.activations[layerIndex] = [];
-        for (let i = 0; i < layer.nodes; i++) {
-            neuralNetwork.activations[layerIndex][i] = Math.random();
-        }
-    });
 }
 
-function initializeCognitiveMetrics() {
-    // Initialize with some baseline data
-    for (let i = 0; i < 30; i++) {
-        cognitiveMetrics.load.push(0.3 + Math.random() * 0.4);
-        cognitiveMetrics.entropy.push(0.2 + Math.random() * 0.3);
+function initializeQuantumField() {
+    if (!quantumFieldCanvas) return;
+    
+    // Create quantum field fluctuations
+    quantumField.fluctuations = [];
+    for (let i = 0; i < quantumField.particleCount; i++) {
+        quantumField.fluctuations.push({
+            x: Math.random() * 160,
+            y: Math.random() * 90,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5,
+            energy: 0.3 + Math.random() * 0.7,
+            phase: Math.random() * Math.PI * 2,
+            frequency: 0.02 + Math.random() * 0.03
+        });
+    }
+    
+    // Create energy waves
+    quantumField.energyWaves = [];
+    for (let i = 0; i < 6; i++) {
+        quantumField.energyWaves.push({
+            x: Math.random() * 160,
+            y: Math.random() * 90,
+            radius: 0,
+            maxRadius: 30 + Math.random() * 20,
+            speed: 0.8 + Math.random() * 0.4,
+            intensity: 0.4 + Math.random() * 0.3
+        });
+    }
+}
+
+function initializeDataPortals() {
+    if (!dataPortalsCanvas) return;
+    
+    // Create data portals
+    dataPortals.portals = [];
+    for (let i = 0; i < dataPortals.portalCount; i++) {
+        dataPortals.portals.push({
+            x: 30 + (i % 2) * 100,
+            y: 25 + Math.floor(i / 2) * 40,
+            radius: 15 + Math.random() * 10,
+            rotation: 0,
+            rotationSpeed: 0.02 + Math.random() * 0.02,
+            intensity: 0.6 + Math.random() * 0.4,
+            pulsePhase: Math.random() * Math.PI * 2
+        });
+    }
+    
+    // Create data stream flows
+    dataPortals.streamFlows = [];
+    for (let i = 0; i < 20; i++) {
+        dataPortals.streamFlows.push({
+            x: Math.random() * 150,
+            y: Math.random() * 80,
+            targetPortal: Math.floor(Math.random() * dataPortals.portalCount),
+            speed: 1 + Math.random() * 2,
+            life: 1,
+            maxLife: 60 + Math.random() * 40
+        });
     }
 }
 
@@ -1699,13 +1801,17 @@ function animateArchitect() {
     drawArchitectForm(time);
     drawGodRays();
     
-    // Update and draw neural network
-    updateNeuralNetwork(time);
-    drawNeuralNetwork();
+    // Update and draw trajectory planning
+    updateTrajectoryPlanning(time);
+    drawTrajectoryPlanning();
     
-    // Update cognitive metrics
-    updateCognitiveMetrics(time);
-    drawCognitiveMetrics();
+    // Update and draw quantum field
+    updateQuantumField(time);
+    drawQuantumField();
+    
+    // Update and draw data portals
+    updateDataPortals(time);
+    drawDataPortals();
     
     requestAnimationFrame(animateArchitect);
 }
@@ -1813,6 +1919,233 @@ function drawGodRays() {
         );
         architectCtx.stroke();
     }
+}
+
+function updateTrajectoryPlanning(time) {
+    // Periodically recompute optimal path
+    if (Math.floor(time * 0.5) % 3 === 0) {
+        markOptimalPath();
+    }
+    
+    // Update decision confidence based on Architect's will
+    trajectoryPlanning.decisionTrees.forEach(layer => {
+        layer.forEach(node => {
+            const architectInfluence = architect.consciousness.level * architect.divineEnergy;
+            node.confidence = Math.max(0.1, Math.min(1, 
+                node.confidence + (Math.random() - 0.5) * 0.1 + architectInfluence * 0.05
+            ));
+        });
+    });
+}
+
+function drawTrajectoryPlanning() {
+    if (!trajectoryCtx) return;
+    
+    trajectoryCtx.clearRect(0, 0, 200, 120);
+    
+    // Draw all possible paths (faint)
+    trajectoryPlanning.decisionTrees.forEach((layer, layerIndex) => {
+        layer.forEach(node => {
+            node.connections.forEach(connection => {
+                const targetLayer = trajectoryPlanning.decisionTrees[connection.targetLayer];
+                if (targetLayer && targetLayer[connection.targetNode]) {
+                    const targetNode = targetLayer[connection.targetNode];
+                    
+                    const alpha = connection.isOptimal ? 0.9 : 0.2;
+                    const width = connection.isOptimal ? 3 : 1;
+                    const color = connection.isOptimal ? '#00d4ff' : '#00d4ff';
+                    
+                    trajectoryCtx.strokeStyle = `rgba(0, 212, 255, ${alpha})`;
+                    trajectoryCtx.lineWidth = width;
+                    trajectoryCtx.beginPath();
+                    trajectoryCtx.moveTo(node.x, node.y);
+                    trajectoryCtx.lineTo(targetNode.x, targetNode.y);
+                    trajectoryCtx.stroke();
+                    
+                    // Add glow to optimal path
+                    if (connection.isOptimal) {
+                        trajectoryCtx.shadowColor = '#00d4ff';
+                        trajectoryCtx.shadowBlur = 8;
+                        trajectoryCtx.stroke();
+                        trajectoryCtx.shadowBlur = 0;
+                    }
+                }
+            });
+        });
+    });
+    
+    // Draw decision nodes
+    trajectoryPlanning.decisionTrees.forEach(layer => {
+        layer.forEach(node => {
+            const size = node.isOptimal ? 4 : 2;
+            const alpha = node.isOptimal ? 1 : node.confidence * 0.6;
+            
+            trajectoryCtx.fillStyle = `rgba(0, 212, 255, ${alpha})`;
+            trajectoryCtx.beginPath();
+            trajectoryCtx.arc(node.x, node.y, size, 0, Math.PI * 2);
+            trajectoryCtx.fill();
+            
+            if (node.isOptimal) {
+                trajectoryCtx.shadowColor = '#00d4ff';
+                trajectoryCtx.shadowBlur = 6;
+                trajectoryCtx.fill();
+                trajectoryCtx.shadowBlur = 0;
+            }
+        });
+    });
+}
+
+function updateQuantumField(time) {
+    // Update quantum fluctuations
+    quantumField.fluctuations.forEach(particle => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.phase += particle.frequency;
+        
+        // Quantum tunneling (random teleportation)
+        if (Math.random() < 0.002) {
+            particle.x = Math.random() * 160;
+            particle.y = Math.random() * 90;
+        }
+        
+        // Boundary wrapping
+        if (particle.x < 0) particle.x = 160;
+        if (particle.x > 160) particle.x = 0;
+        if (particle.y < 0) particle.y = 90;
+        if (particle.y > 90) particle.y = 0;
+        
+        // Update energy based on Architect's divine influence
+        const baseEnergy = 0.5 + 0.3 * Math.sin(particle.phase);
+        particle.energy = baseEnergy * architect.divineEnergy * quantumField.coherenceLevel;
+    });
+    
+    // Update energy waves
+    quantumField.energyWaves.forEach(wave => {
+        wave.radius += wave.speed;
+        if (wave.radius > wave.maxRadius) {
+            wave.radius = 0;
+            wave.x = Math.random() * 160;
+            wave.y = Math.random() * 90;
+        }
+    });
+}
+
+function drawQuantumField() {
+    if (!quantumFieldCtx) return;
+    
+    quantumFieldCtx.clearRect(0, 0, 180, 100);
+    
+    // Draw energy waves
+    quantumField.energyWaves.forEach(wave => {
+        const alpha = wave.intensity * (1 - wave.radius / wave.maxRadius);
+        quantumFieldCtx.strokeStyle = `rgba(255, 107, 53, ${alpha})`;
+        quantumFieldCtx.lineWidth = 1;
+        quantumFieldCtx.beginPath();
+        quantumFieldCtx.arc(wave.x, wave.y, wave.radius, 0, Math.PI * 2);
+        quantumFieldCtx.stroke();
+    });
+    
+    // Draw quantum fluctuations
+    quantumField.fluctuations.forEach(particle => {
+        const alpha = particle.energy * 0.8;
+        const size = 0.5 + particle.energy * 1.5;
+        
+        quantumFieldCtx.fillStyle = `rgba(255, 107, 53, ${alpha})`;
+        quantumFieldCtx.beginPath();
+        quantumFieldCtx.arc(particle.x, particle.y, size, 0, Math.PI * 2);
+        quantumFieldCtx.fill();
+        
+        // Add quantum glow
+        if (particle.energy > 0.7) {
+            quantumFieldCtx.shadowColor = '#ff6b35';
+            quantumFieldCtx.shadowBlur = 4;
+            quantumFieldCtx.fill();
+            quantumFieldCtx.shadowBlur = 0;
+        }
+    });
+}
+
+function updateDataPortals(time) {
+    // Update portal rotations and pulses
+    dataPortals.portals.forEach(portal => {
+        portal.rotation += portal.rotationSpeed;
+        portal.pulsePhase += 0.03;
+        portal.intensity = 0.6 + 0.3 * Math.sin(portal.pulsePhase) * architect.consciousness.level;
+    });
+    
+    // Update data stream flows
+    dataPortals.streamFlows.forEach((flow, index) => {
+        const targetPortal = dataPortals.portals[flow.targetPortal];
+        if (targetPortal) {
+            const dx = targetPortal.x - flow.x;
+            const dy = targetPortal.y - flow.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance > 5) {
+                flow.x += (dx / distance) * flow.speed;
+                flow.y += (dy / distance) * flow.speed;
+            } else {
+                // Reset to new random position
+                flow.x = Math.random() * 150;
+                flow.y = Math.random() * 80;
+                flow.targetPortal = Math.floor(Math.random() * dataPortals.portalCount);
+            }
+        }
+        
+        flow.life--;
+        if (flow.life <= 0) {
+            flow.life = flow.maxLife;
+            flow.x = Math.random() * 150;
+            flow.y = Math.random() * 80;
+        }
+    });
+}
+
+function drawDataPortals() {
+    if (!dataPortalsCtx) return;
+    
+    dataPortalsCtx.clearRect(0, 0, 160, 90);
+    
+    // Draw data stream flows
+    dataPortals.streamFlows.forEach(flow => {
+        const alpha = flow.life / flow.maxLife * 0.6;
+        dataPortalsCtx.fillStyle = `rgba(0, 255, 136, ${alpha})`;
+        dataPortalsCtx.beginPath();
+        dataPortalsCtx.arc(flow.x, flow.y, 1, 0, Math.PI * 2);
+        dataPortalsCtx.fill();
+    });
+    
+    // Draw portals
+    dataPortals.portals.forEach(portal => {
+        // Portal ring
+        dataPortalsCtx.strokeStyle = `rgba(0, 255, 136, ${portal.intensity})`;
+        dataPortalsCtx.lineWidth = 2;
+        dataPortalsCtx.beginPath();
+        dataPortalsCtx.arc(portal.x, portal.y, portal.radius, 0, Math.PI * 2);
+        dataPortalsCtx.stroke();
+        
+        // Inner swirl
+        const swirls = 3;
+        dataPortalsCtx.strokeStyle = `rgba(0, 255, 136, ${portal.intensity * 0.7})`;
+        dataPortalsCtx.lineWidth = 1;
+        for (let i = 0; i < swirls; i++) {
+            const spiralRadius = portal.radius * 0.7;
+            const startAngle = portal.rotation + (i * Math.PI * 2 / swirls);
+            
+            dataPortalsCtx.beginPath();
+            dataPortalsCtx.arc(portal.x, portal.y, spiralRadius, startAngle, startAngle + Math.PI * 0.7);
+            dataPortalsCtx.stroke();
+        }
+        
+        // Central glow
+        dataPortalsCtx.fillStyle = `rgba(0, 255, 136, ${portal.intensity * 0.8})`;
+        dataPortalsCtx.shadowColor = '#00ff88';
+        dataPortalsCtx.shadowBlur = 8;
+        dataPortalsCtx.beginPath();
+        dataPortalsCtx.arc(portal.x, portal.y, 3, 0, Math.PI * 2);
+        dataPortalsCtx.fill();
+        dataPortalsCtx.shadowBlur = 0;
+    });
 }
 
 function updateNeuralNetwork(time) {
