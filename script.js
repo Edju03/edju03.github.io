@@ -143,19 +143,31 @@ function animateParticles() {
     requestAnimationFrame(animateParticles);
 }
 
-// 3D Scanning Drone Swarm System
+// Kinetic Typography Drone Swarm System
 let droneSwarmCanvas, droneSwarmCtx, errorGraphCanvas, errorGraphCtx;
-let scanningDrones = [];
-let artifact = {};
-let pointCloud = [];
-let reconstructedWireframe = [];
-let lidarScans = [];
-let radarSweeps = [];
+let typographyDrones = [];
+let lightTrails = [];
+let neuralConstellations = [];
+let textSequences = [
+    { text: "Hello, I am Edward", duration: 4000, pause: 1000 },
+    { text: "Robotics, Control, and Navigation", duration: 5000, pause: 1000 },
+    { text: "AI & Machine Learning", duration: 4000, pause: 1000 },
+    { text: "Autonomous Systems", duration: 4000, pause: 1000 }
+];
+let currentSequenceIndex = 0;
+let sequenceStartTime = 0;
+let droneFormationState = 'writing'; // 'writing', 'dissolving', 'transitioning'
 let animationTime = 0;
 let simulationStartTime = 0;
-let scanCompleteness = 0;
-let reconstructionError = [];
-let maxReconstructionPoints = 3000;
+let typographySettings = {
+    droneCount: 400,
+    fontSize: 60,
+    letterSpacing: 15,
+    lineHeight: 80,
+    glowIntensity: 0.8,
+    trailLength: 25,
+    dissolutionSpeed: 0.02
+};
 
 function initializeDroneSwarm() {
     droneSwarmCanvas = document.getElementById('drone-swarm-canvas');
@@ -172,22 +184,23 @@ function initializeDroneSwarm() {
     resizeDroneCanvas();
     window.addEventListener('resize', resizeDroneCanvas);
     
-    // Create mysterious crystalline artifact
-    createCrystallineArtifact();
+    // Create neural network constellation background
+    createNeuralConstellations();
     
-    // Create scanning drone swarm
-    createScanningDroneSwarm();
+    // Initialize typography drone swarm
+    createTypographyDrones();
     
-    // Initialize reconstruction tracking
-    initializeReconstruction();
+    // Initialize light trail system
+    initializeLightTrails();
     
-    // Start animation loop
-    animateScanningSwarm();
+    // Start kinetic typography animation
+    animateKineticTypography();
     
     // Update stats display
     updateSwarmStats();
     
     simulationStartTime = Date.now();
+    sequenceStartTime = Date.now();
 }
 
 function resizeDroneCanvas() {
@@ -198,219 +211,432 @@ function resizeDroneCanvas() {
     droneSwarmCanvas.height = container.offsetHeight;
 }
 
-function createCrystallineArtifact() {
-    const centerX = droneSwarmCanvas.width / 2;
-    const centerY = droneSwarmCanvas.height / 2;
+function createNeuralConstellations() {
+    neuralConstellations = [];
+    const constellationCount = 15;
     
-    artifact = {
-        centerX: centerX,
-        centerY: centerY,
-        radius: 60,
-        vertices: [],
-        faces: [],
-        rotation: { x: 0, y: 0, z: 0 },
-        rotationSpeed: { x: 0.008, y: 0.012, z: 0.005 }
-    };
-    
-    // Create complex crystalline structure (icosahedron-like)
-    const phi = (1 + Math.sqrt(5)) / 2; // Golden ratio
-    const scale = 30;
-    
-    // Define vertices of an icosahedron
-    const baseVertices = [
-        [-1, phi, 0], [1, phi, 0], [-1, -phi, 0], [1, -phi, 0],
-        [0, -1, phi], [0, 1, phi], [0, -1, -phi], [0, 1, -phi],
-        [phi, 0, -1], [phi, 0, 1], [-phi, 0, -1], [-phi, 0, 1]
-    ];
-    
-    // Normalize and scale vertices
-    artifact.vertices = baseVertices.map(v => {
-        const length = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
-        return [
-            (v[0] / length) * scale,
-            (v[1] / length) * scale,
-            (v[2] / length) * scale
-        ];
-    });
-    
-    // Define faces (triangles) - simplified for performance
-    artifact.faces = [
-        [0, 11, 5], [0, 5, 1], [0, 1, 7], [0, 7, 10], [0, 10, 11],
-        [1, 5, 9], [5, 11, 4], [11, 10, 2], [10, 7, 6], [7, 1, 8],
-        [3, 9, 4], [3, 4, 2], [3, 2, 6], [3, 6, 8], [3, 8, 9],
-        [4, 9, 5], [2, 4, 11], [6, 2, 10], [8, 6, 7], [9, 8, 1]
-    ];
+    for (let i = 0; i < constellationCount; i++) {
+        const constellation = {
+            x: Math.random() * droneSwarmCanvas.width,
+            y: Math.random() * droneSwarmCanvas.height,
+            nodes: [],
+            connections: [],
+            pulsePhase: Math.random() * Math.PI * 2,
+            driftX: (Math.random() - 0.5) * 0.2,
+            driftY: (Math.random() - 0.5) * 0.2
+        };
+        
+        // Create nodes for this constellation
+        const nodeCount = 3 + Math.floor(Math.random() * 4);
+        for (let j = 0; j < nodeCount; j++) {
+            constellation.nodes.push({
+                x: (Math.random() - 0.5) * 80,
+                y: (Math.random() - 0.5) * 80,
+                intensity: 0.3 + Math.random() * 0.4,
+                phase: Math.random() * Math.PI * 2
+            });
+        }
+        
+        // Create connections between nearby nodes
+        for (let a = 0; a < constellation.nodes.length; a++) {
+            for (let b = a + 1; b < constellation.nodes.length; b++) {
+                const node1 = constellation.nodes[a];
+                const node2 = constellation.nodes[b];
+                const distance = Math.sqrt((node1.x - node2.x) ** 2 + (node1.y - node2.y) ** 2);
+                
+                if (distance < 60) {
+                    constellation.connections.push({
+                        from: a,
+                        to: b,
+                        opacity: 0.1 + (60 - distance) / 60 * 0.2
+                    });
+                }
+            }
+        }
+        
+        neuralConstellations.push(constellation);
+    }
 }
 
-function createScanningDroneSwarm() {
-    const droneCount = 12; // Elite scanning UAVs
-    scanningDrones = [];
+function createTypographyDrones() {
+    typographyDrones = [];
     
-    const centerX = artifact.centerX;
-    const centerY = artifact.centerY;
-    const orbitRadius = 120;
-    
-    for (let i = 0; i < droneCount; i++) {
-        const angle = (i / droneCount) * Math.PI * 2;
-        const orbitHeight = Math.sin(i * 0.5) * 40; // Varied orbit heights
-        
-        scanningDrones.push({
+    // Create the initial swarm of micro-drones
+    for (let i = 0; i < typographySettings.droneCount; i++) {
+        typographyDrones.push({
             id: i,
-            x: centerX + Math.cos(angle) * orbitRadius,
-            y: centerY + Math.sin(angle) * orbitRadius,
-            z: orbitHeight,
-            targetAngle: angle,
-            orbitRadius: orbitRadius + Math.random() * 20 - 10,
-            orbitSpeed: 0.01 + Math.random() * 0.005,
-            verticalOscillation: Math.random() * 0.008 + 0.003,
-            phase: i * Math.PI / 6,
-            size: 3 + Math.random() * 2,
-            brightness: 0.8 + Math.random() * 0.2,
+            x: Math.random() * droneSwarmCanvas.width,
+            y: Math.random() * droneSwarmCanvas.height,
+            targetX: 0,
+            targetY: 0,
+            vx: 0,
+            vy: 0,
+            size: 1.5 + Math.random() * 1,
+            brightness: 0.7 + Math.random() * 0.3,
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.8 + Math.random() * 0.4,
+            state: 'idle', // 'idle', 'moving', 'forming', 'dissolving'
+            assignedCharIndex: -1,
+            assignedPointIndex: -1,
             
-            // Sensor systems
-            lidarActive: Math.random() < 0.7,
-            radarActive: Math.random() < 0.5,
-            lidarConeAngle: Math.PI / 8,
-            lidarRange: 80,
-            radarSweepAngle: 0,
-            radarSweepSpeed: 0.05,
+            // Trail system
+            trail: [],
+            maxTrailLength: typographySettings.trailLength,
             
-            // Data collection
-            scanData: [],
-            contributedPoints: 0,
-            
-            // Visual trail
-            trailX: [],
-            trailY: [],
-            maxTrailLength: 15
+            // Motion blur effect
+            motionBlurIntensity: 0,
+            prevX: 0,
+            prevY: 0
         });
     }
     
     // Update drone count display
-    document.getElementById('drone-count').textContent = droneCount.toString();
+    document.getElementById('drone-count').textContent = typographySettings.droneCount.toString();
 }
 
-function initializeReconstruction() {
-    pointCloud = [];
-    reconstructedWireframe = [];
-    reconstructionError = [];
-    scanCompleteness = 0;
+function initializeLightTrails() {
+    lightTrails = [];
     
-    // Initialize error tracking with high initial error
-    for (let i = 0; i < 50; i++) {
-        reconstructionError.push(1.0 - (i * 0.015));
-    }
+    // Light trails will be created dynamically as drones move
+    // Each drone will contribute to the trail system
 }
 
-function animateScanningSwarm() {
+function animateKineticTypography() {
     if (!droneSwarmCtx) return;
     
     animationTime += 16; // ~60fps
+    const time = Date.now() * 0.001;
+    const currentTime = Date.now();
     
-    // Clear canvas with subtle trail effect
-    droneSwarmCtx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+    // Clear canvas with fade effect for trails
+    droneSwarmCtx.fillStyle = 'rgba(10, 10, 10, 0.15)';
     droneSwarmCtx.fillRect(0, 0, droneSwarmCanvas.width, droneSwarmCanvas.height);
     
-    const time = Date.now() * 0.001;
+    // Draw neural network constellation background
+    drawNeuralConstellations(time);
     
-    // Update artifact rotation
-    artifact.rotation.x += artifact.rotationSpeed.x;
-    artifact.rotation.y += artifact.rotationSpeed.y;
-    artifact.rotation.z += artifact.rotationSpeed.z;
+    // Handle text sequence transitions
+    handleTextSequences(currentTime);
     
-    // Draw the mysterious crystalline artifact
-    drawCrystallineArtifact();
+    // Update and draw typography drones
+    updateTypographyDrones(time);
     
-    // Update and draw scanning drones
-    updateScanningDrones(time);
+    // Draw persistent light trails
+    drawLightTrails();
     
-    // Process point cloud generation
-    generatePointCloudData();
+    // Draw current text formation
+    drawTextFormation(time);
     
-    // Draw point cloud
-    drawPointCloud();
+    // Update statistics
+    updateTypographyStats();
     
-    // Draw reconstructed wireframe
-    drawReconstructedWireframe();
-    
-    // Update scan completeness
-    updateScanCompleteness();
-    
-    // Draw sensor visualizations
-    drawSensorVisualizations();
-    
-    // Update reconstruction error graph
-    updateReconstructionGraph();
-    
-    requestAnimationFrame(animateScanningSwarm);
+    requestAnimationFrame(animateKineticTypography);
 }
 
-function drawCrystallineArtifact() {
-    const centerX = artifact.centerX;
-    const centerY = artifact.centerY;
-    
-    // Rotate and project vertices
-    const projectedVertices = artifact.vertices.map(vertex => {
-        // Apply rotations
-        let [x, y, z] = vertex;
+function drawNeuralConstellations(time) {
+    neuralConstellations.forEach(constellation => {
+        // Update constellation position
+        constellation.x += constellation.driftX;
+        constellation.y += constellation.driftY;
+        constellation.pulsePhase += 0.02;
         
-        // Rotate around Y axis
-        const cosY = Math.cos(artifact.rotation.y);
-        const sinY = Math.sin(artifact.rotation.y);
-        const newX = x * cosY - z * sinY;
-        const newZ = x * sinY + z * cosY;
-        x = newX;
-        z = newZ;
+        // Wrap around canvas
+        if (constellation.x < -100) constellation.x = droneSwarmCanvas.width + 100;
+        if (constellation.x > droneSwarmCanvas.width + 100) constellation.x = -100;
+        if (constellation.y < -100) constellation.y = droneSwarmCanvas.height + 100;
+        if (constellation.y > droneSwarmCanvas.height + 100) constellation.y = -100;
         
-        // Rotate around X axis
-        const cosX = Math.cos(artifact.rotation.x);
-        const sinX = Math.sin(artifact.rotation.x);
-        const newY = y * cosX - z * sinX;
-        z = y * sinX + z * cosX;
-        y = newY;
+        // Draw connections
+        constellation.connections.forEach(connection => {
+            const node1 = constellation.nodes[connection.from];
+            const node2 = constellation.nodes[connection.to];
+            
+            const x1 = constellation.x + node1.x;
+            const y1 = constellation.y + node1.y;
+            const x2 = constellation.x + node2.x;
+            const y2 = constellation.y + node2.y;
+            
+            const pulseAlpha = connection.opacity * (0.7 + 0.3 * Math.sin(constellation.pulsePhase));
+            
+            droneSwarmCtx.strokeStyle = `rgba(0, 212, 255, ${pulseAlpha})`;
+            droneSwarmCtx.lineWidth = 0.5;
+            droneSwarmCtx.beginPath();
+            droneSwarmCtx.moveTo(x1, y1);
+            droneSwarmCtx.lineTo(x2, y2);
+            droneSwarmCtx.stroke();
+        });
         
-        // Project to 2D (simple orthographic projection)
-        return {
-            x: centerX + x,
-            y: centerY + y,
-            z: z
-        };
+        // Draw nodes
+        constellation.nodes.forEach(node => {
+            const x = constellation.x + node.x;
+            const y = constellation.y + node.y;
+            const pulse = node.intensity * (0.6 + 0.4 * Math.sin(time * 2 + node.phase));
+            
+            droneSwarmCtx.fillStyle = `rgba(0, 212, 255, ${pulse})`;
+            droneSwarmCtx.beginPath();
+            droneSwarmCtx.arc(x, y, 1.5, 0, Math.PI * 2);
+            droneSwarmCtx.fill();
+            
+            // Add subtle glow
+            if (pulse > 0.7) {
+                droneSwarmCtx.shadowColor = '#00d4ff';
+                droneSwarmCtx.shadowBlur = 4;
+                droneSwarmCtx.fill();
+                droneSwarmCtx.shadowBlur = 0;
+            }
+        });
     });
+}
+
+function handleTextSequences(currentTime) {
+    const currentSequence = textSequences[currentSequenceIndex];
+    const elapsed = currentTime - sequenceStartTime;
     
-    // Draw faces with depth-based opacity
-    artifact.faces.forEach(face => {
-        const v1 = projectedVertices[face[0]];
-        const v2 = projectedVertices[face[1]];
-        const v3 = projectedVertices[face[2]];
+    if (droneFormationState === 'writing') {
+        if (elapsed > currentSequence.duration) {
+            droneFormationState = 'dissolving';
+        }
+    } else if (droneFormationState === 'dissolving') {
+        if (elapsed > currentSequence.duration + currentSequence.pause) {
+            // Move to next sequence
+            currentSequenceIndex = (currentSequenceIndex + 1) % textSequences.length;
+            sequenceStartTime = currentTime;
+            droneFormationState = 'transitioning';
+        }
+    } else if (droneFormationState === 'transitioning') {
+        if (elapsed > 1000) { // 1 second transition
+            droneFormationState = 'writing';
+        }
+    }
+}
+
+function getTextPoints(text, fontSize) {
+    // Create an off-screen canvas to extract text path points
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCanvas.width = droneSwarmCanvas.width;
+    tempCanvas.height = droneSwarmCanvas.height;
+    
+    tempCtx.font = `${fontSize}px Orbitron, monospace`;
+    tempCtx.textAlign = 'center';
+    tempCtx.textBaseline = 'middle';
+    
+    const centerX = tempCanvas.width / 2;
+    const centerY = tempCanvas.height / 2;
+    
+    // Measure text to get dimensions
+    const metrics = tempCtx.measureText(text);
+    const textWidth = metrics.width;
+    const textHeight = fontSize;
+    
+    // Fill text to get pixel data
+    tempCtx.fillStyle = 'white';
+    tempCtx.fillText(text, centerX, centerY);
+    
+    const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+    const data = imageData.data;
+    
+    const points = [];
+    const sampleRate = 3; // Sample every 3rd pixel for performance
+    
+    for (let y = 0; y < tempCanvas.height; y += sampleRate) {
+        for (let x = 0; x < tempCanvas.width; x += sampleRate) {
+            const index = (y * tempCanvas.width + x) * 4;
+            const alpha = data[index + 3];
+            
+            if (alpha > 128) { // If pixel is part of text
+                points.push({ x, y });
+            }
+        }
+    }
+    
+    return points;
+}
+
+function updateTypographyDrones(time) {
+    const currentSequence = textSequences[currentSequenceIndex];
+    const currentText = currentSequence.text;
+    
+    // Get target points for current text
+    const textPoints = getTextPoints(currentText, typographySettings.fontSize);
+    
+    typographyDrones.forEach((drone, index) => {
+        // Store previous position for motion blur
+        drone.prevX = drone.x;
+        drone.prevY = drone.y;
         
-        // Calculate average depth
-        const avgZ = (v1.z + v2.z + v3.z) / 3;
-        const depthAlpha = 0.3 + (avgZ / 60) * 0.4;
+        if (droneFormationState === 'writing' || droneFormationState === 'transitioning') {
+            // Assign drones to text points
+            if (index < textPoints.length) {
+                const targetPoint = textPoints[index];
+                drone.targetX = targetPoint.x;
+                drone.targetY = targetPoint.y;
+                drone.state = 'forming';
+                drone.assignedPointIndex = index;
+            } else {
+                // Extra drones orbit around the text
+                const orbitRadius = 100 + (index % 50) * 5;
+                const orbitAngle = (index / 50) * Math.PI * 2 + time * 0.5;
+                drone.targetX = droneSwarmCanvas.width / 2 + Math.cos(orbitAngle) * orbitRadius;
+                drone.targetY = droneSwarmCanvas.height / 2 + Math.sin(orbitAngle) * orbitRadius;
+                drone.state = 'orbiting';
+            }
+        } else if (droneFormationState === 'dissolving') {
+            // Dissolve into particles
+            drone.state = 'dissolving';
+            drone.targetX = drone.x + (Math.random() - 0.5) * 100;
+            drone.targetY = drone.y + (Math.random() - 0.5) * 100;
+        }
         
-        droneSwarmCtx.strokeStyle = `rgba(0, 255, 136, ${Math.max(0.1, depthAlpha)})`;
-        droneSwarmCtx.lineWidth = 1.5;
+        // Move drone toward target
+        const dx = drone.targetX - drone.x;
+        const dy = drone.targetY - drone.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
         
+        if (distance > 1) {
+            const moveSpeed = drone.speed * (drone.state === 'dissolving' ? 0.5 : 1);
+            drone.vx = (dx / distance) * moveSpeed;
+            drone.vy = (dy / distance) * moveSpeed;
+            
+            drone.x += drone.vx;
+            drone.y += drone.vy;
+            
+            // Calculate motion blur intensity
+            const velocity = Math.sqrt(drone.vx * drone.vx + drone.vy * drone.vy);
+            drone.motionBlurIntensity = Math.min(1, velocity / 5);
+        }
+        
+        // Update trail
+        drone.trail.push({ x: drone.x, y: drone.y, time: time });
+        if (drone.trail.length > drone.maxTrailLength) {
+            drone.trail.shift();
+        }
+        
+        // Update phase for pulsing effect
+        drone.phase += 0.05;
+        
+        // Draw drone with volumetric glow
+        const pulse = drone.brightness * (0.8 + 0.2 * Math.sin(drone.phase));
+        const glowIntensity = typographySettings.glowIntensity * pulse;
+        
+        // Motion blur effect
+        if (drone.motionBlurIntensity > 0.3) {
+            drawMotionBlur(drone);
+        }
+        
+        // Main drone body
+        droneSwarmCtx.shadowColor = '#00d4ff';
+        droneSwarmCtx.shadowBlur = 15 * glowIntensity;
+        droneSwarmCtx.fillStyle = `rgba(0, 212, 255, ${pulse})`;
         droneSwarmCtx.beginPath();
-        droneSwarmCtx.moveTo(v1.x, v1.y);
-        droneSwarmCtx.lineTo(v2.x, v2.y);
-        droneSwarmCtx.lineTo(v3.x, v3.y);
-        droneSwarmCtx.closePath();
-        droneSwarmCtx.stroke();
-    });
-    
-    // Add crystalline glow effect
-    droneSwarmCtx.shadowColor = '#00ff88';
-    droneSwarmCtx.shadowBlur = 10;
-    
-    // Draw vertices as glowing points
-    projectedVertices.forEach(vertex => {
-        droneSwarmCtx.fillStyle = `rgba(0, 255, 136, 0.8)`;
-        droneSwarmCtx.beginPath();
-        droneSwarmCtx.arc(vertex.x, vertex.y, 2, 0, Math.PI * 2);
+        droneSwarmCtx.arc(drone.x, drone.y, drone.size, 0, Math.PI * 2);
         droneSwarmCtx.fill();
+        droneSwarmCtx.shadowBlur = 0;
     });
+}
+
+function drawMotionBlur(drone) {
+    const blurSteps = 5;
+    const stepX = (drone.x - drone.prevX) / blurSteps;
+    const stepY = (drone.y - drone.prevY) / blurSteps;
     
-    droneSwarmCtx.shadowBlur = 0;
+    for (let i = 0; i < blurSteps; i++) {
+        const alpha = (i / blurSteps) * drone.motionBlurIntensity * 0.3;
+        const x = drone.prevX + stepX * i;
+        const y = drone.prevY + stepY * i;
+        
+        droneSwarmCtx.fillStyle = `rgba(0, 212, 255, ${alpha})`;
+        droneSwarmCtx.beginPath();
+        droneSwarmCtx.arc(x, y, drone.size * 0.8, 0, Math.PI * 2);
+        droneSwarmCtx.fill();
+    }
+}
+
+function drawLightTrails() {
+    typographyDrones.forEach(drone => {
+        if (drone.trail.length > 1) {
+            // Draw persistent light trails
+            for (let i = 1; i < drone.trail.length; i++) {
+                const prev = drone.trail[i - 1];
+                const curr = drone.trail[i];
+                
+                const alpha = (i / drone.trail.length) * 0.6;
+                const width = (i / drone.trail.length) * 2 + 0.5;
+                
+                droneSwarmCtx.strokeStyle = `rgba(0, 212, 255, ${alpha})`;
+                droneSwarmCtx.lineWidth = width;
+                droneSwarmCtx.lineCap = 'round';
+                
+                droneSwarmCtx.beginPath();
+                droneSwarmCtx.moveTo(prev.x, prev.y);
+                droneSwarmCtx.lineTo(curr.x, curr.y);
+                droneSwarmCtx.stroke();
+                
+                // Add glow to trails
+                if (alpha > 0.4) {
+                    droneSwarmCtx.shadowColor = '#00d4ff';
+                    droneSwarmCtx.shadowBlur = 8;
+                    droneSwarmCtx.stroke();
+                    droneSwarmCtx.shadowBlur = 0;
+                }
+            }
+        }
+    });
+}
+
+function drawTextFormation(time) {
+    if (droneFormationState === 'writing' || droneFormationState === 'dissolving') {
+        const currentSequence = textSequences[currentSequenceIndex];
+        const currentText = currentSequence.text;
+        
+        // Draw holographic text outline
+        const centerX = droneSwarmCanvas.width / 2;
+        const centerY = droneSwarmCanvas.height / 2;
+        
+        droneSwarmCtx.font = `${typographySettings.fontSize}px Orbitron, monospace`;
+        droneSwarmCtx.textAlign = 'center';
+        droneSwarmCtx.textBaseline = 'middle';
+        
+        // Create holographic effect
+        const holoAlpha = droneFormationState === 'dissolving' ? 0.1 : 0.3;
+        const pulse = 0.8 + 0.2 * Math.sin(time * 3);
+        
+        // Draw multiple offset text layers for depth
+        for (let offset = 0; offset < 3; offset++) {
+            const alpha = holoAlpha * (1 - offset * 0.3) * pulse;
+            droneSwarmCtx.strokeStyle = `rgba(0, 212, 255, ${alpha})`;
+            droneSwarmCtx.lineWidth = 1 + offset * 0.5;
+            droneSwarmCtx.strokeText(currentText, centerX + offset, centerY + offset);
+        }
+        
+        // Add glow effect
+        droneSwarmCtx.shadowColor = '#00d4ff';
+        droneSwarmCtx.shadowBlur = 20;
+        droneSwarmCtx.strokeStyle = `rgba(0, 212, 255, ${holoAlpha * 0.5})`;
+        droneSwarmCtx.lineWidth = 0.5;
+        droneSwarmCtx.strokeText(currentText, centerX, centerY);
+        droneSwarmCtx.shadowBlur = 0;
+    }
+}
+
+function updateTypographyStats() {
+    const currentSequence = textSequences[currentSequenceIndex];
+    
+    // Update display elements
+    document.getElementById('formation-progress').textContent = droneFormationState.toUpperCase();
+    
+    const activeDrones = typographyDrones.filter(d => d.state === 'forming').length;
+    document.getElementById('solution-time').textContent = `${((activeDrones / typographyDrones.length) * 100).toFixed(1)}%`;
+    
+    document.getElementById('point-cloud-count').textContent = currentSequence.text.length.toString() + ' CHARS';
+}
+
+function updateSwarmStats() {
+    // Update the swarm statistics display
+    const currentSequence = textSequences[currentSequenceIndex];
+    document.getElementById('formation-progress').textContent = 'KINETIC TYPOGRAPHY';
+    document.getElementById('solution-time').textContent = '0.0%';
+    document.getElementById('point-cloud-count').textContent = '0';
 }
 
 function updateScanningDrones(time) {
