@@ -85,45 +85,33 @@
             <div class="tech-grid"></div>
             <div class="robotic-arm-blueprint">
                 <canvas id="robotic-arm-canvas"></canvas>
-                <div class="kinematic-overlay">
-                    <div class="equation-float eq-1">h(x) ≥ 0</div>
-                    <div class="equation-float eq-2">ḣ(x) ≥ -α</div>
-                    <div class="equation-float eq-3">Safety</div>
-                    <div class="equation-float eq-4">CBF</div>
-                </div>
+                                  <div class="kinematic-overlay">
+                      <div class="equation-float eq-1">θ₁ = 45°</div>
+                      <div class="equation-float eq-2">L₁ = 120mm</div>
+                      <div class="equation-float eq-3">v = 2.3 m/s</div>
+                      <div class="equation-float eq-4">τ = 15.7 Nm</div>
+                  </div>
             </div>
             <div class="cfd-simulation">
                 <canvas id="cfd-canvas"></canvas>
-                <div class="physics-overlay">
-                    <div class="navier-stokes-equation">
-                        <div class="equation-title">RRT Algorithm</div>
-                        <div class="equation-formula">Rapidly-Exploring Random Tree</div>
-                    </div>
-                </div>
+                                  <div class="physics-overlay">
+                      <div class="navier-stokes-equation">
+                          <div class="equation-title">Navier-Stokes</div>
+                          <div class="equation-formula">∂u/∂t + u∇u = -∇p/ρ + ν∇²u</div>
+                      </div>
+                  </div>
             </div>
             <div class="thruster-simulation">
                 <canvas id="thruster-canvas"></canvas>
-                <div class="thruster-overlay">
-                    <div class="vector-field vf-1">P_k</div>
-                    <div class="vector-field vf-2">K_k</div>
-                    <div class="vector-field vf-3">σ² ↓</div>
-                </div>
+                                  <div class="thruster-overlay">
+                      <div class="vector-field vf-1">∇p</div>
+                      <div class="vector-field vf-2">∇T</div>
+                      <div class="vector-field vf-3">Ma = 2.4</div>
+                  </div>
             </div>
             <div class="architect-core">
                 <canvas id="architect-canvas"></canvas>
                 <div class="consciousness-overlay">
-                    <div class="trajectory-planning">
-                        <canvas id="trajectory-canvas"></canvas>
-                        <div class="planning-label">HOLOGRAPHIC RRT</div>
-                    </div>
-                    <div class="quantum-field">
-                        <canvas id="quantum-field-canvas"></canvas>
-                        <div class="field-label">QUANTUM FIELD</div>
-                    </div>
-                    <div class="data-portals">
-                        <canvas id="data-portals-canvas"></canvas>
-                        <div class="portal-label">STATE ESTIMATION</div>
-                    </div>
                 </div>
             </div>
             <div class="code-rain-layer">
@@ -169,10 +157,6 @@
                         <div class="filter-visualization">
                             <div class="filter-label">SWARM DYNAMICS</div>
                             <div class="filter-equation">F = ma + μ(vᵢ - vⱼ) + α∇φ</div>
-                        </div>
-                        <div class="reconstruction-graph">
-                            <canvas id="error-graph-canvas" width="120" height="60"></canvas>
-                            <div class="graph-label">Formation Coherence</div>
                         </div>
                     </div>
                     <div class="depth-field-overlay"></div>

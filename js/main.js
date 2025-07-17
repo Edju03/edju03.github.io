@@ -13,9 +13,14 @@ function initializeApp() {
     // Initialize all components
     ParticleSystem.init();
     DroneSwarm.init();
-    ControlBarrierFunction.init();
-    RRTVisualization.init();
-    StateEstimationEllipsoid.init();
+    
+    // Original simulations
+    RoboticArm.init();
+    CFDSimulation.init();
+    ThrusterSimulation.init();
+    
+    // New holographic simulations are embedded in existing canvases
+    
     Architect.init();
     CodeRain.init();
     Navigation.init();
@@ -35,10 +40,38 @@ function initializeApp() {
         setTimeout(() => {
             LoadingScreen.hide();
             isLoaded = true;
-            Animations.start();
+            startAnimations();
         }, 2000);
     });
 }
+
+// Start animations after loading
+function startAnimations() {
+    // Add any animations that should start after loading
+    document.querySelectorAll('.hero-text, .hero-visual').forEach(element => {
+        element.style.animationPlayState = 'running';
+    });
+}
+
+// Loading Screen
+const LoadingScreen = {
+    show() {
+        const loadingScreen = document.querySelector('.loading-screen');
+        if (loadingScreen) {
+            loadingScreen.classList.remove('hidden');
+        }
+    },
+    
+    hide() {
+        const loadingScreen = document.querySelector('.loading-screen');
+        if (loadingScreen) {
+            loadingScreen.classList.add('hidden');
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500);
+        }
+    }
+};
 
 // Export for global access
 window.initializeApp = initializeApp; 
