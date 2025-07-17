@@ -20,19 +20,19 @@ const DroneSwarm = {
     animationTime: 0,
     simulationStartTime: 0,
     typographySettings: {
-        droneCount: 120, // Elite squadron for complex letter formation
-        fontSize: 56,
-        letterSpacing: 14,
-        lineHeight: 70,
-        glowIntensity: 2.0,
-        trailLength: 25, // Motion blur streaks for dramatic effect
+        droneCount: 80, // Reduced for cleaner letter formation
+        fontSize: 64, // Larger text for better readability
+        letterSpacing: 16,
+        lineHeight: 80,
+        glowIntensity: 0.8, // Reduced brightness
+        trailLength: 15, // Shorter trails for clarity
         dissolutionSpeed: 0.02,
-        hyperKineticSpeed: 12.0, // Hyper-speed repositioning
-        precisionThreshold: 1.5,
-        afterburnerLength: 20,
-        breakawaySpeed: 15.0, // Speed when breaking formation
-        formationHoldTime: 2500, // How long to hold letter formation
-        transitionTime: 1200 // Time for dramatic repositioning
+        hyperKineticSpeed: 8.0, // Slower for better visibility
+        precisionThreshold: 2.0,
+        afterburnerLength: 12, // Shorter trails
+        breakawaySpeed: 10.0, // Reduced speed
+        formationHoldTime: 3500, // Longer hold time
+        transitionTime: 1500 // Longer transition for clarity
     },
 
     init() {
@@ -92,9 +92,9 @@ const DroneSwarm = {
                 vy: 0,
                 
                 // Elite characteristics
-                size: 3 + Math.random() * 2, // Larger, more visible
-                brightness: 0.9 + Math.random() * 0.1,
-                coreEnergy: 1.0,
+                size: 2 + Math.random() * 1, // Smaller, more precise
+                brightness: 0.6 + Math.random() * 0.2, // Reduced brightness
+                coreEnergy: 0.8,
                 phase: Math.random() * Math.PI * 2,
                 hyperSpeed: this.typographySettings.hyperKineticSpeed * (0.8 + Math.random() * 0.4),
                 
@@ -144,8 +144,8 @@ const DroneSwarm = {
         const time = Date.now() * 0.001;
         const currentTime = Date.now();
         
-        // Clear canvas with deep black void
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        // Clear canvas with deeper fade for better contrast
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         // Draw cyan grid floor
@@ -224,20 +224,20 @@ const DroneSwarm = {
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             
-            // Create crystalline effect with multiple layers
-            const crystallineAlpha = this.droneFormationState === 'dissolving' ? 0.05 : 0.15;
-            const pulse = 0.7 + 0.3 * Math.sin(time * 2);
+            // Create crystalline effect with multiple layers - enhanced visibility
+            const crystallineAlpha = this.droneFormationState === 'dissolving' ? 0.15 : 0.35;
+            const pulse = 0.8 + 0.2 * Math.sin(time * 2);
             
             // Draw multiple offset layers for crystalline depth
-            for (let layer = 0; layer < 4; layer++) {
-                const offset = layer * 2;
-                const alpha = crystallineAlpha * (1 - layer * 0.2) * pulse;
+            for (let layer = 0; layer < 3; layer++) {
+                const offset = layer * 1.5;
+                const alpha = crystallineAlpha * (1 - layer * 0.25) * pulse;
                 
-                // Crystalline stroke
-                this.ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
-                this.ctx.lineWidth = 2 - layer * 0.3;
-                this.ctx.shadowColor = '#00ffff';
-                this.ctx.shadowBlur = 15 - layer * 3;
+                // Crystalline stroke with better visibility
+                this.ctx.strokeStyle = `rgba(100, 255, 255, ${alpha})`;
+                this.ctx.lineWidth = 3 - layer * 0.5;
+                this.ctx.shadowColor = '#40ffff';
+                this.ctx.shadowBlur = 20 - layer * 5;
                 this.ctx.strokeText(currentText, centerX + offset, centerY + offset);
             }
             
@@ -300,7 +300,7 @@ const DroneSwarm = {
         
         // Extract formation points from pixel data with intelligent sampling
         const formationPoints = [];
-        const sampleRate = 3; // Sample every 3rd pixel for optimal density
+        const sampleRate = 4; // Increased sampling rate for sparser formation
         
         for (let y = 0; y < tempCanvas.height; y += sampleRate) {
             for (let x = 0; x < tempCanvas.width; x += sampleRate) {
@@ -524,24 +524,24 @@ const DroneSwarm = {
             }
         }
         
-        // Enhanced motion blur for hyper-speed movement
-        const motionIntensity = drone.motionBlurIntensity * (drone.breakawayIntensity || 1);
-        if (motionIntensity > 0.3) {
-            const blurSteps = drone.state === 'breakaway' ? 16 : 8; // More steps for breakaway
+        // Enhanced motion blur for hyper-speed movement - reduced intensity
+        const motionIntensity = drone.motionBlurIntensity * (drone.breakawayIntensity || 1) * 0.6;
+        if (motionIntensity > 0.2) {
+            const blurSteps = drone.state === 'breakaway' ? 12 : 6; // Reduced steps
             const stepX = (drone.x - drone.prevX) / blurSteps;
             const stepY = (drone.y - drone.prevY) / blurSteps;
             
             for (let i = 0; i < blurSteps; i++) {
-                const alpha = (i / blurSteps) * motionIntensity * 0.6;
+                const alpha = (i / blurSteps) * motionIntensity * 0.4;
                 const x = drone.prevX + stepX * i;
                 const y = drone.prevY + stepY * i;
-                const size = drone.size * (0.6 + (i / blurSteps) * 0.4);
+                const size = drone.size * (0.5 + (i / blurSteps) * 0.3);
                 
                 // Breakaway drones get white-hot streaks
                 if (drone.state === 'breakaway') {
                     this.ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
                 } else {
-                    this.ctx.fillStyle = `rgba(0, 212, 255, ${alpha})`;
+                    this.ctx.fillStyle = `rgba(0, 212, 255, ${alpha * 0.7})`;
                 }
                 
                 this.ctx.beginPath();
@@ -574,45 +574,45 @@ const DroneSwarm = {
             this.ctx.fill();
         }
         
-        // Main elite drone body (larger, more intense)
+        // Main elite drone body - reduced glow
         this.ctx.shadowColor = '#00d4ff';
-        this.ctx.shadowBlur = 20 * this.typographySettings.glowIntensity;
-        this.ctx.fillStyle = `rgba(0, 212, 255, ${coreIntensity})`;
+        this.ctx.shadowBlur = 8 * this.typographySettings.glowIntensity;
+        this.ctx.fillStyle = `rgba(0, 212, 255, ${coreIntensity * 0.8})`;
         this.ctx.beginPath();
         this.ctx.arc(drone.x, drone.y, coreSize, 0, Math.PI * 2);
         this.ctx.fill();
         this.ctx.shadowBlur = 0;
         
-        // Elite core highlight
-        this.ctx.fillStyle = `rgba(255, 255, 255, ${coreIntensity * 0.8})`;
+        // Elite core highlight - more subtle
+        this.ctx.fillStyle = `rgba(255, 255, 255, ${coreIntensity * 0.5})`;
         this.ctx.beginPath();
-        this.ctx.arc(drone.x, drone.y, coreSize * 0.4, 0, Math.PI * 2);
+        this.ctx.arc(drone.x, drone.y, coreSize * 0.3, 0, Math.PI * 2);
         this.ctx.fill();
     },
 
     drawBreakawayStreaks(drone) {
-        // Draw dramatic breakaway streaks with white-hot intensity
-        const streakLength = 50 * (drone.breakawayIntensity || 1);
-        const streakCount = 12;
+        // Draw subtle breakaway streaks - reduced intensity
+        const streakLength = 30 * (drone.breakawayIntensity || 1);
+        const streakCount = 8; // Fewer streaks
         
         for (let i = 0; i < streakCount; i++) {
             const angle = (i / streakCount) * Math.PI * 2;
-            const distance = streakLength * (0.5 + Math.random() * 0.5);
+            const distance = streakLength * (0.4 + Math.random() * 0.4);
             const endX = drone.x + Math.cos(angle) * distance;
             const endY = drone.y + Math.sin(angle) * distance;
             
-            // Create gradient streak effect
+            // Create gradient streak effect - more subtle
             const gradient = this.ctx.createLinearGradient(drone.x, drone.y, endX, endY);
-            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-            gradient.addColorStop(0.3, 'rgba(255, 200, 100, 0.6)');
-            gradient.addColorStop(0.7, 'rgba(0, 200, 255, 0.3)');
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.5)');
+            gradient.addColorStop(0.3, 'rgba(255, 200, 100, 0.3)');
+            gradient.addColorStop(0.7, 'rgba(0, 200, 255, 0.2)');
             gradient.addColorStop(1, 'rgba(0, 100, 200, 0)');
             
             this.ctx.strokeStyle = gradient;
-            this.ctx.lineWidth = 3 * (drone.breakawayIntensity || 1);
+            this.ctx.lineWidth = 2 * (drone.breakawayIntensity || 1);
             this.ctx.lineCap = 'round';
             this.ctx.shadowColor = '#ffffff';
-            this.ctx.shadowBlur = 8;
+            this.ctx.shadowBlur = 4;
             
             this.ctx.beginPath();
             this.ctx.moveTo(drone.x, drone.y);
@@ -623,7 +623,7 @@ const DroneSwarm = {
         
         // Decay breakaway intensity over time
         if (drone.breakawayIntensity) {
-            drone.breakawayIntensity -= 0.02;
+            drone.breakawayIntensity -= 0.03; // Faster decay
             if (drone.breakawayIntensity <= 0) {
                 drone.breakawayIntensity = 0;
                 drone.streakMultiplier = 1;
