@@ -9,7 +9,10 @@ const DroneSwarm = {
     typographyDrones: [],
     lightTrails: [],
     textSequences: [
-        { text: "Hello, I am Edward", duration: 4000, pause: 1000 }
+        { text: "Hello", duration: 2500, pause: 800, type: 'word' },
+        { text: "I am", duration: 2000, pause: 600, type: 'phrase' },
+        { text: "Edward", duration: 2500, pause: 1000, type: 'word' },
+        { text: "Hello, I am Edward", duration: 4000, pause: 2000, type: 'complete' }
     ],
     currentSequenceIndex: 0,
     sequenceStartTime: 0,
@@ -17,16 +20,19 @@ const DroneSwarm = {
     animationTime: 0,
     simulationStartTime: 0,
     typographySettings: {
-        droneCount: 64, // Increased for better letter formation
-        fontSize: 48,
-        letterSpacing: 12,
-        lineHeight: 60,
-        glowIntensity: 1.5,
-        trailLength: 0, // No trails as specified
-        dissolutionSpeed: 0.015,
-        hyperKineticSpeed: 6.0,
-        precisionThreshold: 1.0,
-        afterburnerLength: 0 // No trails
+        droneCount: 120, // Elite squadron for complex letter formation
+        fontSize: 56,
+        letterSpacing: 14,
+        lineHeight: 70,
+        glowIntensity: 2.0,
+        trailLength: 25, // Motion blur streaks for dramatic effect
+        dissolutionSpeed: 0.02,
+        hyperKineticSpeed: 12.0, // Hyper-speed repositioning
+        precisionThreshold: 1.5,
+        afterburnerLength: 20,
+        breakawaySpeed: 15.0, // Speed when breaking formation
+        formationHoldTime: 2500, // How long to hold letter formation
+        transitionTime: 1200 // Time for dramatic repositioning
     },
 
     init() {
@@ -276,104 +282,97 @@ const DroneSwarm = {
     },
 
     getEliteFormationPoints(text, fontSize) {
-        // Create strategic formation points for elite squadron
+        // Create pixel-perfect formation points using canvas ImageData
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
-        tempCanvas.width = this.canvas.width;
-        tempCanvas.height = this.canvas.height;
+        tempCanvas.width = 1200; // Higher resolution for better precision
+        tempCanvas.height = 300;
         
-        tempCtx.font = `${fontSize}px Orbitron, monospace`;
-        tempCtx.fontWeight = 'bold';
+        tempCtx.font = `bold ${fontSize * 2}px Orbitron, monospace`; // Double size for better sampling
         tempCtx.textAlign = 'center';
         tempCtx.textBaseline = 'middle';
-        
-        const centerX = tempCanvas.width / 2;
-        const centerY = tempCanvas.height / 2;
-        
-        // Create text path for precise vector extraction
         tempCtx.fillStyle = 'white';
-        tempCtx.strokeStyle = 'white';
-        tempCtx.lineWidth = 2;
-        tempCtx.fillText(text, centerX, centerY);
-        tempCtx.strokeText(text, centerX, centerY);
+        tempCtx.fillText(text, tempCanvas.width / 2, tempCanvas.height / 2);
         
-        // Extract strategic formation points (corners, intersections, key curves)
+        // Get pixel data for precise formation points
+        const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+        const pixels = imageData.data;
+        
+        // Extract formation points from pixel data with intelligent sampling
         const formationPoints = [];
-        const textMetrics = tempCtx.measureText(text);
-        const textWidth = textMetrics.width;
-        const textHeight = fontSize;
+        const sampleRate = 3; // Sample every 3rd pixel for optimal density
         
-        // Create precision points based on character analysis
-        const chars = text.split('');
-        const charSpacing = textWidth / Math.max(1, chars.length - 1);
-        const startX = centerX - textWidth / 2;
-        
-        chars.forEach((char, index) => {
-            const charX = startX + index * charSpacing;
-            
-            // Add strategic points for each character
-            switch (char.toUpperCase()) {
-                case 'H':
-                    formationPoints.push(
-                        { x: charX - 8, y: centerY - textHeight/3, priority: 'high' },
-                        { x: charX + 8, y: centerY - textHeight/3, priority: 'high' },
-                        { x: charX, y: centerY, priority: 'critical' },
-                        { x: charX - 8, y: centerY + textHeight/3, priority: 'high' },
-                        { x: charX + 8, y: centerY + textHeight/3, priority: 'high' }
-                    );
-                    break;
-                case 'E':
-                    formationPoints.push(
-                        { x: charX - 6, y: centerY - textHeight/3, priority: 'high' },
-                        { x: charX + 6, y: centerY - textHeight/3, priority: 'medium' },
-                        { x: charX - 6, y: centerY, priority: 'critical' },
-                        { x: charX + 4, y: centerY, priority: 'medium' },
-                        { x: charX - 6, y: centerY + textHeight/3, priority: 'high' },
-                        { x: charX + 6, y: centerY + textHeight/3, priority: 'medium' }
-                    );
-                    break;
-                case 'L':
-                    formationPoints.push(
-                        { x: charX - 6, y: centerY - textHeight/3, priority: 'high' },
-                        { x: charX - 6, y: centerY, priority: 'critical' },
-                        { x: charX - 6, y: centerY + textHeight/3, priority: 'high' },
-                        { x: charX + 6, y: centerY + textHeight/3, priority: 'medium' }
-                    );
-                    break;
-                case 'O':
-                    formationPoints.push(
-                        { x: charX, y: centerY - textHeight/3, priority: 'high' },
-                        { x: charX - 8, y: centerY, priority: 'critical' },
-                        { x: charX + 8, y: centerY, priority: 'critical' },
-                        { x: charX, y: centerY + textHeight/3, priority: 'high' }
-                    );
-                    break;
-                case 'R':
-                    formationPoints.push(
-                        { x: charX - 6, y: centerY - textHeight/3, priority: 'high' },
-                        { x: charX + 4, y: centerY - textHeight/3, priority: 'medium' },
-                        { x: charX - 6, y: centerY, priority: 'critical' },
-                        { x: charX + 2, y: centerY, priority: 'medium' },
-                        { x: charX - 6, y: centerY + textHeight/3, priority: 'high' },
-                        { x: charX + 6, y: centerY + textHeight/3, priority: 'medium' }
-                    );
-                    break;
-                default:
-                    // Generic formation for other characters
-                    formationPoints.push(
-                        { x: charX, y: centerY - textHeight/4, priority: 'medium' },
-                        { x: charX - 4, y: centerY, priority: 'high' },
-                        { x: charX + 4, y: centerY, priority: 'high' },
-                        { x: charX, y: centerY + textHeight/4, priority: 'medium' }
-                    );
+        for (let y = 0; y < tempCanvas.height; y += sampleRate) {
+            for (let x = 0; x < tempCanvas.width; x += sampleRate) {
+                const index = (y * tempCanvas.width + x) * 4;
+                const alpha = pixels[index + 3]; // Alpha channel
+                
+                if (alpha > 128) { // If pixel is part of text
+                    // Convert back to world coordinates
+                    const worldX = (x / tempCanvas.width) * this.canvas.width;
+                    const worldY = (y / tempCanvas.height) * this.canvas.height;
+                    
+                    // Add priority based on position (edges get higher priority)
+                    const edgeDetection = this.detectEdge(pixels, x, y, tempCanvas.width, tempCanvas.height);
+                    const priority = edgeDetection ? 'critical' : 'medium';
+                    
+                    formationPoints.push({ 
+                        x: worldX, 
+                        y: worldY, 
+                        priority: priority,
+                        char: this.getCharacterAtPosition(text, x, tempCanvas.width)
+                    });
+                }
             }
-        });
+        }
         
-        // Sort by priority and limit to drone count
+        // Sort by priority and distribute evenly
         const priorityOrder = { 'critical': 3, 'high': 2, 'medium': 1 };
         formationPoints.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
         
-        return formationPoints.slice(0, this.typographySettings.droneCount);
+        // If we have more points than drones, sample them intelligently
+        if (formationPoints.length > this.typographySettings.droneCount) {
+            const step = formationPoints.length / this.typographySettings.droneCount;
+            const sampledPoints = [];
+            for (let i = 0; i < this.typographySettings.droneCount; i++) {
+                const index = Math.floor(i * step);
+                if (formationPoints[index]) {
+                    sampledPoints.push(formationPoints[index]);
+                }
+            }
+            return sampledPoints;
+        }
+        
+        return formationPoints;
+    },
+
+    detectEdge(pixels, x, y, width, height) {
+        // Simple edge detection for letter outlines
+        const index = (y * width + x) * 4;
+        const current = pixels[index + 3];
+        
+        // Check neighboring pixels
+        const neighbors = [
+            {x: x-1, y: y}, {x: x+1, y: y}, 
+            {x: x, y: y-1}, {x: x, y: y+1}
+        ];
+        
+        for (let neighbor of neighbors) {
+            if (neighbor.x >= 0 && neighbor.x < width && neighbor.y >= 0 && neighbor.y < height) {
+                const nIndex = (neighbor.y * width + neighbor.x) * 4;
+                const neighborAlpha = pixels[nIndex + 3];
+                if (Math.abs(current - neighborAlpha) > 128) {
+                    return true; // Edge detected
+                }
+            }
+        }
+        return false;
+    },
+
+    getCharacterAtPosition(text, x, totalWidth) {
+        // Estimate which character this position belongs to
+        const charIndex = Math.floor((x / totalWidth) * text.length);
+        return text[Math.min(charIndex, text.length - 1)];
     },
 
     updateTypographyDrones(time) {
@@ -399,6 +398,10 @@ const DroneSwarm = {
                     newTargetY = targetPoint.y;
                     drone.state = 'engaging';
                     drone.crystallineFormation = true;
+                    
+                    // Character-specific positioning for dramatic breakaway effects
+                    drone.assignedCharacter = targetPoint.char;
+                    drone.characterIndex = this.getCharacterIndex(targetPoint.char, currentText);
                 } else {
                     // Standby drones maintain perimeter
                     const standbyRadius = 150;
@@ -409,12 +412,8 @@ const DroneSwarm = {
                     drone.crystallineFormation = false;
                 }
             } else if (this.droneFormationState === 'dissolving') {
-                // Aggressive exit vectors
-                const exitAngle = Math.atan2(drone.y - this.canvas.height/2, drone.x - this.canvas.width/2);
-                newTargetX = drone.x + Math.cos(exitAngle) * 200;
-                newTargetY = drone.y + Math.sin(exitAngle) * 200;
-                drone.state = 'repositioning';
-                drone.crystallineFormation = false;
+                // Character-specific dramatic breakaway effects
+                this.executeBreakawayManeuver(drone, time);
             }
             
             // Hyper-kinetic movement calculations
@@ -488,6 +487,11 @@ const DroneSwarm = {
     },
 
     drawEliteDrone(drone) {
+        // Enhanced breakaway motion blur streaks
+        if (drone.state === 'breakaway' && drone.breakawayIntensity > 0) {
+            this.drawBreakawayStreaks(drone);
+        }
+        
         // Draw brilliant afterburner trail
         if (drone.afterburnerTrail.length > 1) {
             for (let i = 1; i < drone.afterburnerTrail.length; i++) {
@@ -497,9 +501,12 @@ const DroneSwarm = {
                 const alpha = (i / drone.afterburnerTrail.length) * curr.intensity * 0.9;
                 const width = (i / drone.afterburnerTrail.length) * 4 + 1;
                 
+                // Enhanced afterburner for breakaway state
+                const breakawayMultiplier = drone.state === 'breakaway' ? (drone.streakMultiplier || 1) : 1;
+                
                 // Sharp, brilliant afterburner
                 this.ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
-                this.ctx.lineWidth = width;
+                this.ctx.lineWidth = width * breakawayMultiplier;
                 this.ctx.lineCap = 'round';
                 
                 this.ctx.beginPath();
@@ -510,26 +517,33 @@ const DroneSwarm = {
                 // Add intense glow to afterburners
                 if (alpha > 0.6) {
                     this.ctx.shadowColor = '#00ffff';
-                    this.ctx.shadowBlur = 12;
+                    this.ctx.shadowBlur = 12 * breakawayMultiplier;
                     this.ctx.stroke();
                     this.ctx.shadowBlur = 0;
                 }
             }
         }
         
-        // Motion blur for hyper-speed movement
-        if (drone.motionBlurIntensity > 0.4) {
-            const blurSteps = 8;
+        // Enhanced motion blur for hyper-speed movement
+        const motionIntensity = drone.motionBlurIntensity * (drone.breakawayIntensity || 1);
+        if (motionIntensity > 0.3) {
+            const blurSteps = drone.state === 'breakaway' ? 16 : 8; // More steps for breakaway
             const stepX = (drone.x - drone.prevX) / blurSteps;
             const stepY = (drone.y - drone.prevY) / blurSteps;
             
             for (let i = 0; i < blurSteps; i++) {
-                const alpha = (i / blurSteps) * drone.motionBlurIntensity * 0.4;
+                const alpha = (i / blurSteps) * motionIntensity * 0.6;
                 const x = drone.prevX + stepX * i;
                 const y = drone.prevY + stepY * i;
                 const size = drone.size * (0.6 + (i / blurSteps) * 0.4);
                 
-                this.ctx.fillStyle = `rgba(0, 212, 255, ${alpha})`;
+                // Breakaway drones get white-hot streaks
+                if (drone.state === 'breakaway') {
+                    this.ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                } else {
+                    this.ctx.fillStyle = `rgba(0, 212, 255, ${alpha})`;
+                }
+                
                 this.ctx.beginPath();
                 this.ctx.arc(x, y, size, 0, Math.PI * 2);
                 this.ctx.fill();
@@ -576,6 +590,47 @@ const DroneSwarm = {
         this.ctx.fill();
     },
 
+    drawBreakawayStreaks(drone) {
+        // Draw dramatic breakaway streaks with white-hot intensity
+        const streakLength = 50 * (drone.breakawayIntensity || 1);
+        const streakCount = 12;
+        
+        for (let i = 0; i < streakCount; i++) {
+            const angle = (i / streakCount) * Math.PI * 2;
+            const distance = streakLength * (0.5 + Math.random() * 0.5);
+            const endX = drone.x + Math.cos(angle) * distance;
+            const endY = drone.y + Math.sin(angle) * distance;
+            
+            // Create gradient streak effect
+            const gradient = this.ctx.createLinearGradient(drone.x, drone.y, endX, endY);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+            gradient.addColorStop(0.3, 'rgba(255, 200, 100, 0.6)');
+            gradient.addColorStop(0.7, 'rgba(0, 200, 255, 0.3)');
+            gradient.addColorStop(1, 'rgba(0, 100, 200, 0)');
+            
+            this.ctx.strokeStyle = gradient;
+            this.ctx.lineWidth = 3 * (drone.breakawayIntensity || 1);
+            this.ctx.lineCap = 'round';
+            this.ctx.shadowColor = '#ffffff';
+            this.ctx.shadowBlur = 8;
+            
+            this.ctx.beginPath();
+            this.ctx.moveTo(drone.x, drone.y);
+            this.ctx.lineTo(endX, endY);
+            this.ctx.stroke();
+            this.ctx.shadowBlur = 0;
+        }
+        
+        // Decay breakaway intensity over time
+        if (drone.breakawayIntensity) {
+            drone.breakawayIntensity -= 0.02;
+            if (drone.breakawayIntensity <= 0) {
+                drone.breakawayIntensity = 0;
+                drone.streakMultiplier = 1;
+            }
+        }
+    },
+
     updateTypographyStats() {
         const currentSequence = this.textSequences[this.currentSequenceIndex];
         
@@ -612,5 +667,76 @@ const DroneSwarm = {
         if (countEl) {
             countEl.textContent = '0';
         }
+    },
+
+    getCharacterIndex(char, text) {
+        // Find the index position of character in text for breakaway sequencing
+        for (let i = 0; i < text.length; i++) {
+            if (text[i] === char) {
+                return i;
+            }
+        }
+        return 0;
+    },
+
+    executeBreakawayManeuver(drone, time) {
+        // Dramatic character-specific breakaway with surgical precision
+        if (!drone.assignedCharacter || drone.characterIndex === undefined) {
+            // Default aggressive exit for unassigned drones
+            const exitAngle = Math.atan2(drone.y - this.canvas.height/2, drone.x - this.canvas.width/2);
+            drone.targetX = drone.x + Math.cos(exitAngle) * 200;
+            drone.targetY = drone.y + Math.sin(exitAngle) * 200;
+            drone.state = 'repositioning';
+            drone.crystallineFormation = false;
+            return;
+        }
+
+        // Character-specific breakaway patterns
+        const breakawayDelay = drone.characterIndex * 50; // Staggered timing per character
+        const breakawayTime = time * 1000 - this.sequenceStartTime;
+        
+        if (breakawayTime > breakawayDelay) {
+            // Brilliant streak breakaway based on character position
+            const characterDirection = this.getCharacterBreakawayVector(drone.assignedCharacter, drone.characterIndex);
+            const streakDistance = this.typographySettings.breakawaySpeed * 8;
+            
+            // Hyper-speed repositioning with motion blur streaks
+            drone.targetX = drone.x + characterDirection.x * streakDistance;
+            drone.targetY = drone.y + characterDirection.y * streakDistance;
+            drone.state = 'breakaway';
+            drone.crystallineFormation = false;
+            
+            // Enhanced motion blur for breakaway effect
+            drone.breakawayIntensity = 1.0;
+            drone.streakMultiplier = 2.5;
+        }
+    },
+
+    getCharacterBreakawayVector(char, charIndex) {
+        // Define unique breakaway vectors for different character types
+        const characterVectors = {
+            'H': { x: -0.8, y: -0.6 }, // Sharp diagonal up-left
+            'e': { x: 0.9, y: -0.4 }, // Aggressive right-up
+            'l': { x: 0.2, y: -1.0 }, // Straight up
+            'o': { x: 0.7, y: 0.7 }, // Curved down-right
+            'I': { x: -0.5, y: -0.9 }, // Strong vertical
+            'a': { x: 0.6, y: 0.8 }, // Flowing arc
+            'm': { x: -0.9, y: 0.3 }, // Wide left sweep
+            'E': { x: 0.8, y: -0.6 }, // Dynamic right-up
+            'd': { x: -0.4, y: 0.9 }, // Gentle down-left
+            'w': { x: 0.3, y: -0.7 }, // Upward wave
+            'r': { x: -0.7, y: -0.7 }, // Sharp diagonal
+            ' ': { x: 0.0, y: 1.0 } // Spaces fall straight down
+        };
+
+        // Get character-specific vector or default
+        const vector = characterVectors[char] || { x: Math.cos(charIndex), y: Math.sin(charIndex) };
+        
+        // Add some randomization for organic movement
+        const randomOffset = 0.2;
+        return {
+            x: vector.x + (Math.random() - 0.5) * randomOffset,
+            y: vector.y + (Math.random() - 0.5) * randomOffset
+        };
     }
 }; 
