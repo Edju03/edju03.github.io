@@ -24,6 +24,12 @@ function initializeApp() {
         
         Architect.init();
         CodeRain.init();
+        
+        // Initialize the holographic data conduit system
+        DataConduits.init();
+        VolumetricRenderer.init();
+        HolographicEnhancer.init();
+        
         Navigation.init();
         Hero.init();
         Animations.init();
@@ -38,13 +44,13 @@ function initializeApp() {
         // Show loading screen initially
         LoadingScreen.show();
         
-        // Hide loading screen faster
+        // Hide loading screen after a good viewing time
         setTimeout(() => {
             LoadingScreen.hide();
             isLoaded = true;
             startAnimations();
             console.log('Loading complete, animations started');
-        }, 500); // Reduced from 2000ms to 500ms
+        }, 1500); // Sweet spot - not too fast, not too slow
         
     } catch (error) {
         console.error('Error during initialization:', error);
