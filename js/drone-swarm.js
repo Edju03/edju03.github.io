@@ -21,7 +21,7 @@ const DroneSwarm = {
     animationTime: 0,
     simulationStartTime: 0,
     typographySettings: {
-        droneCount: 60, // Further reduced for minimal coverage
+        droneCount: 100, // Increased for better letter coverage
         fontSize: 48, // Smaller to fit long text
         letterSpacing: 12,
         lineHeight: 60,
@@ -325,7 +325,7 @@ const DroneSwarm = {
         
         // Extract formation points from pixel data with intelligent sampling
         const formationPoints = [];
-        const sampleRate = 5; // Adjusted for smaller font size
+        const sampleRate = 3; // Denser sampling for more drones
         
         for (let y = 0; y < tempCanvas.height; y += sampleRate) {
             for (let x = 0; x < tempCanvas.width; x += sampleRate) {
