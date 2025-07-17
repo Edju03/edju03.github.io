@@ -8,7 +8,6 @@ const DroneSwarm = {
     errorGraphCtx: null,
     typographyDrones: [],
     lightTrails: [],
-    neuralConstellations: [],
     textSequences: [
         { text: "Hello, I am Edward", duration: 4000, pause: 1000 }
     ],
@@ -31,22 +30,18 @@ const DroneSwarm = {
     },
 
     init() {
+        console.log('Initializing DroneSwarm simulation...');
         this.canvas = document.getElementById('drone-swarm-canvas');
-        this.errorGraphCanvas = document.getElementById('error-graph-canvas');
-        
-        if (!this.canvas) return;
-        
-        this.ctx = this.canvas.getContext('2d');
-        if (this.errorGraphCanvas) {
-            this.errorGraphCtx = this.errorGraphCanvas.getContext('2d');
+        if (!this.canvas) {
+            console.error('DroneSwarm: Canvas not found!');
+            return;
         }
+        console.log('DroneSwarm: Canvas found, initializing...');
+        this.ctx = this.canvas.getContext('2d');
         
         // Set canvas size
         this.resizeCanvas();
         window.addEventListener('resize', () => this.resizeCanvas());
-        
-        // Create neural network constellation background
-        this.createNeuralConstellations();
         
         // Initialize typography drone swarm
         this.createTypographyDrones();
@@ -55,13 +50,14 @@ const DroneSwarm = {
         this.initializeLightTrails();
         
         // Start kinetic typography animation
-        this.animate();
+        this.animateKineticTypography();
         
         // Update stats display
         this.updateSwarmStats();
         
         this.simulationStartTime = Date.now();
         this.sequenceStartTime = Date.now();
+        console.log('DroneSwarm: Initialization complete');
     },
 
     resizeCanvas() {
@@ -70,53 +66,6 @@ const DroneSwarm = {
         const container = this.canvas.parentElement;
         this.canvas.width = container.offsetWidth;
         this.canvas.height = container.offsetHeight;
-    },
-
-    createNeuralConstellations() {
-        this.neuralConstellations = [];
-        const constellationCount = 15;
-        
-        for (let i = 0; i < constellationCount; i++) {
-            const constellation = {
-                x: Math.random() * this.canvas.width,
-                y: Math.random() * this.canvas.height,
-                nodes: [],
-                connections: [],
-                pulsePhase: Math.random() * Math.PI * 2,
-                driftX: (Math.random() - 0.5) * 0.2,
-                driftY: (Math.random() - 0.5) * 0.2
-            };
-            
-            // Create nodes for this constellation
-            const nodeCount = 3 + Math.floor(Math.random() * 4);
-            for (let j = 0; j < nodeCount; j++) {
-                constellation.nodes.push({
-                    x: (Math.random() - 0.5) * 80,
-                    y: (Math.random() - 0.5) * 80,
-                    intensity: 0.3 + Math.random() * 0.4,
-                    phase: Math.random() * Math.PI * 2
-                });
-            }
-            
-            // Create connections between nearby nodes
-            for (let a = 0; a < constellation.nodes.length; a++) {
-                for (let b = a + 1; b < constellation.nodes.length; b++) {
-                    const node1 = constellation.nodes[a];
-                    const node2 = constellation.nodes[b];
-                    const distance = Math.sqrt((node1.x - node2.x) ** 2 + (node1.y - node2.y) ** 2);
-                    
-                    if (distance < 60) {
-                        constellation.connections.push({
-                            from: a,
-                            to: b,
-                            opacity: 0.1 + (60 - distance) / 60 * 0.2
-                        });
-                    }
-                }
-            }
-            
-            this.neuralConstellations.push(constellation);
-        }
     },
 
     createTypographyDrones() {
@@ -137,7 +86,7 @@ const DroneSwarm = {
                 vy: 0,
                 
                 // Elite characteristics
-                size: 3 + Math.random() * 2,
+                size: 3 + Math.random() * 2, // Larger, more visible
                 brightness: 0.9 + Math.random() * 0.1,
                 coreEnergy: 1.0,
                 phase: Math.random() * Math.PI * 2,
@@ -145,7 +94,7 @@ const DroneSwarm = {
                 
                 // Precision targeting
                 precision: 0.9 + Math.random() * 0.1,
-                state: 'standby',
+                state: 'standby', // 'standby', 'engaging', 'forming', 'repositioning'
                 
                 // Advanced trail systems
                 afterburnerTrail: [],
@@ -177,9 +126,12 @@ const DroneSwarm = {
 
     initializeLightTrails() {
         this.lightTrails = [];
+        
+        // Light trails will be created dynamically as drones move
+        // Each drone will contribute to the trail system
     },
 
-    animate() {
+    animateKineticTypography() {
         if (!this.ctx) return;
         
         this.animationTime += 16; // ~60fps
@@ -192,9 +144,6 @@ const DroneSwarm = {
         
         // Draw cyan grid floor
         this.drawCyanGridFloor(time);
-        
-        // Draw neural network constellation background
-        this.drawNeuralConstellations(time);
         
         // Handle text sequence transitions
         this.handleTextSequences(currentTime);
@@ -213,12 +162,12 @@ const DroneSwarm = {
         // Update statistics
         this.updateTypographyStats();
         
-        requestAnimationFrame(() => this.animate());
+        requestAnimationFrame(() => this.animateKineticTypography());
     },
 
     drawCyanGridFloor(time) {
         const gridSize = 40;
-        const centerY = this.canvas.height * 0.8;
+        const centerY = this.canvas.height * 0.8; // Grid floor at bottom
         const gridAlpha = 0.2 + 0.1 * Math.sin(time * 0.5);
         
         // Draw grid lines with perspective effect
@@ -256,59 +205,52 @@ const DroneSwarm = {
         this.ctx.shadowBlur = 0;
     },
 
-    drawNeuralConstellations(time) {
-        this.neuralConstellations.forEach(constellation => {
-            // Update constellation position
-            constellation.x += constellation.driftX;
-            constellation.y += constellation.driftY;
-            constellation.pulsePhase += 0.02;
+    drawCrystallineTextFormation(time) {
+        if (this.droneFormationState === 'writing' || this.droneFormationState === 'dissolving') {
+            const currentSequence = this.textSequences[this.currentSequenceIndex];
+            const currentText = currentSequence.text;
             
-            // Wrap around canvas
-            if (constellation.x < -100) constellation.x = this.canvas.width + 100;
-            if (constellation.x > this.canvas.width + 100) constellation.x = -100;
-            if (constellation.y < -100) constellation.y = this.canvas.height + 100;
-            if (constellation.y > this.canvas.height + 100) constellation.y = -100;
+            // Draw crystalline text outline
+            const centerX = this.canvas.width / 2;
+            const centerY = this.canvas.height / 2;
             
-            // Draw connections
-            constellation.connections.forEach(connection => {
-                const node1 = constellation.nodes[connection.from];
-                const node2 = constellation.nodes[connection.to];
+            this.ctx.font = `bold ${this.typographySettings.fontSize}px Orbitron, monospace`;
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            
+            // Create crystalline effect with multiple layers
+            const crystallineAlpha = this.droneFormationState === 'dissolving' ? 0.05 : 0.15;
+            const pulse = 0.7 + 0.3 * Math.sin(time * 2);
+            
+            // Draw multiple offset layers for crystalline depth
+            for (let layer = 0; layer < 4; layer++) {
+                const offset = layer * 2;
+                const alpha = crystallineAlpha * (1 - layer * 0.2) * pulse;
                 
-                const x1 = constellation.x + node1.x;
-                const y1 = constellation.y + node1.y;
-                const x2 = constellation.x + node2.x;
-                const y2 = constellation.y + node2.y;
+                // Crystalline stroke
+                this.ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
+                this.ctx.lineWidth = 2 - layer * 0.3;
+                this.ctx.shadowColor = '#00ffff';
+                this.ctx.shadowBlur = 15 - layer * 3;
+                this.ctx.strokeText(currentText, centerX + offset, centerY + offset);
+            }
+            
+            this.ctx.shadowBlur = 0;
+            
+            // Add prismatic edge effects
+            const edgeCount = 6;
+            for (let i = 0; i < edgeCount; i++) {
+                const angle = (i / edgeCount) * Math.PI * 2;
+                const distance = 3;
+                const edgeX = centerX + Math.cos(angle) * distance;
+                const edgeY = centerY + Math.sin(angle) * distance;
+                const edgeAlpha = crystallineAlpha * 0.3;
                 
-                const pulseAlpha = connection.opacity * (0.7 + 0.3 * Math.sin(constellation.pulsePhase));
-                
-                this.ctx.strokeStyle = `rgba(0, 212, 255, ${pulseAlpha})`;
+                this.ctx.strokeStyle = `rgba(255, 255, 255, ${edgeAlpha})`;
                 this.ctx.lineWidth = 0.5;
-                this.ctx.beginPath();
-                this.ctx.moveTo(x1, y1);
-                this.ctx.lineTo(x2, y2);
-                this.ctx.stroke();
-            });
-            
-            // Draw nodes
-            constellation.nodes.forEach(node => {
-                const x = constellation.x + node.x;
-                const y = constellation.y + node.y;
-                const pulse = node.intensity * (0.6 + 0.4 * Math.sin(time * 2 + node.phase));
-                
-                this.ctx.fillStyle = `rgba(0, 212, 255, ${pulse})`;
-                this.ctx.beginPath();
-                this.ctx.arc(x, y, 1.5, 0, Math.PI * 2);
-                this.ctx.fill();
-                
-                // Add subtle glow
-                if (pulse > 0.7) {
-                    this.ctx.shadowColor = '#00d4ff';
-                    this.ctx.shadowBlur = 4;
-                    this.ctx.fill();
-                    this.ctx.shadowBlur = 0;
-                }
-            });
-        });
+                this.ctx.strokeText(currentText, edgeX, edgeY);
+            }
+        }
     },
 
     handleTextSequences(currentTime) {
@@ -334,51 +276,104 @@ const DroneSwarm = {
     },
 
     getEliteFormationPoints(text, fontSize) {
-        // Create pixel-perfect formation points using canvas ImageData
+        // Create strategic formation points for elite squadron
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
-        tempCanvas.width = 800;
-        tempCanvas.height = 200;
+        tempCanvas.width = this.canvas.width;
+        tempCanvas.height = this.canvas.height;
         
-        tempCtx.font = `bold ${fontSize}px Orbitron, monospace`;
+        tempCtx.font = `${fontSize}px Orbitron, monospace`;
+        tempCtx.fontWeight = 'bold';
         tempCtx.textAlign = 'center';
         tempCtx.textBaseline = 'middle';
+        
+        const centerX = tempCanvas.width / 2;
+        const centerY = tempCanvas.height / 2;
+        
+        // Create text path for precise vector extraction
         tempCtx.fillStyle = 'white';
-        tempCtx.fillText(text, tempCanvas.width / 2, tempCanvas.height / 2);
+        tempCtx.strokeStyle = 'white';
+        tempCtx.lineWidth = 2;
+        tempCtx.fillText(text, centerX, centerY);
+        tempCtx.strokeText(text, centerX, centerY);
         
-        // Get pixel data
-        const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-        const pixels = imageData.data;
-        
-        // Extract formation points from pixel data
+        // Extract strategic formation points (corners, intersections, key curves)
         const formationPoints = [];
-        const sampleRate = 4; // Sample every 4th pixel for density control
+        const textMetrics = tempCtx.measureText(text);
+        const textWidth = textMetrics.width;
+        const textHeight = fontSize;
         
-        for (let y = 0; y < tempCanvas.height; y += sampleRate) {
-            for (let x = 0; x < tempCanvas.width; x += sampleRate) {
-                const index = (y * tempCanvas.width + x) * 4;
-                const alpha = pixels[index + 3]; // Alpha channel
-                
-                if (alpha > 128) { // If pixel is part of text
-                    const worldX = (x / tempCanvas.width) * this.canvas.width;
-                    const worldY = (y / tempCanvas.height) * this.canvas.height;
-                    formationPoints.push({ x: worldX, y: worldY });
-                }
+        // Create precision points based on character analysis
+        const chars = text.split('');
+        const charSpacing = textWidth / Math.max(1, chars.length - 1);
+        const startX = centerX - textWidth / 2;
+        
+        chars.forEach((char, index) => {
+            const charX = startX + index * charSpacing;
+            
+            // Add strategic points for each character
+            switch (char.toUpperCase()) {
+                case 'H':
+                    formationPoints.push(
+                        { x: charX - 8, y: centerY - textHeight/3, priority: 'high' },
+                        { x: charX + 8, y: centerY - textHeight/3, priority: 'high' },
+                        { x: charX, y: centerY, priority: 'critical' },
+                        { x: charX - 8, y: centerY + textHeight/3, priority: 'high' },
+                        { x: charX + 8, y: centerY + textHeight/3, priority: 'high' }
+                    );
+                    break;
+                case 'E':
+                    formationPoints.push(
+                        { x: charX - 6, y: centerY - textHeight/3, priority: 'high' },
+                        { x: charX + 6, y: centerY - textHeight/3, priority: 'medium' },
+                        { x: charX - 6, y: centerY, priority: 'critical' },
+                        { x: charX + 4, y: centerY, priority: 'medium' },
+                        { x: charX - 6, y: centerY + textHeight/3, priority: 'high' },
+                        { x: charX + 6, y: centerY + textHeight/3, priority: 'medium' }
+                    );
+                    break;
+                case 'L':
+                    formationPoints.push(
+                        { x: charX - 6, y: centerY - textHeight/3, priority: 'high' },
+                        { x: charX - 6, y: centerY, priority: 'critical' },
+                        { x: charX - 6, y: centerY + textHeight/3, priority: 'high' },
+                        { x: charX + 6, y: centerY + textHeight/3, priority: 'medium' }
+                    );
+                    break;
+                case 'O':
+                    formationPoints.push(
+                        { x: charX, y: centerY - textHeight/3, priority: 'high' },
+                        { x: charX - 8, y: centerY, priority: 'critical' },
+                        { x: charX + 8, y: centerY, priority: 'critical' },
+                        { x: charX, y: centerY + textHeight/3, priority: 'high' }
+                    );
+                    break;
+                case 'R':
+                    formationPoints.push(
+                        { x: charX - 6, y: centerY - textHeight/3, priority: 'high' },
+                        { x: charX + 4, y: centerY - textHeight/3, priority: 'medium' },
+                        { x: charX - 6, y: centerY, priority: 'critical' },
+                        { x: charX + 2, y: centerY, priority: 'medium' },
+                        { x: charX - 6, y: centerY + textHeight/3, priority: 'high' },
+                        { x: charX + 6, y: centerY + textHeight/3, priority: 'medium' }
+                    );
+                    break;
+                default:
+                    // Generic formation for other characters
+                    formationPoints.push(
+                        { x: charX, y: centerY - textHeight/4, priority: 'medium' },
+                        { x: charX - 4, y: centerY, priority: 'high' },
+                        { x: charX + 4, y: centerY, priority: 'high' },
+                        { x: charX, y: centerY + textHeight/4, priority: 'medium' }
+                    );
             }
-        }
+        });
         
-        // If we have more points than drones, sample them evenly
-        if (formationPoints.length > this.typographySettings.droneCount) {
-            const step = formationPoints.length / this.typographySettings.droneCount;
-            const sampledPoints = [];
-            for (let i = 0; i < this.typographySettings.droneCount; i++) {
-                const index = Math.floor(i * step);
-                sampledPoints.push(formationPoints[index]);
-            }
-            return sampledPoints;
-        }
+        // Sort by priority and limit to drone count
+        const priorityOrder = { 'critical': 3, 'high': 2, 'medium': 1 };
+        formationPoints.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
         
-        return formationPoints;
+        return formationPoints.slice(0, this.typographySettings.droneCount);
     },
 
     updateTypographyDrones(time) {
@@ -465,7 +460,25 @@ const DroneSwarm = {
             drone.targetX = newTargetX;
             drone.targetY = newTargetY;
             
-            // No trails - drones move with surgical precision
+            // Update afterburner trail (sharp, bright trail)
+            if (drone.velocity > 2) {
+                drone.afterburnerTrail.push({
+                    x: drone.x,
+                    y: drone.y,
+                    intensity: Math.min(1, drone.velocity / 20),
+                    time: time
+                });
+            }
+            
+            if (drone.afterburnerTrail.length > drone.maxAfterburnerLength) {
+                drone.afterburnerTrail.shift();
+            }
+            
+            // Update motion trail (for position history)
+            drone.motionTrail.push({ x: drone.x, y: drone.y, time: time });
+            if (drone.motionTrail.length > drone.maxMotionLength) {
+                drone.motionTrail.shift();
+            }
             
             // Update energy fields and phase
             drone.phase += 0.08;
@@ -475,67 +488,129 @@ const DroneSwarm = {
     },
 
     drawEliteDrone(drone) {
-        // Elite drone core with brilliant cyan glow
+        // Draw brilliant afterburner trail
+        if (drone.afterburnerTrail.length > 1) {
+            for (let i = 1; i < drone.afterburnerTrail.length; i++) {
+                const prev = drone.afterburnerTrail[i - 1];
+                const curr = drone.afterburnerTrail[i];
+                
+                const alpha = (i / drone.afterburnerTrail.length) * curr.intensity * 0.9;
+                const width = (i / drone.afterburnerTrail.length) * 4 + 1;
+                
+                // Sharp, brilliant afterburner
+                this.ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
+                this.ctx.lineWidth = width;
+                this.ctx.lineCap = 'round';
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(prev.x, prev.y);
+                this.ctx.lineTo(curr.x, curr.y);
+                this.ctx.stroke();
+                
+                // Add intense glow to afterburners
+                if (alpha > 0.6) {
+                    this.ctx.shadowColor = '#00ffff';
+                    this.ctx.shadowBlur = 12;
+                    this.ctx.stroke();
+                    this.ctx.shadowBlur = 0;
+                }
+            }
+        }
+        
+        // Motion blur for hyper-speed movement
+        if (drone.motionBlurIntensity > 0.4) {
+            const blurSteps = 8;
+            const stepX = (drone.x - drone.prevX) / blurSteps;
+            const stepY = (drone.y - drone.prevY) / blurSteps;
+            
+            for (let i = 0; i < blurSteps; i++) {
+                const alpha = (i / blurSteps) * drone.motionBlurIntensity * 0.4;
+                const x = drone.prevX + stepX * i;
+                const y = drone.prevY + stepY * i;
+                const size = drone.size * (0.6 + (i / blurSteps) * 0.4);
+                
+                this.ctx.fillStyle = `rgba(0, 212, 255, ${alpha})`;
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, size, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+        }
+        
+        // Elite drone core with enhanced energy field
         const coreSize = drone.size * drone.energyField;
         const coreIntensity = drone.coreEnergy;
         
-        // Main elite drone body with intense glow
+        // Energy field aura
+        if (drone.crystallineFormation) {
+            this.ctx.shadowColor = '#00d4ff';
+            this.ctx.shadowBlur = 25;
+            this.ctx.fillStyle = `rgba(0, 212, 255, 0.3)`;
+            this.ctx.beginPath();
+            this.ctx.arc(drone.x, drone.y, coreSize + 8, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.shadowBlur = 0;
+        }
+        
+        // Thruster glow
+        if (drone.thrusterGlow > 0) {
+            const thrusterSize = coreSize + drone.thrusterGlow * 6;
+            this.ctx.fillStyle = `rgba(255, 255, 255, ${drone.thrusterGlow * 0.4})`;
+            this.ctx.beginPath();
+            this.ctx.arc(drone.x, drone.y, thrusterSize, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+        
+        // Main elite drone body (larger, more intense)
         this.ctx.shadowColor = '#00d4ff';
-        this.ctx.shadowBlur = 15 * this.typographySettings.glowIntensity;
-        this.ctx.fillStyle = `rgba(0, 255, 255, ${coreIntensity})`;
+        this.ctx.shadowBlur = 20 * this.typographySettings.glowIntensity;
+        this.ctx.fillStyle = `rgba(0, 212, 255, ${coreIntensity})`;
         this.ctx.beginPath();
         this.ctx.arc(drone.x, drone.y, coreSize, 0, Math.PI * 2);
         this.ctx.fill();
         this.ctx.shadowBlur = 0;
         
-        // Bright core highlight
-        this.ctx.fillStyle = `rgba(255, 255, 255, ${coreIntensity * 0.9})`;
+        // Elite core highlight
+        this.ctx.fillStyle = `rgba(255, 255, 255, ${coreIntensity * 0.8})`;
         this.ctx.beginPath();
-        this.ctx.arc(drone.x, drone.y, coreSize * 0.5, 0, Math.PI * 2);
+        this.ctx.arc(drone.x, drone.y, coreSize * 0.4, 0, Math.PI * 2);
         this.ctx.fill();
-    },
-
-    drawCrystallineTextFormation(time) {
-        // No text overlay - drones form the letters themselves
     },
 
     updateTypographyStats() {
         const currentSequence = this.textSequences[this.currentSequenceIndex];
         
         // Update display elements
-        const formationProgressEl = document.getElementById('formation-progress');
-        if (formationProgressEl) {
-            formationProgressEl.textContent = this.droneFormationState.toUpperCase();
+        const progressEl = document.getElementById('formation-progress');
+        if (progressEl) {
+            progressEl.textContent = this.droneFormationState.toUpperCase();
         }
         
         const activeDrones = this.typographyDrones.filter(d => d.state === 'forming').length;
-        const solutionTimeEl = document.getElementById('solution-time');
-        if (solutionTimeEl) {
-            solutionTimeEl.textContent = `${((activeDrones / this.typographyDrones.length) * 100).toFixed(1)}%`;
+        const solutionEl = document.getElementById('solution-time');
+        if (solutionEl) {
+            solutionEl.textContent = `${((activeDrones / this.typographyDrones.length) * 100).toFixed(1)}%`;
         }
         
-        const pointCloudCountEl = document.getElementById('point-cloud-count');
-        if (pointCloudCountEl) {
-            pointCloudCountEl.textContent = currentSequence.text.length.toString() + ' CHARS';
+        const countEl = document.getElementById('point-cloud-count');
+        if (countEl) {
+            countEl.textContent = currentSequence.text.length.toString() + ' CHARS';
         }
     },
 
     updateSwarmStats() {
         // Update the swarm statistics display
         const currentSequence = this.textSequences[this.currentSequenceIndex];
-        const formationProgressEl = document.getElementById('formation-progress');
-        if (formationProgressEl) {
-            formationProgressEl.textContent = 'KINETIC TYPOGRAPHY';
+        const progressEl = document.getElementById('formation-progress');
+        if (progressEl) {
+            progressEl.textContent = 'KINETIC TYPOGRAPHY';
         }
-        
-        const solutionTimeEl = document.getElementById('solution-time');
-        if (solutionTimeEl) {
-            solutionTimeEl.textContent = '0.0%';
+        const solutionEl = document.getElementById('solution-time');
+        if (solutionEl) {
+            solutionEl.textContent = '0.0%';
         }
-        
-        const pointCloudCountEl = document.getElementById('point-cloud-count');
-        if (pointCloudCountEl) {
-            pointCloudCountEl.textContent = '0';
+        const countEl = document.getElementById('point-cloud-count');
+        if (countEl) {
+            countEl.textContent = '0';
         }
     }
 }; 

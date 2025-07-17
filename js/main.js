@@ -22,7 +22,6 @@ function initializeApp() {
         CFDSimulation.init();
         ThrusterSimulation.init();
         
-        Architect.init();
         CodeRain.init();
         
         // Initialize the holographic data conduit system

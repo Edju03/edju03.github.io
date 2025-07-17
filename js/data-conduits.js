@@ -18,8 +18,8 @@ const DataConduits = {
         dataFlowSpeed: 3.2,
         packetSpeed: 5.5,
         tendrilCount: 12,
-        crystallineOpacity: 0.4,
-        volumetricIntensity: 1.6,
+        crystallineOpacity: 0.8,
+        volumetricIntensity: 2.0,
         refractionEffect: 0.25,
         holographicShimmer: 0.8,
         depthLayers: 5,
@@ -52,21 +52,18 @@ const DataConduits = {
         // Create a background canvas layer for the conduit system
         this.canvas = document.createElement('canvas');
         this.canvas.id = 'data-conduits-canvas';
-        this.canvas.style.position = 'absolute';
+        this.canvas.style.position = 'fixed';
         this.canvas.style.top = '0';
         this.canvas.style.left = '0';
-        this.canvas.style.width = '100%';
-        this.canvas.style.height = '100%';
+        this.canvas.style.width = '100vw';
+        this.canvas.style.height = '100vh';
         this.canvas.style.pointerEvents = 'none';
-        this.canvas.style.zIndex = '1';
-        this.canvas.style.opacity = '0.7';
+        this.canvas.style.zIndex = '10';
+        this.canvas.style.opacity = '0.8';
+        this.canvas.style.mixBlendMode = 'screen';
         
-        // Insert behind other elements
-        const heroBackground = document.querySelector('.hero-background');
-        if (heroBackground) {
-            heroBackground.style.position = 'relative';
-            heroBackground.insertBefore(this.canvas, heroBackground.firstChild);
-        }
+        // Insert directly into body for full visibility
+        document.body.appendChild(this.canvas);
     },
 
     resizeCanvas() {
@@ -83,9 +80,9 @@ const DataConduits = {
         const keyPoints = [
             { x: window.innerWidth * 0.15, y: window.innerHeight * 0.8, type: 'roboticArm' },
             { x: window.innerWidth * 0.85, y: window.innerHeight * 0.5, type: 'droneSwarm' },
-            { x: window.innerWidth * 0.5, y: window.innerHeight * 0.3, type: 'architect' },
-            { x: window.innerWidth * 0.3, y: window.innerHeight * 0.7, type: 'cfd' },
-            { x: window.innerWidth * 0.7, y: window.innerHeight * 0.75, type: 'thruster' }
+            { x: window.innerWidth * 0.3, y: window.innerHeight * 0.6, type: 'cfd' },
+            { x: window.innerWidth * 0.7, y: window.innerHeight * 0.7, type: 'thruster' },
+            { x: window.innerWidth * 0.5, y: window.innerHeight * 0.9, type: 'codeRain' }
         ];
 
         // Generate primary conduits between key systems
@@ -187,11 +184,11 @@ const DataConduits = {
 
     createDataPorts() {
         this.dataPorts = [
-            { x: window.innerWidth * 0.15, y: window.innerHeight * 0.8, type: 'roboticArm', activity: 0.8 },
-            { x: window.innerWidth * 0.85, y: window.innerHeight * 0.5, type: 'droneSwarm', activity: 0.9 },
-            { x: window.innerWidth * 0.5, y: window.innerHeight * 0.3, type: 'architect', activity: 1.0 },
-            { x: window.innerWidth * 0.3, y: window.innerHeight * 0.7, type: 'cfd', activity: 0.7 },
-            { x: window.innerWidth * 0.7, y: window.innerHeight * 0.75, type: 'thruster', activity: 0.75 }
+            { x: window.innerWidth * 0.15, y: window.innerHeight * 0.8, type: 'roboticArm', activity: 0.9 },
+            { x: window.innerWidth * 0.85, y: window.innerHeight * 0.5, type: 'droneSwarm', activity: 1.0 },
+            { x: window.innerWidth * 0.3, y: window.innerHeight * 0.6, type: 'cfd', activity: 0.8 },
+            { x: window.innerWidth * 0.7, y: window.innerHeight * 0.7, type: 'thruster', activity: 0.8 },
+            { x: window.innerWidth * 0.5, y: window.innerHeight * 0.9, type: 'codeRain', activity: 0.6 }
         ];
 
         // Initialize light tendrils for each port
@@ -256,8 +253,8 @@ const DataConduits = {
         this.animationTime += 0.016; // ~60fps
         const time = Date.now() * 0.001;
         
-        // Clear with deep void for maximum contrast
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.02)';
+        // Clear with minimal fade to preserve pipe visibility
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.005)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         // Render the living supercomputer
