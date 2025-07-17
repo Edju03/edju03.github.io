@@ -22,9 +22,9 @@ const DroneSwarm = {
     simulationStartTime: 0,
     typographySettings: {
         droneCount: 60, // Further reduced for minimal coverage
-        fontSize: 72, // Even larger text
-        letterSpacing: 18,
-        lineHeight: 90,
+        fontSize: 48, // Smaller to fit long text
+        letterSpacing: 12,
+        lineHeight: 60,
         glowIntensity: 0.4, // Much lower brightness
         trailLength: 8, // Very short trails
         dissolutionSpeed: 0.02,
@@ -225,6 +225,11 @@ const DroneSwarm = {
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             
+            // Use the same adjusted font size as the formation points
+            if (this.lastUsedFontSize) {
+                this.ctx.font = `bold ${this.lastUsedFontSize}px Orbitron, monospace`;
+            }
+            
             // Create crystalline effect with multiple layers - enhanced visibility
             const crystallineAlpha = this.droneFormationState === 'dissolving' ? 0.15 : 0.35;
             const pulse = 0.8 + 0.2 * Math.sin(time * 2);
@@ -286,14 +291,33 @@ const DroneSwarm = {
         // Create pixel-perfect formation points using canvas ImageData
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
-        tempCanvas.width = 1200; // Higher resolution for better precision
-        tempCanvas.height = 300;
+        tempCanvas.width = this.canvas.width; // Match actual canvas width
+        tempCanvas.height = this.canvas.height; // Match actual canvas height
         
-        tempCtx.font = `bold ${fontSize * 2}px Orbitron, monospace`; // Double size for better sampling
+        tempCtx.font = `bold ${fontSize}px Orbitron, monospace`; // Use actual font size
         tempCtx.textAlign = 'center';
         tempCtx.textBaseline = 'middle';
         tempCtx.fillStyle = 'white';
-        tempCtx.fillText(text, tempCanvas.width / 2, tempCanvas.height / 2);
+        
+        // Draw text at the same position as the crystalline text
+        const centerX = tempCanvas.width / 2;
+        const centerY = tempCanvas.height / 2;
+        
+        // Measure text to ensure it fits
+        const textMetrics = tempCtx.measureText(text);
+        const textWidth = textMetrics.width;
+        
+        // Scale down font if text is too wide
+        let adjustedFontSize = fontSize;
+        if (textWidth > tempCanvas.width * 0.9) {
+            adjustedFontSize = fontSize * (tempCanvas.width * 0.9) / textWidth;
+            tempCtx.font = `bold ${adjustedFontSize}px Orbitron, monospace`;
+        }
+        
+        tempCtx.fillText(text, centerX, centerY);
+        
+        // Store the adjusted font size for consistent use
+        this.lastUsedFontSize = adjustedFontSize;
         
         // Get pixel data for precise formation points
         const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
@@ -301,7 +325,7 @@ const DroneSwarm = {
         
         // Extract formation points from pixel data with intelligent sampling
         const formationPoints = [];
-        const sampleRate = 6; // Much sparser formation for outline effect
+        const sampleRate = 5; // Adjusted for smaller font size
         
         for (let y = 0; y < tempCanvas.height; y += sampleRate) {
             for (let x = 0; x < tempCanvas.width; x += sampleRate) {
@@ -309,9 +333,9 @@ const DroneSwarm = {
                 const alpha = pixels[index + 3]; // Alpha channel
                 
                 if (alpha > 128) { // If pixel is part of text
-                    // Convert back to world coordinates
-                    const worldX = (x / tempCanvas.width) * this.canvas.width;
-                    const worldY = (y / tempCanvas.height) * this.canvas.height;
+                    // Direct coordinate mapping since canvas sizes match
+                    const worldX = x;
+                    const worldY = y;
                     
                     // Add priority based on position (edges get higher priority)
                     const edgeDetection = this.detectEdge(pixels, x, y, tempCanvas.width, tempCanvas.height);
@@ -321,7 +345,7 @@ const DroneSwarm = {
                         x: worldX, 
                         y: worldY, 
                         priority: priority,
-                        char: this.getCharacterAtPosition(text, x, tempCanvas.width)
+                        char: this.getCharacterAtPosition(text, x, tempCanvas.width, adjustedFontSize)
                     });
                 }
             }
@@ -370,10 +394,18 @@ const DroneSwarm = {
         return false;
     },
 
-    getCharacterAtPosition(text, x, totalWidth) {
+    getCharacterAtPosition(text, x, totalWidth, fontSize) {
         // Estimate which character this position belongs to
-        const charIndex = Math.floor((x / totalWidth) * text.length);
-        return text[Math.min(charIndex, text.length - 1)];
+        // Account for text being centered
+        const textStart = (totalWidth - this.estimateTextWidth(text, fontSize)) / 2;
+        const relativeX = x - textStart;
+        const charIndex = Math.floor((relativeX / this.estimateTextWidth(text, fontSize)) * text.length);
+        return text[Math.min(Math.max(charIndex, 0), text.length - 1)];
+    },
+
+    estimateTextWidth(text, fontSize) {
+        // Simple estimation - more accurate would require measuring each character
+        return text.length * fontSize * 0.6; // Approximate character width
     },
 
     updateTypographyDrones(time) {
@@ -612,7 +644,7 @@ const DroneSwarm = {
     },
 
     updateTypographyStats() {
-        const currentSequence = this.textSequences[this.currentSequenceIndex];
+        const currentText = this.textSequences[this.currentSequenceIndex].text;
         
         // Update display elements
         const progressEl = document.getElementById('formation-progress');
@@ -628,13 +660,12 @@ const DroneSwarm = {
         
         const countEl = document.getElementById('point-cloud-count');
         if (countEl) {
-            countEl.textContent = currentSequence.text.length.toString() + ' CHARS';
+            countEl.textContent = currentText.length.toString() + ' CHARS';
         }
     },
 
     updateSwarmStats() {
         // Update the swarm statistics display
-        const currentSequence = this.textSequences[this.currentSequenceIndex];
         const progressEl = document.getElementById('formation-progress');
         if (progressEl) {
             progressEl.textContent = 'KINETIC TYPOGRAPHY';
