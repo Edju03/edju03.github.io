@@ -24,10 +24,7 @@ function initializeApp() {
         
         CodeRain.init();
         
-        // Initialize the holographic data conduit system
-        DataConduits.init();
-        // VolumetricRenderer.init();
-        // HolographicEnhancer.init();
+        // Data conduit system removed - keeping clean background
         
         Navigation.init();
         Hero.init();
