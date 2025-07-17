@@ -9,10 +9,11 @@ const DroneSwarm = {
     typographyDrones: [],
     lightTrails: [],
     textSequences: [
-        { text: "Hello", duration: 2500, pause: 800, type: 'word' },
-        { text: "I am", duration: 2000, pause: 600, type: 'phrase' },
-        { text: "Edward", duration: 2500, pause: 1000, type: 'word' },
-        { text: "Hello, I am Edward", duration: 4000, pause: 2000, type: 'complete' }
+        { text: "Hello, I am Edward", duration: 4000, pause: 1200, type: 'introduction' },
+        { text: "I am interested in", duration: 3500, pause: 1000, type: 'transition' },
+        { text: "Computer Vision", duration: 3000, pause: 1000, type: 'expertise' },
+        { text: "Control", duration: 2500, pause: 1000, type: 'expertise' },
+        { text: "Planning and Navigation", duration: 4000, pause: 2000, type: 'expertise' }
     ],
     currentSequenceIndex: 0,
     sequenceStartTime: 0,
@@ -20,19 +21,19 @@ const DroneSwarm = {
     animationTime: 0,
     simulationStartTime: 0,
     typographySettings: {
-        droneCount: 80, // Reduced for cleaner letter formation
-        fontSize: 64, // Larger text for better readability
-        letterSpacing: 16,
-        lineHeight: 80,
-        glowIntensity: 0.8, // Reduced brightness
-        trailLength: 15, // Shorter trails for clarity
+        droneCount: 60, // Further reduced for minimal coverage
+        fontSize: 72, // Even larger text
+        letterSpacing: 18,
+        lineHeight: 90,
+        glowIntensity: 0.4, // Much lower brightness
+        trailLength: 8, // Very short trails
         dissolutionSpeed: 0.02,
-        hyperKineticSpeed: 8.0, // Slower for better visibility
+        hyperKineticSpeed: 6.0, // Slower movement
         precisionThreshold: 2.0,
-        afterburnerLength: 12, // Shorter trails
-        breakawaySpeed: 10.0, // Reduced speed
-        formationHoldTime: 3500, // Longer hold time
-        transitionTime: 1500 // Longer transition for clarity
+        afterburnerLength: 6, // Minimal trails
+        breakawaySpeed: 8.0, // Slower breakaway
+        formationHoldTime: 4000, // Even longer hold time
+        transitionTime: 1800 // Longer transition
     },
 
     init() {
@@ -92,9 +93,9 @@ const DroneSwarm = {
                 vy: 0,
                 
                 // Elite characteristics
-                size: 2 + Math.random() * 1, // Smaller, more precise
-                brightness: 0.6 + Math.random() * 0.2, // Reduced brightness
-                coreEnergy: 0.8,
+                size: 1 + Math.random() * 0.5, // Much smaller drones
+                brightness: 0.4 + Math.random() * 0.2, // Very low brightness
+                coreEnergy: 0.6,
                 phase: Math.random() * Math.PI * 2,
                 hyperSpeed: this.typographySettings.hyperKineticSpeed * (0.8 + Math.random() * 0.4),
                 
@@ -300,7 +301,7 @@ const DroneSwarm = {
         
         // Extract formation points from pixel data with intelligent sampling
         const formationPoints = [];
-        const sampleRate = 4; // Increased sampling rate for sparser formation
+        const sampleRate = 6; // Much sparser formation for outline effect
         
         for (let y = 0; y < tempCanvas.height; y += sampleRate) {
             for (let x = 0; x < tempCanvas.width; x += sampleRate) {
@@ -492,21 +493,18 @@ const DroneSwarm = {
             this.drawBreakawayStreaks(drone);
         }
         
-        // Draw brilliant afterburner trail
-        if (drone.afterburnerTrail.length > 1) {
-            for (let i = 1; i < drone.afterburnerTrail.length; i++) {
+        // Draw minimal afterburner trail
+        if (drone.afterburnerTrail.length > 1 && drone.velocity > 4) {
+            for (let i = Math.max(1, drone.afterburnerTrail.length - 3); i < drone.afterburnerTrail.length; i++) {
                 const prev = drone.afterburnerTrail[i - 1];
                 const curr = drone.afterburnerTrail[i];
                 
-                const alpha = (i / drone.afterburnerTrail.length) * curr.intensity * 0.9;
-                const width = (i / drone.afterburnerTrail.length) * 4 + 1;
+                const alpha = (i / drone.afterburnerTrail.length) * curr.intensity * 0.3; // Much lower alpha
+                const width = 1; // Fixed thin width
                 
-                // Enhanced afterburner for breakaway state
-                const breakawayMultiplier = drone.state === 'breakaway' ? (drone.streakMultiplier || 1) : 1;
-                
-                // Sharp, brilliant afterburner
+                // Minimal afterburner
                 this.ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
-                this.ctx.lineWidth = width * breakawayMultiplier;
+                this.ctx.lineWidth = width;
                 this.ctx.lineCap = 'round';
                 
                 this.ctx.beginPath();
@@ -514,36 +512,25 @@ const DroneSwarm = {
                 this.ctx.lineTo(curr.x, curr.y);
                 this.ctx.stroke();
                 
-                // Add intense glow to afterburners
-                if (alpha > 0.6) {
-                    this.ctx.shadowColor = '#00ffff';
-                    this.ctx.shadowBlur = 12 * breakawayMultiplier;
-                    this.ctx.stroke();
-                    this.ctx.shadowBlur = 0;
-                }
+                // No glow for minimal effect
             }
         }
         
-        // Enhanced motion blur for hyper-speed movement - reduced intensity
-        const motionIntensity = drone.motionBlurIntensity * (drone.breakawayIntensity || 1) * 0.6;
-        if (motionIntensity > 0.2) {
-            const blurSteps = drone.state === 'breakaway' ? 12 : 6; // Reduced steps
+        // Minimal motion blur only for very fast movement
+        const motionIntensity = drone.motionBlurIntensity * (drone.breakawayIntensity || 1) * 0.3;
+        if (motionIntensity > 0.4 && drone.velocity > 6) {
+            const blurSteps = 3; // Very few steps
             const stepX = (drone.x - drone.prevX) / blurSteps;
             const stepY = (drone.y - drone.prevY) / blurSteps;
             
             for (let i = 0; i < blurSteps; i++) {
-                const alpha = (i / blurSteps) * motionIntensity * 0.4;
+                const alpha = (i / blurSteps) * motionIntensity * 0.2; // Very low alpha
                 const x = drone.prevX + stepX * i;
                 const y = drone.prevY + stepY * i;
-                const size = drone.size * (0.5 + (i / blurSteps) * 0.3);
+                const size = drone.size * 0.6; // Smaller blur dots
                 
-                // Breakaway drones get white-hot streaks
-                if (drone.state === 'breakaway') {
-                    this.ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-                } else {
-                    this.ctx.fillStyle = `rgba(0, 212, 255, ${alpha * 0.7})`;
-                }
-                
+                // Subtle blur effect
+                this.ctx.fillStyle = `rgba(0, 212, 255, ${alpha})`;
                 this.ctx.beginPath();
                 this.ctx.arc(x, y, size, 0, Math.PI * 2);
                 this.ctx.fill();
@@ -554,39 +541,32 @@ const DroneSwarm = {
         const coreSize = drone.size * drone.energyField;
         const coreIntensity = drone.coreEnergy;
         
-        // Energy field aura
-        if (drone.crystallineFormation) {
+        // Minimal energy field aura only when forming letters
+        if (drone.crystallineFormation && drone.state === 'engaging') {
             this.ctx.shadowColor = '#00d4ff';
-            this.ctx.shadowBlur = 25;
-            this.ctx.fillStyle = `rgba(0, 212, 255, 0.3)`;
+            this.ctx.shadowBlur = 6; // Much smaller glow
+            this.ctx.fillStyle = `rgba(0, 212, 255, 0.1)`; // Very subtle
             this.ctx.beginPath();
-            this.ctx.arc(drone.x, drone.y, coreSize + 8, 0, Math.PI * 2);
+            this.ctx.arc(drone.x, drone.y, coreSize + 2, 0, Math.PI * 2);
             this.ctx.fill();
             this.ctx.shadowBlur = 0;
         }
         
-        // Thruster glow
-        if (drone.thrusterGlow > 0) {
-            const thrusterSize = coreSize + drone.thrusterGlow * 6;
-            this.ctx.fillStyle = `rgba(255, 255, 255, ${drone.thrusterGlow * 0.4})`;
-            this.ctx.beginPath();
-            this.ctx.arc(drone.x, drone.y, thrusterSize, 0, Math.PI * 2);
-            this.ctx.fill();
-        }
+        // No thruster glow to keep it minimal
         
-        // Main elite drone body - reduced glow
+        // Main elite drone body - minimal glow
         this.ctx.shadowColor = '#00d4ff';
-        this.ctx.shadowBlur = 8 * this.typographySettings.glowIntensity;
-        this.ctx.fillStyle = `rgba(0, 212, 255, ${coreIntensity * 0.8})`;
+        this.ctx.shadowBlur = 3 * this.typographySettings.glowIntensity; // Very small glow
+        this.ctx.fillStyle = `rgba(0, 212, 255, ${coreIntensity * 0.7})`;
         this.ctx.beginPath();
         this.ctx.arc(drone.x, drone.y, coreSize, 0, Math.PI * 2);
         this.ctx.fill();
         this.ctx.shadowBlur = 0;
         
-        // Elite core highlight - more subtle
-        this.ctx.fillStyle = `rgba(255, 255, 255, ${coreIntensity * 0.5})`;
+        // Minimal core highlight
+        this.ctx.fillStyle = `rgba(255, 255, 255, ${coreIntensity * 0.3})`;
         this.ctx.beginPath();
-        this.ctx.arc(drone.x, drone.y, coreSize * 0.3, 0, Math.PI * 2);
+        this.ctx.arc(drone.x, drone.y, coreSize * 0.2, 0, Math.PI * 2);
         this.ctx.fill();
     },
 
@@ -726,6 +706,20 @@ const DroneSwarm = {
             'd': { x: -0.4, y: 0.9 }, // Gentle down-left
             'w': { x: 0.3, y: -0.7 }, // Upward wave
             'r': { x: -0.7, y: -0.7 }, // Sharp diagonal
+            'n': { x: 0.5, y: -0.8 }, // Diagonal up-right
+            't': { x: 0.1, y: -0.9 }, // Straight up
+            's': { x: 0.8, y: 0.3 }, // S-curve right
+            'C': { x: -0.9, y: -0.2 }, // Wide left arc
+            'u': { x: 0.4, y: 0.9 }, // U-curve down
+            'p': { x: -0.6, y: 0.8 }, // P-loop down-left
+            'V': { x: 0.7, y: -0.7 }, // V-formation diagonal
+            'i': { x: 0.1, y: -0.95 }, // Dot up
+            'g': { x: -0.3, y: 0.95 }, // G-tail down
+            'P': { x: -0.8, y: -0.4 }, // P-strong left
+            'N': { x: 0.9, y: -0.4 }, // N-diagonal
+            'v': { x: 0.6, y: -0.8 }, // Small v up
+            'f': { x: -0.2, y: -0.98 }, // F-flag up
+            ',': { x: 0.1, y: 0.99 }, // Comma drops
             ' ': { x: 0.0, y: 1.0 } // Spaces fall straight down
         };
 
