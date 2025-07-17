@@ -26,8 +26,8 @@ function initializeApp() {
         
         // Initialize the holographic data conduit system
         DataConduits.init();
-        VolumetricRenderer.init();
-        HolographicEnhancer.init();
+        // VolumetricRenderer.init();
+        // HolographicEnhancer.init();
         
         Navigation.init();
         Hero.init();

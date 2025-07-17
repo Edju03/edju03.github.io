@@ -59,8 +59,8 @@ const DataConduits = {
         this.canvas.style.height = '100vh';
         this.canvas.style.pointerEvents = 'none';
         this.canvas.style.zIndex = '10';
-        this.canvas.style.opacity = '0.8';
-        this.canvas.style.mixBlendMode = 'screen';
+        this.canvas.style.opacity = '0.4';
+        this.canvas.style.mixBlendMode = 'overlay';
         
         // Insert directly into body for full visibility
         document.body.appendChild(this.canvas);
@@ -212,7 +212,7 @@ const DataConduits = {
         // Create high-energy data packets that zip through conduits
         this.pipes.forEach((pipe, pipeIndex) => {
             if (pipe.type === 'primary') {
-                for (let i = 0; i < 4; i++) {
+                for (let i = 0; i < 2; i++) {
                     this.dataPackets.push({
                         pipeId: pipeIndex,
                         position: Math.random(),
@@ -231,17 +231,17 @@ const DataConduits = {
 
     initializeGridNetwork() {
         this.gridNodes = [];
-        const gridSpacing = 60;
+        const gridSpacing = 120; // Doubled spacing to reduce density
         
-        // Create a sophisticated grid network on the floor
+        // Create a subtle grid network on the floor
         for (let x = 0; x < window.innerWidth; x += gridSpacing) {
-            for (let y = window.innerHeight * 0.7; y < window.innerHeight; y += gridSpacing) {
+            for (let y = window.innerHeight * 0.8; y < window.innerHeight; y += gridSpacing) {
                 this.gridNodes.push({
                     x: x,
                     y: y,
-                    activity: Math.random() * 0.3,
+                    activity: Math.random() * 0.1, // Reduced activity
                     pulsePhase: Math.random() * Math.PI * 2,
-                    connectionStrength: Math.random() * 0.5
+                    connectionStrength: Math.random() * 0.2 // Reduced strength
                 });
             }
         }
@@ -257,13 +257,13 @@ const DataConduits = {
         this.ctx.fillStyle = 'rgba(0, 0, 0, 0.005)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Render the living supercomputer
-        this.drawGridNetwork(time);
+        // Render the living supercomputer (simplified)
+        // this.drawGridNetwork(time);
         this.drawCrystallinePipes(time);
         this.updateAndDrawDataPackets(time);
         this.drawDataPorts(time);
-        this.drawLightTendrils(time);
-        this.drawVolumetricEffects(time);
+        // this.drawLightTendrils(time);
+        // this.drawVolumetricEffects(time);
         
         requestAnimationFrame(() => this.animate());
     },
