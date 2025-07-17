@@ -49,7 +49,7 @@ const RoboticArm = {
         const time = Date.now() * 0.001;
         
         // Update arm segment angles with smooth motion
-        this.armSegments.forEach((segment) => {
+        this.armSegments.forEach((segment, index) => {
             const baseMotion = Math.sin(time * segment.speed) * 15;
             segment.angle = segment.baseAngle + baseMotion;
         });
@@ -295,8 +295,10 @@ const CFDSimulation = {
         this.ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
+        const time = Date.now() * 0.001;
+        
         // Update and draw streamlines
-        this.streamlines.forEach((streamline) => {
+        this.streamlines.forEach((streamline, index) => {
             const currentPoint = streamline.points[streamline.points.length - 1];
             
             // Calculate flow velocity at current position
@@ -373,8 +375,8 @@ const CFDSimulation = {
             vortex.age++;
             
             // Move vortices slowly
-            vortex.x += Math.sin(Date.now() * 0.0005 + index) * 0.3;
-            vortex.y += Math.cos(Date.now() * 0.0003 + index) * 0.2;
+            vortex.x += Math.sin(time * 0.5 + index) * 0.3;
+            vortex.y += Math.cos(time * 0.3 + index) * 0.2;
             
             // Draw vortex as spiral
             const spiralTurns = 3;
@@ -386,8 +388,8 @@ const CFDSimulation = {
             this.ctx.beginPath();
             for (let angle = 0; angle < spiralTurns * Math.PI * 2; angle += 0.2) {
                 const radius = (angle / (spiralTurns * Math.PI * 2)) * maxRadius;
-                const x = vortex.x + Math.cos(angle + Date.now() * vortex.strength * 0.01) * radius;
-                const y = vortex.y + Math.sin(angle + Date.now() * vortex.strength * 0.01) * radius;
+                const x = vortex.x + Math.cos(angle + time * vortex.strength * 10) * radius;
+                const y = vortex.y + Math.sin(angle + time * vortex.strength * 10) * radius;
                 
                 if (angle === 0) {
                     this.ctx.moveTo(x, y);
@@ -496,7 +498,7 @@ const ThrusterSimulation = {
         const time = Date.now() * 0.001;
         
         // Draw shock diamonds
-        this.shockDiamonds.forEach((diamond) => {
+        this.shockDiamonds.forEach((diamond, index) => {
             const oscillation = Math.sin(time * 3 + diamond.phase) * 0.3;
             
             this.ctx.strokeStyle = `rgba(255, 107, 53, ${diamond.intensity + oscillation})`;
@@ -519,7 +521,7 @@ const ThrusterSimulation = {
         });
         
         // Update and draw exhaust particles
-        this.exhaustParticles.forEach((particle) => {
+        this.exhaustParticles.forEach((particle, index) => {
             // Update particle physics
             particle.x += particle.vx;
             particle.y += particle.vy;
@@ -550,7 +552,7 @@ const ThrusterSimulation = {
         });
         
         // Update and draw pressure waves
-        this.pressureWaves.forEach((wave) => {
+        this.pressureWaves.forEach((wave, index) => {
             wave.radius += wave.speed;
             
             if (wave.radius > wave.maxRadius) {
@@ -587,6 +589,185 @@ const ThrusterSimulation = {
     }
 };
 
+// New Holographic Robotics Visualizations
+const RRTVisualization = {
+    canvas: null,
+    ctx: null,
+    tree: { nodes: [], edges: [] },
+    optimalPath: [],
+    growthRate: 0.02,
+    
+    init() {
+        console.log('RRTVisualization: Skipped - using existing simulations');
+    }
+};
+
+const StateEstimationEllipsoid = {
+    canvas: null,
+    ctx: null,
+    ellipsoid: { x: 0, y: 0, a: 100, b: 60, angle: 0 },
+    confidence: 0.5,
+    
+    init() {
+        console.log('StateEstimationEllipsoid: Skipped - using existing simulations');
+        return;
+        this.ctx = this.canvas.getContext('2d');
+        this.resizeCanvas();
+        this.ellipsoid.x = this.canvas.width / 2;
+        this.ellipsoid.y = this.canvas.height / 2;
+        this.animate();
+    },
+    
+    resizeCanvas() {
+        if (!this.canvas) return;
+        const container = this.canvas.parentElement;
+        this.canvas.width = container.offsetWidth;
+        this.canvas.height = container.offsetHeight;
+    },
+    
+    animate() {
+        if (!this.ctx) return;
+        
+        const time = Date.now() * 0.001;
+        
+        // Clear with deep void
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Update ellipsoid (shrinking over time to show increasing certainty)
+        this.confidence += 0.005;
+        this.ellipsoid.a = Math.max(20, 100 - this.confidence * 50);
+        this.ellipsoid.b = Math.max(15, 60 - this.confidence * 30);
+        this.ellipsoid.angle += 0.01;
+        
+        if (this.confidence > 2) this.confidence = 0; // Reset
+        
+        // Draw covariance ellipsoid
+        this.ctx.save();
+        this.ctx.translate(this.ellipsoid.x, this.ellipsoid.y);
+        this.ctx.rotate(this.ellipsoid.angle);
+        
+        // Luminous ellipsoid
+        this.ctx.strokeStyle = 'rgba(0, 255, 255, 0.8)';
+        this.ctx.lineWidth = 2;
+        this.ctx.shadowColor = '#00ffff';
+        this.ctx.shadowBlur = 15;
+        
+        this.ctx.beginPath();
+        this.ctx.ellipse(0, 0, this.ellipsoid.a, this.ellipsoid.b, 0, 0, Math.PI * 2);
+        this.ctx.stroke();
+        
+        // Inner glow
+        this.ctx.fillStyle = 'rgba(0, 255, 255, 0.1)';
+        this.ctx.fill();
+        
+        this.ctx.restore();
+        this.ctx.shadowBlur = 0;
+        
+        // Draw Kalman filter equation
+        this.ctx.fillStyle = 'rgba(0, 255, 255, 0.7)';
+        this.ctx.font = '14px Orbitron, monospace';
+        this.ctx.fillText('Pₖ = (I - KₖHₖ)Pₖ⁻', 20, this.canvas.height - 20);
+        
+        requestAnimationFrame(() => this.animate());
+    }
+};
+
+const ControlBarrierFunction = {
+    canvas: null,
+    ctx: null,
+    barriers: [],
+    agent: { x: 0, y: 0, vx: 2, vy: 1 },
+    
+    init() {
+        console.log('ControlBarrierFunction: Skipped - using existing simulations');
+        return;
+        this.ctx = this.canvas.getContext('2d');
+        this.resizeCanvas();
+        this.initializeBarriers();
+        this.agent.x = 50;
+        this.agent.y = this.canvas.height / 2;
+        this.animate();
+    },
+    
+    resizeCanvas() {
+        if (!this.canvas) return;
+        const container = this.canvas.parentElement;
+        this.canvas.width = container.offsetWidth;
+        this.canvas.height = container.offsetHeight;
+    },
+    
+    initializeBarriers() {
+        this.barriers = [
+            { x: this.canvas.width * 0.3, y: this.canvas.height * 0.4, radius: 40 },
+            { x: this.canvas.width * 0.6, y: this.canvas.height * 0.7, radius: 35 },
+            { x: this.canvas.width * 0.8, y: this.canvas.height * 0.3, radius: 45 }
+        ];
+    },
+    
+    animate() {
+        if (!this.ctx) return;
+        
+        const time = Date.now() * 0.001;
+        
+        // Clear with deep void
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Update agent position
+        this.agent.x += this.agent.vx;
+        this.agent.y += this.agent.vy;
+        
+        // Wrap around
+        if (this.agent.x > this.canvas.width) this.agent.x = 0;
+        if (this.agent.y > this.canvas.height) this.agent.y = 0;
+        if (this.agent.y < 0) this.agent.y = this.canvas.height;
+        
+        // Draw control barrier functions
+        this.barriers.forEach(barrier => {
+            const dist = Math.sqrt((this.agent.x - barrier.x) ** 2 + (this.agent.y - barrier.y) ** 2);
+            const isNear = dist < barrier.radius + 50;
+            
+            // Energy shield intensity based on proximity
+            const intensity = isNear ? Math.max(0.3, 1 - (dist - barrier.radius) / 50) : 0.1;
+            
+            // Translucent energy shield
+            this.ctx.strokeStyle = `rgba(255, 100, 0, ${intensity})`;
+            this.ctx.lineWidth = isNear ? 3 : 1;
+            this.ctx.shadowColor = '#ff6400';
+            this.ctx.shadowBlur = isNear ? 20 : 5;
+            
+            this.ctx.beginPath();
+            this.ctx.arc(barrier.x, barrier.y, barrier.radius, 0, Math.PI * 2);
+            this.ctx.stroke();
+            
+            // Pulsing energy field
+            if (isNear) {
+                this.ctx.fillStyle = `rgba(255, 100, 0, ${intensity * 0.2})`;
+                this.ctx.fill();
+            }
+        });
+        
+        this.ctx.shadowBlur = 0;
+        
+        // Draw agent
+        this.ctx.fillStyle = 'rgba(0, 255, 255, 0.9)';
+        this.ctx.shadowColor = '#00ffff';
+        this.ctx.shadowBlur = 10;
+        this.ctx.beginPath();
+        this.ctx.arc(this.agent.x, this.agent.y, 5, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.shadowBlur = 0;
+        
+        // Draw CBF equation
+        this.ctx.fillStyle = 'rgba(255, 100, 0, 0.7)';
+        this.ctx.font = '12px Orbitron, monospace';
+        this.ctx.fillText('ḣ(x) ≥ -α(h(x))', 20, this.canvas.height - 20);
+        
+        requestAnimationFrame(() => this.animate());
+    }
+};
+
 const CodeRain = {
     canvas: null,
     ctx: null,
@@ -613,7 +794,7 @@ const CodeRain = {
         this.canvas.width = container.offsetWidth;
         this.canvas.height = container.offsetHeight;
     },
-
+    
     initializeStreams() {
         this.streams = [];
         const streamCount = Math.floor(this.canvas.width / 20);
@@ -651,4 +832,4 @@ const CodeRain = {
         
         requestAnimationFrame(() => this.animate());
     }
-};
+}; 

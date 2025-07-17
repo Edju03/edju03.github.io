@@ -322,21 +322,4 @@ const Theme = {
     }
 };
 
-const LoadingScreen = {
-    show() {
-        const loadingScreen = document.querySelector('.loading-screen');
-        if (loadingScreen) {
-            loadingScreen.classList.remove('hidden');
-        }
-    },
-
-    hide() {
-        const loadingScreen = document.querySelector('.loading-screen');
-        if (loadingScreen) {
-            loadingScreen.classList.add('hidden');
-            setTimeout(() => {
-                loadingScreen.style.display = 'none';
-            }, 500);
-        }
-    }
-}; 
+// LoadingScreen removed - now handled in main.js 

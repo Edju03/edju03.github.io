@@ -10,39 +10,49 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
-    // Initialize all components
-    ParticleSystem.init();
-    DroneSwarm.init();
+    console.log('Starting app initialization...');
     
-    // Original simulations
-    RoboticArm.init();
-    CFDSimulation.init();
-    ThrusterSimulation.init();
-    
-    // New holographic simulations are embedded in existing canvases
-    
-    Architect.init();
-    CodeRain.init();
-    Navigation.init();
-    Hero.init();
-    Animations.init();
-    Stats.init();
-    ContactForm.init();
-    CursorTrail.init();
-    ScrollIndicator.init();
-    Theme.init();
-    
-    // Show loading screen initially
-    LoadingScreen.show();
-    
-    // Hide loading screen after everything is loaded
-    window.addEventListener('load', function() {
+    try {
+        // Initialize core components
+        ParticleSystem.init();
+        DroneSwarm.init();
+        
+        // Original simulations
+        RoboticArm.init();
+        CFDSimulation.init();
+        ThrusterSimulation.init();
+        
+        Architect.init();
+        CodeRain.init();
+        Navigation.init();
+        Hero.init();
+        Animations.init();
+        Stats.init();
+        ContactForm.init();
+        CursorTrail.init();
+        ScrollIndicator.init();
+        Theme.init();
+        
+        console.log('All components initialized successfully');
+        
+        // Show loading screen initially
+        LoadingScreen.show();
+        
+        // Hide loading screen faster
         setTimeout(() => {
             LoadingScreen.hide();
             isLoaded = true;
             startAnimations();
-        }, 2000);
-    });
+            console.log('Loading complete, animations started');
+        }, 500); // Reduced from 2000ms to 500ms
+        
+    } catch (error) {
+        console.error('Error during initialization:', error);
+        // Force hide loading screen on error
+        setTimeout(() => {
+            LoadingScreen.hide();
+        }, 1000);
+    }
 }
 
 // Start animations after loading
