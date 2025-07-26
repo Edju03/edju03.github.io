@@ -150,7 +150,7 @@ const DroneSwarm = {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         // Draw cyan grid floor
-        this.drawCyanGridFloor(time);
+        // this.drawCyanGridFloor(time);
         
         // Handle text sequence transitions
         this.handleTextSequences(currentTime);

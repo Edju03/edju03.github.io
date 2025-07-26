@@ -1363,6 +1363,10 @@ body {
     background: linear-gradient(135deg, #ef4444, #00d4ff);
 }
 
+.project-card:nth-child(7) .project-image {
+    background: linear-gradient(135deg, #00d4ff, #9333ea);
+}
+
 .project-image::before {
     content: '';
     position: absolute;
@@ -1606,6 +1610,39 @@ body {
     animation: dataTransmit 1.5s ease-in-out infinite;
 }
 
+/* Humanoid Quadruped VR Visuals */
+.robot-icon {
+    width: 50px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.9);
+    top: 50%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+    clip-path: polygon(30% 0%, 70% 0%, 90% 20%, 90% 60%, 70% 80%, 60% 100%, 40% 100%, 30% 80%, 10% 60%, 10% 20%);
+    animation: robotWalk 3s ease-in-out infinite;
+}
+
+.vr-headset {
+    width: 60px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    top: 30%;
+    right: 25%;
+    transform: translateX(50%);
+    animation: vrFloat 4s ease-in-out infinite;
+}
+
+.quadruped-legs {
+    width: 80px;
+    height: 20px;
+    background: linear-gradient(90deg, transparent 20%, rgba(255, 255, 255, 0.7) 20%, rgba(255, 255, 255, 0.7) 25%, transparent 25%, transparent 45%, rgba(255, 255, 255, 0.7) 45%, rgba(255, 255, 255, 0.7) 50%, transparent 50%, transparent 70%, rgba(255, 255, 255, 0.7) 70%, rgba(255, 255, 255, 0.7) 75%, transparent 75%);
+    bottom: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: legMove 2s linear infinite;
+}
+
 /* Animations */
 @keyframes robotHover {
     0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
@@ -1678,6 +1715,22 @@ body {
 @keyframes dataTransmit {
     0%, 100% { opacity: 0.3; transform: scale(1); }
     50% { opacity: 1; transform: scale(1.5); }
+}
+
+@keyframes robotWalk {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+    25% { transform: translate(-50%, -50%) translateY(-5px) rotate(-5deg); }
+    75% { transform: translate(-50%, -50%) translateY(-5px) rotate(5deg); }
+}
+
+@keyframes vrFloat {
+    0%, 100% { transform: translateX(50%) translateY(0px) rotate(0deg); }
+    50% { transform: translateX(50%) translateY(-10px) rotate(5deg); }
+}
+
+@keyframes legMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 20px 0; }
 }
 
 /* Divine Trajectory Planning System */
