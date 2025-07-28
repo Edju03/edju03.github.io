@@ -1,17 +1,20 @@
 /* Modern Robot-Themed CSS */
 :root {
-    /* Color Palette */
-    --primary-bg: #0a0a0a;
-    --secondary-bg: #1a1a1a;
-    --accent-bg: #2a2a2a;
-    --primary-text: #ffffff;
-    --secondary-text: #b0b0b0;
-    --accent-text: #888888;
-    --primary-accent: #00d4ff;
-    --secondary-accent: #ff6b35;
-    --success-color: #00ff88;
-    --warning-color: #ffaa00;
-    --error-color: #ff4444;
+    /* Color Palette - Improved for accessibility and eye comfort */
+    --primary-bg: #0e0e10;
+    --secondary-bg: #1c1c1e;
+    --accent-bg: #2c2c2e;
+    --primary-text: #f2f2f7;
+    --secondary-text: #c7c7cc;
+    --accent-text: #8e8e93;
+    --primary-accent: #0096c7;
+    --secondary-accent: #e76f51;
+    --success-color: #30d158;
+    --warning-color: #ff9f0a;
+    --error-color: #ff453a;
+    --neutral-bg: #1c1c1e;
+    --card-bg: #2c2c2e;
+    --border-subtle: rgba(255, 255, 255, 0.08);
     
     /* Typography */
     --font-primary: 'Orbitron', monospace;
@@ -710,17 +713,28 @@ body {
 }
 
 .hero-subtitle {
-    font-size: 1.5rem;
-    color: var(--secondary-text);
+    font-size: 1.6rem;
+    color: var(--primary-text);
     margin-bottom: var(--spacing-lg);
-    font-weight: 300;
+    font-weight: 400;
+    line-height: 1.4;
 }
 
 .hero-description {
-    font-size: 1.1rem;
-    color: var(--accent-text);
+    font-size: 1.2rem;
+    color: var(--secondary-text);
     margin-bottom: var(--spacing-xl);
-    line-height: 1.7;
+    line-height: 1.8;
+    font-weight: 400;
+}
+
+.hero-mission {
+    font-style: italic;
+    color: var(--primary-accent);
+    font-weight: 500;
+    margin-top: var(--spacing-md);
+    padding-left: var(--spacing-md);
+    border-left: 3px solid var(--primary-accent);
 }
 
 .hero-buttons {
@@ -1096,16 +1110,19 @@ body {
     align-items: center;
     gap: var(--spacing-sm);
     padding: var(--spacing-md) var(--spacing-xl);
+    min-height: 44px;
+    min-width: 44px;
     border: none;
     border-radius: var(--border-radius);
     font-family: var(--font-secondary);
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: 1.1rem;
+    font-weight: 600;
     text-decoration: none;
     cursor: pointer;
     transition: all var(--transition-fast);
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btn::before {
@@ -1152,6 +1169,22 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 var(--spacing-xl);
+}
+
+/* Section spacing and dividers for better visual separation */
+.about, .projects, .experience, .contact {
+    position: relative;
+}
+
+.about::before, .projects::before, .experience::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
 }
 
 .section-header {
@@ -1217,8 +1250,10 @@ body {
 
 .text-card p {
     color: var(--secondary-text);
-    line-height: 1.7;
+    line-height: 1.8;
     margin-bottom: var(--spacing-md);
+    font-size: 1.05rem;
+    font-weight: 400;
 }
 
 .skills-grid {
@@ -1300,15 +1335,16 @@ body {
 }
 
 .project-card {
-    background: var(--secondary-bg);
+    background: var(--card-bg);
     border-radius: var(--border-radius-lg);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-subtle);
     overflow: hidden;
     transition: all var(--transition-slow);
     position: relative;
     transform: translateY(0);
     opacity: 1;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .project-card.visible {
@@ -1860,7 +1896,7 @@ body {
 
 .project-content {
     padding: var(--spacing-xl);
-    background: linear-gradient(135deg, var(--secondary-bg), var(--accent-bg));
+    background: var(--card-bg);
     position: relative;
 }
 
@@ -1907,10 +1943,12 @@ body {
 
 .project-description {
     color: var(--secondary-text);
-    line-height: 1.7;
+    line-height: 1.8;
     margin-bottom: var(--spacing-lg);
     position: relative;
     z-index: 1;
+    font-size: 1rem;
+    font-weight: 400;
 }
 
 .project-tech {
@@ -2530,25 +2568,31 @@ body {
     color: var(--primary-text);
     margin-bottom: var(--spacing-sm);
     font-weight: 500;
+    font-size: 1rem;
 }
 
 .form-group input,
 .form-group textarea {
     width: 100%;
     padding: var(--spacing-md);
-    background: var(--secondary-bg);
-    border: 2px solid var(--border-color);
+    background: var(--card-bg);
+    border: 2px solid var(--border-subtle);
     border-radius: var(--border-radius);
     color: var(--primary-text);
     font-family: var(--font-secondary);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
     transition: all var(--transition-fast);
+    min-height: 44px;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
     border-color: var(--primary-accent);
-    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(0, 150, 199, 0.2);
+    background: var(--accent-bg);
 }
 
 .form-group textarea {
