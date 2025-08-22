@@ -7,18 +7,23 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <!-- Modular JavaScript files -->
     <script src="js/utils.js"></script>
+    <script src="js/performance-optimizer.js"></script>
     <script src="js/particle-system.js"></script>
     <script src="js/drone-swarm.js"></script>
     <script src="js/architect.js"></script>
     <script src="js/simulation-modules.js"></script>
+    <script src="js/humanoid-robot.js"></script>
+    <script src="js/robotics-equations.js"></script>
     <script src="js/ui-modules.js"></script>
     <script src="js/main.js"></script>
 </head>
 <body>
-    <!-- Cursor Trail -->
-    <div class="cursor-trail"></div>
+    <!-- Cursor Trail - Disabled for better performance -->
+    <!-- <div class="cursor-trail"></div> -->
     
     <!-- Loading Screen -->
     <div class="loading-screen">
@@ -126,10 +131,8 @@
                     <span class="title-line">Robotics</span>
                     <span class="title-line">Engineer</span>
                 </h1>
-                <p class="hero-subtitle">Building autonomous systems that improve human lives</p>
                 <div class="hero-description">
                     <p>Hi, I'm Edward! I'm passionate about creating robots that work alongside humans to solve real-world challenges. As a Computer Science & Robotics student at Caltech, I'm currently researching UAV safety at AMBER Lab and have been recognized as a NASA Big Idea Challenge Finalist.</p>
-                    <p class="hero-mission">My mission: bridging the gap between cutting-edge robotics and meaningful human impact.</p>
                 </div>
                 <div class="hero-buttons">
                     <button class="btn primary" onclick="scrollToSection('projects')">
@@ -414,20 +417,18 @@
                 <div class="project-card">
                     <div class="project-image">
                         <div class="project-visual">
-                            <div class="visual-element robot-icon"></div>
-                            <div class="visual-element vr-headset"></div>
-                            <div class="visual-element quadruped-legs"></div>
-                            <div class="project-title-overlay">HUMANOID QUADRUPED VR</div>
+                            <!-- Removed visual elements for cleaner look -->
+                            <div class="project-title-overlay">HUMANOID TELEOPERATION</div>
                         </div>
                     </div>
                     <div class="project-content">
-                        <div class="project-category">Robotics & Virtual Reality</div>
-                        <h3 class="project-title">Humanoid Quadruped VR System</h3>
-                        <p class="project-description">Development of an integrated VR control system for humanoid quadruped robots, enabling intuitive teleoperation and immersive control interfaces.</p>
+                        <div class="project-category">Robotics & AI</div>
+                        <h3 class="project-title">Real-time Humanoid Teleoperation</h3>
+                        <p class="project-description">AI robotics startup developing general purpose humanoid and quadruped robots. Working on real-time teleoperation of Unitree G1 Humanoid with low-latency control systems and advanced motion planning.</p>
                         <div class="project-tech">
-                            <span class="tech-tag">Virtual Reality</span>
-                            <span class="tech-tag">Robotics</span>
-                            <span class="tech-tag">Control Systems</span>
+                            <span class="tech-tag">Teleoperation</span>
+                            <span class="tech-tag">Unitree G1</span>
+                            <span class="tech-tag">Real-time Control</span>
                             <span class="tech-tag">ROS</span>
                         </div>
                         <div class="project-stats">

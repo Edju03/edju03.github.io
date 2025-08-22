@@ -220,7 +220,7 @@ const ContactForm = {
             });
         });
         
-        // Form submission
+        // Form submission with EmailJS
         contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -228,12 +228,30 @@ const ContactForm = {
             submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Sending...</span>';
             submitButton.disabled = true;
             
-            // Simulate form submission
+            // Get form data
+            const formData = new FormData(contactForm);
+            const templateParams = {
+                from_name: formData.get('name'),
+                from_email: formData.get('email'),
+                subject: formData.get('subject'),
+                message: formData.get('message'),
+                to_name: 'Edward Ju'
+            };
+            
             try {
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                // Send email using EmailJS
+                // You'll need to replace these with your actual EmailJS credentials
+                const result = await emailjs.send(
+                    'YOUR_SERVICE_ID',     // Replace with your EmailJS service ID
+                    'YOUR_TEMPLATE_ID',    // Replace with your EmailJS template ID
+                    templateParams,
+                    'YOUR_PUBLIC_KEY'      // Replace with your EmailJS public key
+                );
+                
+                console.log('Email sent successfully:', result);
                 
                 submitButton.innerHTML = '<i class="fas fa-check"></i> <span>Sent!</span>';
-                submitButton.style.background = '#00ff88';
+                submitButton.style.background = 'var(--success-color)';
                 
                 // Reset form
                 contactForm.reset();
@@ -249,8 +267,10 @@ const ContactForm = {
                 }, 3000);
                 
             } catch (error) {
-                submitButton.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span>Error!</span>';
-                submitButton.style.background = '#ff4444';
+                console.error('Email send failed:', error);
+                
+                submitButton.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span>Failed to send</span>';
+                submitButton.style.background = 'var(--error-color)';
                 
                 setTimeout(() => {
                     submitButton.innerHTML = originalText;
@@ -269,26 +289,52 @@ const CursorTrail = {
         
         let cursorX = 0, cursorY = 0;
         let trailX = 0, trailY = 0;
+        let animationId = null;
+        let isMoving = false;
+        let moveTimeout = null;
         
+        // Use passive event listener for better performance
         document.addEventListener('mousemove', function(e) {
             cursorX = e.clientX;
             cursorY = e.clientY;
             
-            cursorTrail.style.opacity = '1';
-        });
+            // Only show cursor when moving
+            if (!isMoving) {
+                isMoving = true;
+                cursorTrail.style.opacity = '1';
+                if (!animationId) {
+                    updateCursorTrail();
+                }
+            }
+            
+            // Hide cursor after stopping
+            clearTimeout(moveTimeout);
+            moveTimeout = setTimeout(() => {
+                isMoving = false;
+                cursorTrail.style.opacity = '0.3';
+            }, 100);
+        }, { passive: true });
         
         document.addEventListener('mouseleave', function() {
             cursorTrail.style.opacity = '0';
+            isMoving = false;
         });
         
         function updateCursorTrail() {
-            trailX += (cursorX - trailX) * 0.1;
-            trailY += (cursorY - trailY) * 0.1;
+            // Smoother interpolation
+            const speed = 0.15;
+            trailX += (cursorX - trailX) * speed;
+            trailY += (cursorY - trailY) * speed;
             
-            cursorTrail.style.left = trailX - 10 + 'px';
-            cursorTrail.style.top = trailY - 10 + 'px';
+            // Use transform instead of left/top for GPU acceleration
+            cursorTrail.style.transform = `translate3d(${trailX - 10}px, ${trailY - 10}px, 0)`;
             
-            requestAnimationFrame(updateCursorTrail);
+            // Only animate when moving
+            if (isMoving || Math.abs(cursorX - trailX) > 0.1 || Math.abs(cursorY - trailY) > 0.1) {
+                animationId = requestAnimationFrame(updateCursorTrail);
+            } else {
+                animationId = null;
+            }
         }
         
         updateCursorTrail();

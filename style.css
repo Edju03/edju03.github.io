@@ -64,7 +64,7 @@ body {
     color: var(--primary-text);
     overflow-x: hidden;
     line-height: 1.6;
-    cursor: none; /* Hide default cursor */
+    /* cursor: none; - Removed to show default cursor */
 }
 
 /* Custom Scrollbar */
@@ -95,7 +95,10 @@ body {
     pointer-events: none;
     z-index: 9999;
     opacity: 0.8;
-    transition: all 0.15s ease;
+    /* Removed transition - causes lag with JS animation */
+    /* Using transform3d for GPU acceleration */
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
     box-shadow: 0 0 15px var(--primary-accent);
 }
 

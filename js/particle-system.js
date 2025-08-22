@@ -33,7 +33,8 @@ const ParticleSystem = {
     },
 
     createParticles() {
-        const particleCount = Math.floor((window.innerWidth * window.innerHeight) / 15000);
+        // Increased particle count for denser network (was /15000, now /8000)
+        const particleCount = Math.floor((window.innerWidth * window.innerHeight) / 8000);
         
         for (let i = 0; i < particleCount; i++) {
             this.particles.push({
@@ -64,13 +65,13 @@ const ParticleSystem = {
             if (particle.y < 0) particle.y = this.canvas.height;
             if (particle.y > this.canvas.height) particle.y = 0;
             
-            // Mouse interaction
+            // Mouse interaction - increased range
             const dx = this.mouseX - particle.x;
             const dy = this.mouseY - particle.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            if (distance < 100) {
-                const force = (100 - distance) / 100;
+            if (distance < 120) {  // Increased mouse interaction range
+                const force = (120 - distance) / 120;
                 particle.vx += dx * force * 0.001;
                 particle.vy += dy * force * 0.001;
             }
@@ -86,23 +87,29 @@ const ParticleSystem = {
             this.ctx.globalAlpha = particle.opacity;
             this.ctx.fill();
             
-            // Draw connections
-            this.particles.forEach((otherParticle, otherIndex) => {
-                if (index !== otherIndex) {
+            // Draw connections - balanced for performance and visibility
+            if (!this.skipConnections) {
+                // Check more particles but still optimized
+                for (let j = index + 1; j < this.particles.length; j++) {
+                    const otherParticle = this.particles[j];
                     const dx = particle.x - otherParticle.x;
                     const dy = particle.y - otherParticle.y;
+                    
+                    // Quick distance check before expensive sqrt - increased range
+                    if (Math.abs(dx) > 100 || Math.abs(dy) > 100) continue;
+                    
                     const distance = Math.sqrt(dx * dx + dy * dy);
                     
-                    if (distance < 80) {
+                    if (distance < 100) {  // Increased from 80 to 100 for more connections
                         this.ctx.beginPath();
                         this.ctx.moveTo(particle.x, particle.y);
                         this.ctx.lineTo(otherParticle.x, otherParticle.y);
                         this.ctx.strokeStyle = '#00d4ff';
-                        this.ctx.globalAlpha = (80 - distance) / 80 * 0.2;
+                        this.ctx.globalAlpha = (100 - distance) / 100 * 0.25;  // Slightly brighter
                         this.ctx.stroke();
                     }
                 }
-            });
+            }
         });
         
         requestAnimationFrame(() => this.animate());

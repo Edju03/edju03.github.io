@@ -9,10 +9,28 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
 
+// Initialize EmailJS
+function initEmailJS() {
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init('YOUR_PUBLIC_KEY'); // Replace with your actual EmailJS public key
+        console.log('📧 EmailJS initialized');
+    } else {
+        console.warn('⚠️ EmailJS not loaded');
+    }
+}
+
 function initializeApp() {
     console.log('Starting app initialization...');
     
+    // Initialize EmailJS first
+    initEmailJS();
+    
     try {
+        // Initialize performance optimizer first
+        if (typeof PerformanceOptimizer !== 'undefined') {
+            PerformanceOptimizer.init();
+        }
+        
         // Initialize core components
         ParticleSystem.init();
         DroneSwarm.init();
@@ -21,6 +39,16 @@ function initializeApp() {
         RoboticArm.init();
         CFDSimulation.init();
         ThrusterSimulation.init();
+        
+        // Humanoid robot visualization
+        if (typeof HumanoidRobot !== 'undefined') {
+            HumanoidRobot.init();
+        }
+        
+        // Floating robotics equations
+        if (typeof RoboticsEquations !== 'undefined') {
+            RoboticsEquations.init();
+        }
         
         CodeRain.init();
         
@@ -31,7 +59,7 @@ function initializeApp() {
         Animations.init();
         Stats.init();
         ContactForm.init();
-        CursorTrail.init();
+        // CursorTrail.init(); // Disabled for better performance
         ScrollIndicator.init();
         Theme.init();
         
